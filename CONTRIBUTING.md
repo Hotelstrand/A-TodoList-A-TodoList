@@ -20,4 +20,5 @@ Follow these steps to make a contribution to any of CF open source repositories:
 
 The easiest way to get your contribution included is to submit a PR on a feature branch against master.
 
-It may help to open an issue prior to working on the feature, so that any discussions about how to
+It may help to open an issue prior to working on the feature, so that any discussions about how to best
+solve the problem can happen ahead of time.

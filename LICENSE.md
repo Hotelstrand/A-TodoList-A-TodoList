@@ -32,4 +32,8 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
 	(a) You must give any other recipients of the Work or Derivative Works a copy of this License; and
 
-	(b) You must cause any mo
+	(b) You must cause any modified files to carry prominent notices stating that You changed the files; and
+
+	(c) You must retain, in the Source form of any Derivative Works that You distribute, all copyright, patent, trademark, and attribution notices from the Source form of the Work, excluding those notices that do not pertain to any part of the Derivative Works; and
+
+	(d) If the Work includes a "NOTICE" text file as part of its distribution, then any Derivative Work

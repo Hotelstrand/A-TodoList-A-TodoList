@@ -16,3 +16,14 @@ To deploy this BOSH release:
 
 ```
 git clone https://github.com/cloudfoundry-community/haproxy-boshrelease.git
+cd haproxy-boshrelease
+
+export BOSH_ENVIRONMENT=<alias>
+export BOSH_DEPLOYMENT=haproxy
+bosh2 deploy manifests/haproxy.yml \
+  -v haproxy-backend-port=80 \
+  -v "haproxy-backend-servers=[10.10.10.10,10.10.10.11]"
+```
+
+To make alterations to the deployment you can use the `bosh2 deploy [-o operator-file.yml]` flag to provide [operations files](https://bosh.io/docs/cli-ops-files.html).
+

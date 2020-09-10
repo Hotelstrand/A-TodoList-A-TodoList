@@ -27,3 +27,13 @@ bosh2 deploy manifests/haproxy.yml \
 
 To make alterations to the deployment you can use the `bosh2 deploy [-o operator-file.yml]` flag to provide [operations files](https://bosh.io/docs/cli-ops-files.html).
 
+Alternately you can build a manifest using `templates/make_manifest`
+
+You can either use the templates + examples provided to merge this in with an existing CloudFoundry
+deployment, or create a new deployment using this command:
+
+```
+make_manifest <aws-ec2|warden> <comma-separated-list-of-router-servers> <additional_templates>
+```
+
+**NOTE**: `make_manifest` requires [spruce v1.8.9](https

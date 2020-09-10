@@ -36,4 +36,18 @@ deployment, or create a new deployment using this command:
 make_manifest <aws-ec2|warden> <comma-separated-list-of-router-servers> <additional_templates>
 ```
 
-**NOTE**: `make_manifest` requires [spruce v1.8.9](https
+**NOTE**: `make_manifest` requires [spruce v1.8.9](https://github.com/geofffranks/spruce) or newer.
+
+```
+# Example for bare bones bosh-lite haproxy release on warden
+templates/make_manifest warden 10.244.0.22
+bosh deploy
+
+# Example for using keepalive with haproxy on warden:
+KEEPALIVED_VIP=10.244.50.2 templates/make_manifest warden 10.244.0.22
+```
+
+### Development
+
+Feel free to contribute back to this via a pull request on a feature branch! Once merged, we'll
+cu

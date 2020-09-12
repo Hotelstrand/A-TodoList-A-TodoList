@@ -50,4 +50,13 @@ KEEPALIVED_VIP=10.244.50.2 templates/make_manifest warden 10.244.0.22
 ### Development
 
 Feel free to contribute back to this via a pull request on a feature branch! Once merged, we'll
-cu
+cut a new final release for you.
+
+### Unit Tests and Linting
+
+#### PR Validation
+PRs will be automatically tested by https://concourse.cfi.sapcloud.io/teams/main/pipelines/haproxy-boshrelease once a maintainer has labelled the PR with the `run-ci` label
+
+#### Local Test Execution
+Unit/rspec Tests and linters can be run locally to verify correct functionality before pushing to the CI system.
+If you change any erb logic in the jo

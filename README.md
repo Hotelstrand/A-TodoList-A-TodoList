@@ -59,4 +59,29 @@ PRs will be automatically tested by https://concourse.cfi.sapcloud.io/teams/main
 
 #### Local Test Execution
 Unit/rspec Tests and linters can be run locally to verify correct functionality before pushing to the CI system.
-If you change any erb logic in the jo
+If you change any erb logic in the jobs directory please add a corresponding test to `spec`.
+
+```bash
+# install the necessary dependencies, once
+bundle package
+```
+
+```bash
+# run the rspec / unit tests for the configuration generation
+cd haproxy_boshrelease
+bundle install
+bundle exec rake spec
+```
+
+```bash
+# run the linter (rubocop) to identify any issues
+cd haproxy_boshrelease
+bundle install
+bundle exec rake lint
+```
+
+```bash
+# watch the tests while developing
+cd haproxy_boshrelease
+bundle install
+bundle exec gu

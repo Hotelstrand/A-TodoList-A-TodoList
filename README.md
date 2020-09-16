@@ -84,4 +84,12 @@ bundle exec rake lint
 # watch the tests while developing
 cd haproxy_boshrelease
 bundle install
-bundle exec gu
+bundle exec guard
+```
+
+#### Test Debugging
+Unit/rspec Tests can also be debugged/stepped through when needed. See for example the [VSCode rdbg Ruby Debugger](https://marketplace.visualstudio.com/items?itemName=KoichiSasada.vscode-rdbg) extension. You can follow the "Launch without configuration" instructions for the extension, just set the "Debug command line" input to `bundle exec rspec <filepath>`.
+
+### Acceptance tests
+
+See [a

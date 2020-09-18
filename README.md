@@ -92,4 +92,4 @@ Unit/rspec Tests can also be debugged/stepped through when needed. See for examp
 
 ### Acceptance tests
 
-See [a
+See [acceptance-tests README](/acceptance-tests/README.md).

@@ -75,4 +75,12 @@ var opsfileAddSSHUser string = `---
 `
 
 // opsfiles that need to be set for all tests
-var defaultOpsfiles = []string{opsfileChangeNa
+var defaultOpsfiles = []string{opsfileChangeName, opsfileChangeVersion, opsfileAddSSHUser}
+var defaultSSHUser string = "ginkgo"
+
+func buildManifestVars(baseManifestVars baseManifestVars, customVars map[string]interface{}) map[string]interface{} {
+	vars := map[string]interface{}{
+		"release-version":         config.ReleaseVersion,
+		"haproxy-backend-port":    fmt.Sprintf("%d", baseManifestVars.haproxyBackendPort),
+		"haproxy-backend-servers": baseManifestVars.haproxyBackendServers,
+		"deploym

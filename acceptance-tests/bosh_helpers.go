@@ -83,4 +83,19 @@ func buildManifestVars(baseManifestVars baseManifestVars, customVars map[string]
 		"release-version":         config.ReleaseVersion,
 		"haproxy-backend-port":    fmt.Sprintf("%d", baseManifestVars.haproxyBackendPort),
 		"haproxy-backend-servers": baseManifestVars.haproxyBackendServers,
-		"deploym
+		"deployment-name":         baseManifestVars.deploymentName,
+		"ssh_user":                defaultSSHUser,
+	}
+	for k, v := range customVars {
+		vars[k] = v
+	}
+
+	return vars
+}
+
+func buildHAProxyInfo(baseManifestVars baseManifestVars, varsStoreReader varsStoreReader) haproxyInfo {
+	var creds struct {
+		SSHKey struct {
+			PrivateKey           string `yaml:"private_key"`
+			PublicKey            string `yaml:"public_key"`
+			PublicKeyFingerprint string

@@ -55,4 +55,24 @@ var opsfileAddSSHUser string = `---
     version: latest
 
 # Add an SSH user
-- t
+- type: replace
+  path: /instance_groups/name=haproxy/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: ((ssh_user))
+        public_key: ((ssh_key.public_key))
+        sudo: true
+
+# Generate an SSH key-pair
+- type: replace
+  path: /variables?/-
+  value:
+    name: ssh_key
+    type: ssh
+`
+
+// opsfiles that need to be set for all tests
+var defaultOpsfiles = []string{opsfileChangeNa

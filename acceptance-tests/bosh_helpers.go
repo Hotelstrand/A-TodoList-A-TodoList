@@ -34,4 +34,25 @@ var opsfileChangeName string = `---
 # change deployment name to allow multiple simultaneous deployments
 - type: replace
   path: /name
-  valu
+  value: ((deployment-name))
+`
+
+var opsfileChangeVersion string = `---
+# Deploy dev version we just compiled
+- type: replace
+  path: /releases/name=haproxy
+  value:
+    name: haproxy
+    version: ((release-version))
+`
+
+var opsfileAddSSHUser string = `---
+# Install OS conf so that we can SSH into VM to inspect configuration
+- type: replace
+  path: /releases/-
+  value:
+    name: os-conf
+    version: latest
+
+# Add an SSH user
+- t

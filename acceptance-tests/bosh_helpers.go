@@ -98,4 +98,18 @@ func buildHAProxyInfo(baseManifestVars baseManifestVars, varsStoreReader varsSto
 		SSHKey struct {
 			PrivateKey           string `yaml:"private_key"`
 			PublicKey            string `yaml:"public_key"`
-			PublicKeyFingerprint string
+			PublicKeyFingerprint string `yaml:"public_key_fingerprint"`
+		} `yaml:"ssh_key"`
+	}
+	err := varsStoreReader(&creds)
+	Expect(err).NotTo(HaveOccurred())
+
+	Expect(creds.SSHKey.PrivateKey).NotTo(BeEmpty())
+	Expect(creds.SSHKey.PublicKey).NotTo(BeEmpty())
+
+	By("Fetching the HAProxy public IP")
+	instances := boshInstances(baseManifestVars.deploymentName)
+	haproxyPublicIP := instances[0].ParseIPs()[0]
+	Expect(haproxyPublicIP).ToNot(BeEmpty())
+
+	return

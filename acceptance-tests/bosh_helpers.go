@@ -112,4 +112,15 @@ func buildHAProxyInfo(baseManifestVars baseManifestVars, varsStoreReader varsSto
 	haproxyPublicIP := instances[0].ParseIPs()[0]
 	Expect(haproxyPublicIP).ToNot(BeEmpty())
 
-	return
+	return haproxyInfo{
+		PublicIP:                haproxyPublicIP,
+		SSHPrivateKey:           creds.SSHKey.PrivateKey,
+		SSHPublicKey:            creds.SSHKey.PublicKey,
+		SSHPublicKeyFingerprint: creds.SSHKey.PublicKeyFingerprint,
+		SSHUser:                 defaultSSHUser,
+	}
+}
+
+// Helper method for deploying HAProxy
+// Takes the HAProxy base manifest vars, an array of custom opsfiles, and a map of custom vars
+// Returns 'info' s

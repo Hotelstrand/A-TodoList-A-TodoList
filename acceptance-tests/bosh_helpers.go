@@ -126,4 +126,9 @@ func buildHAProxyInfo(baseManifestVars baseManifestVars, varsStoreReader varsSto
 // Returns 'info' struct containing public IP and ssh creds, and a callback to deserialize properties from the vars store
 // Use expectSuccess with false if the base configuration will not start successfully, e.g. because
 // files that are referenced in the configuration still need to be uploaded, or a custom backend needs more time to start up.
-// In those cases, `monit` will keep restarting the boshrelease and the test can expect
+// In those cases, `monit` will keep restarting the boshrelease and the test can expect the procesess to be healthy after
+// the necessary referenced resources are available.
+func deployHAProxy(baseManifestVars baseManifestVars, customOpsfiles []string, customVars map[string]interface{}, expectSuccess bool) (haproxyInfo, varsStoreReader) {
+	manifestVars := buildManifestVars(baseManifestVars, customVars)
+	opsfiles := append(defaultOpsfiles, customOpsfiles...)
+	cmd, varsStoreReader := deployBaseManifestCmd(baseManifestVars.deploymen

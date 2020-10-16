@@ -131,4 +131,17 @@ func buildHAProxyInfo(baseManifestVars baseManifestVars, varsStoreReader varsSto
 func deployHAProxy(baseManifestVars baseManifestVars, customOpsfiles []string, customVars map[string]interface{}, expectSuccess bool) (haproxyInfo, varsStoreReader) {
 	manifestVars := buildManifestVars(baseManifestVars, customVars)
 	opsfiles := append(defaultOpsfiles, customOpsfiles...)
-	cmd, varsStoreReader := deployBaseManifestCmd(baseManifestVars.deploymen
+	cmd, varsStoreReader := deployBaseManifestCmd(baseManifestVars.deploymentName, opsfiles, manifestVars)
+
+	dumpCmd(cmd)
+	session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+	Expect(err).NotTo(HaveOccurred())
+
+	if expectSuccess {
+		Eventually(session, 20*time.Minute, time.Second).Should(gexec.Exit(0))
+	} else {
+		Eventually(session, 20*time.Minute, time.Second).Should(gexec.Exit())
+		Expect(session.ExitCode()).NotTo(BeZero())
+	}
+
+	haproxyInfo := buildHAProxyInfo(baseManifestV

@@ -144,4 +144,20 @@ func deployHAProxy(baseManifestVars baseManifestVars, customOpsfiles []string, c
 		Expect(session.ExitCode()).NotTo(BeZero())
 	}
 
-	haproxyInfo := buildHAProxyInfo(baseManifestV
+	haproxyInfo := buildHAProxyInfo(baseManifestVars, varsStoreReader)
+
+	// Dump HAProxy config to help debugging
+	dumpHAProxyConfig(haproxyInfo)
+
+	return haproxyInfo, varsStoreReader
+}
+
+func dumpCmd(cmd *exec.Cmd) {
+	writeLog("---------- Command to run ----------")
+	writeLog(cmd.String())
+	writeLog("------------------------------------")
+}
+
+func dumpHAProxyConfig(haproxyInfo haproxyInfo) {
+	By("Checking /var/vcap/jobs/haproxy/config/haproxy.config")
+	haProxyConfig, _, err := runOnRemo

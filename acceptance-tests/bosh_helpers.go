@@ -160,4 +160,12 @@ func dumpCmd(cmd *exec.Cmd) {
 
 func dumpHAProxyConfig(haproxyInfo haproxyInfo) {
 	By("Checking /var/vcap/jobs/haproxy/config/haproxy.config")
-	haProxyConfig, _, err := runOnRemo
+	haProxyConfig, _, err := runOnRemote(haproxyInfo.SSHUser, haproxyInfo.PublicIP, haproxyInfo.SSHPrivateKey, "cat /var/vcap/jobs/haproxy/config/haproxy.config")
+	Expect(err).NotTo(HaveOccurred())
+	writeLog("---------- HAProxy Config ----------")
+	writeLog(haProxyConfig)
+	writeLog("------------------------------------")
+}
+
+// Takes bosh deployment name, ops files and vars.
+// Returns a cmd object and a callback to deserialise the bosh-gener

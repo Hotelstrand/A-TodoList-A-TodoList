@@ -168,4 +168,14 @@ func dumpHAProxyConfig(haproxyInfo haproxyInfo) {
 }
 
 // Takes bosh deployment name, ops files and vars.
-// Returns a cmd object and a callback to deserialise the bosh-gener
+// Returns a cmd object and a callback to deserialise the bosh-generated vars store after cmd has executed
+func deployBaseManifestCmd(boshDeployment string, opsFilesContents []string, vars map[string]interface{}) (*exec.Cmd, varsStoreReader) {
+	By(fmt.Sprintf("Deploying HAProxy (deployment name: %s)", boshDeployment))
+	args := []string{"deploy"}
+
+	// ops files
+	for _, opsFileContents := range opsFilesContents {
+		opsFile, err := ioutil.TempFile("", "haproxy-tests-ops-file-*.yml")
+		Expect(err).NotTo(HaveOccurred())
+
+		writeLog(fmt.Sprintf("Wri

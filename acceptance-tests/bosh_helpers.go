@@ -193,4 +193,16 @@ func deployBaseManifestCmd(boshDeployment string, opsFilesContents []string, var
 
 	// vars file
 	if vars != nil {
-		varsFile, err :
+		varsFile, err := ioutil.TempFile("", "haproxy-tests-vars-file-*.json")
+		Expect(err).NotTo(HaveOccurred())
+
+		bytes, err := json.Marshal(vars)
+		Expect(err).NotTo(HaveOccurred())
+
+		writeLog(fmt.Sprintf("Writing vars file to %s\n", varsFile.Name()))
+		writeLog("------------------------------------")
+		writeLog(string(bytes))
+		writeLog("------------------------------------")
+
+		_, err = varsFile.Write(bytes)
+		Expect(err).NotTo(HaveO

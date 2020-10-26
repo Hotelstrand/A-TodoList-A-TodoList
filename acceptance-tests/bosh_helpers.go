@@ -205,4 +205,20 @@ func deployBaseManifestCmd(boshDeployment string, opsFilesContents []string, var
 		writeLog("------------------------------------")
 
 		_, err = varsFile.Write(bytes)
-		Expect(err).NotTo(HaveO
+		Expect(err).NotTo(HaveOccurred())
+		err = varsFile.Close()
+		Expect(err).NotTo(HaveOccurred())
+
+		args = append(args, "--vars-file", varsFile.Name())
+	}
+
+	// vars store
+	varsStore, err := ioutil.TempFile("", "haproxy-tests-vars-store-*.yml")
+	Expect(err).NotTo(HaveOccurred())
+
+	_, err = varsStore.WriteString("{}")
+	Expect(err).NotTo(HaveOccurred())
+	err = varsStore.Close()
+	Expect(err).NotTo(HaveOccurred())
+
+	args = append(args, "--vars-store", varsStore.Name())

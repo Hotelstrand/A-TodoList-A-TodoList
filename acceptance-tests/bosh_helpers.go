@@ -222,3 +222,21 @@ func deployBaseManifestCmd(boshDeployment string, opsFilesContents []string, var
 	Expect(err).NotTo(HaveOccurred())
 
 	args = append(args, "--vars-store", varsStore.Name())
+	args = append(args, config.BaseManifestPath)
+
+	varsStoreReader := func(target interface{}) error {
+		varsStoreBytes, err := ioutil.ReadFile(varsStore.Name())
+		if err != nil {
+			return err
+		}
+
+		return yaml.Unmarshal(varsStoreBytes, target)
+	}
+
+	return config.boshCmd(boshDeployment, args...), varsStoreReader
+}
+
+type boshInstance struct {
+	AgentID           string `json:"agent_id"`
+	Az                string `json:"az"`
+	Bootstrap        

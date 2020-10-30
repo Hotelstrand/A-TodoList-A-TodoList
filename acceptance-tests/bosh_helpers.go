@@ -239,4 +239,13 @@ func deployBaseManifestCmd(boshDeployment string, opsFilesContents []string, var
 type boshInstance struct {
 	AgentID           string `json:"agent_id"`
 	Az                string `json:"az"`
-	Bootstrap        
+	Bootstrap         string `json:"bootstrap"`
+	Deployment        string `json:"deployment"`
+	DiskCids          string `json:"disk_cids"`
+	Ignore            string `json:"ignore"`
+	Index             string `json:"index"`
+	Instance          string `json:"instance"`
+	CommaSeparatedIPs string `json:"ips"`
+	ProcessState      string `json:"process_state"`
+	State             string `json:"state"`
+	VMCid             string `json:"vm_cid"`

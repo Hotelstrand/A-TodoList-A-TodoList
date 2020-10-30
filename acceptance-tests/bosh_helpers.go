@@ -249,3 +249,15 @@ type boshInstance struct {
 	ProcessState      string `json:"process_state"`
 	State             string `json:"state"`
 	VMCid             string `json:"vm_cid"`
+	VMType            string `json:"vm_type"`
+}
+
+func (instance boshInstance) ParseIPs() []string {
+	return strings.Split(instance.CommaSeparatedIPs, ",")
+}
+
+func boshInstances(boshDeployment string) []boshInstance {
+	writeLog("Fetching Bosh instances")
+	cmd := config.boshCmd(boshDeployment, "--json", "instances", "--details")
+	session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+	Expect(err).NotTo(HaveOccurred())

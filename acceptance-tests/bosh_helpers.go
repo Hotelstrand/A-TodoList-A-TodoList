@@ -261,3 +261,19 @@ func boshInstances(boshDeployment string) []boshInstance {
 	cmd := config.boshCmd(boshDeployment, "--json", "instances", "--details")
 	session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 	Expect(err).NotTo(HaveOccurred())
+	Eventually(session, time.Minute, time.Second).Should(gexec.Exit(0))
+
+	output := struct {
+		Tables []struct {
+			Rows []boshInstance `json:"Rows"`
+		} `json:"Tables"`
+	}{}
+
+	err = json.Unmarshal(session.Out.Contents(), &output)
+	Expect(err).NotTo(HaveOccurred())
+
+	return output.Tables[0].Rows
+}
+
+func deleteDeployment(boshDeployment string) {
+	By(fmt.Sprintf("Deleting HAProxy deployment (deployment name: %s)", boshDe

@@ -286,4 +286,15 @@ func deleteDeployment(boshDeployment string) {
 func waitForHAProxyListening(haproxyInfo haproxyInfo) {
 	Eventually(func() error {
 		return checkListening(fmt.Sprintf("%s:443", haproxyInfo.PublicIP))
-	}, 2*time.Minute, 5*time.Second).Sh
+	}, 2*time.Minute, 5*time.Second).ShouldNot(HaveOccurred())
+}
+
+func reloadHAProxy(haproxyInfo haproxyInfo) {
+	_, _, err := runOnRemote(haproxyInfo.SSHUser, haproxyInfo.PublicIP, haproxyInfo.SSHPrivateKey, "sudo /var/vcap/jobs/haproxy/bin/reload")
+	Expect(err).NotTo(HaveOccurred())
+	time.Sleep(10 * time.Second)
+}
+
+func drainHAProxy(haproxyInfo haproxyInfo) {
+	go func() {
+		_, _, err := runOnRemote(haproxyInfo.SSHUser, haproxyInfo.PublicIP, haproxyInfo.SSHPrivateKey, "sudo /var/vcap/job

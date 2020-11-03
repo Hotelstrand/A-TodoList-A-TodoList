@@ -276,4 +276,14 @@ func boshInstances(boshDeployment string) []boshInstance {
 }
 
 func deleteDeployment(boshDeployment string) {
-	By(fmt.Sprintf("Deleting HAProxy deployment (deployment name: %s)", boshDe
+	By(fmt.Sprintf("Deleting HAProxy deployment (deployment name: %s)", boshDeployment))
+	cmd := config.boshCmd(boshDeployment, "delete-deployment")
+	session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+	Expect(err).NotTo(HaveOccurred())
+	Eventually(session, 10*time.Minute, time.Second).Should(gexec.Exit(0))
+}
+
+func waitForHAProxyListening(haproxyInfo haproxyInfo) {
+	Eventually(func() error {
+		return checkListening(fmt.Sprintf("%s:443", haproxyInfo.PublicIP))
+	}, 2*time.Minute, 5*time.Second).Sh

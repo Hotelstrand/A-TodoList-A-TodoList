@@ -297,4 +297,13 @@ func reloadHAProxy(haproxyInfo haproxyInfo) {
 
 func drainHAProxy(haproxyInfo haproxyInfo) {
 	go func() {
-		_, _, err := runOnRemote(haproxyInfo.SSHUser, haproxyInfo.PublicIP, haproxyInfo.SSHPrivateKey, "sudo /var/vcap/job
+		_, _, err := runOnRemote(haproxyInfo.SSHUser, haproxyInfo.PublicIP, haproxyInfo.SSHPrivateKey, "sudo /var/vcap/jobs/haproxy/bin/drain")
+		Expect(err).NotTo(HaveOccurred())
+	}()
+	time.Sleep(5 * time.Second)
+}
+
+func crashHAProxy(haproxyInfo haproxyInfo) {
+	_, _, err := runOnRemote(haproxyInfo.SSHUser, haproxyInfo.PublicIP, haproxyInfo.SSHPrivateKey, "sudo pkill -9 -x haproxy")
+	Expect(err).NotTo(HaveOccurred())
+}

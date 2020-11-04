@@ -20,4 +20,16 @@ var _ = Describe("max_rewrite and buffer_size_bytes", func() {
   value: 71000
 `
 		haproxyBackendPort := 12000
-		haproxyInfo, _ := deployHAProxy(baseManifestV
+		haproxyInfo, _ := deployHAProxy(baseManifestVars{
+			haproxyBackendPort:    haproxyBackendPort,
+			haproxyBackendServers: []string{"127.0.0.1"},
+			deploymentName:        deploymentNameForTestNode(),
+		}, []string{opsfileBufferSize}, map[string]interface{}{}, true)
+
+		closeLocalServer, localPort := startDefaultTestServer()
+		defer closeLocalServer()
+
+		closeTunnel := setupTunnelFromHaproxyToTestServer(haproxyInfo, haproxyBackendPort, localPort)
+		defer closeTunnel()
+
+		By("

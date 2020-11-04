@@ -41,4 +41,13 @@ var _ = Describe("max_rewrite and buffer_size_bytes", func() {
 		req, err := http.NewRequest("GET", fmt.Sprintf("http://%s", haproxyInfo.PublicIP), nil)
 		Expect(err).NotTo(HaveOccurred())
 
-		// ensure t
+		// ensure total header size (key+value) is 64kb
+		req.Header.Set("X-Custom", string(randBytes(64*1024-len("X-Custom: "))))
+
+		expectTestServer200(http.DefaultClient.Do(req))
+
+		By("Sending a request to HAProxy with a 72kb header is not allowed")
+		req, err = http.NewRequest("GET", fmt.Sprintf("http://%s", haproxyInfo.PublicIP), nil)
+		Expect(err).NotTo(HaveOccurred())
+
+		// ensure total header size (key+value) is 72k

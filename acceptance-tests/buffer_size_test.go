@@ -32,4 +32,13 @@ var _ = Describe("max_rewrite and buffer_size_bytes", func() {
 		closeTunnel := setupTunnelFromHaproxyToTestServer(haproxyInfo, haproxyBackendPort, localPort)
 		defer closeTunnel()
 
-		By("
+		By("Sending a request to HAProxy with a 64kb header is allowed")
+		// buffer_size_bytes is 71000 and max_rewrite is 4096.
+		// buffer_size_bytes - max_rewrite = 71000 - 4096 = 66904
+		// remaining buffer for the request which should leave plenty
+		// of room for a request with a single 64kb header
+
+		req, err := http.NewRequest("GET", fmt.Sprintf("http://%s", haproxyInfo.PublicIP), nil)
+		Expect(err).NotTo(HaveOccurred())
+
+		// ensure t

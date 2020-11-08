@@ -51,3 +51,18 @@ var _ = Describe("max_rewrite and buffer_size_bytes", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		// ensure total header size (key+value) is 72k
+		req.Header.Set("X-Custom", string(randBytes(72*1024-len("X-Custom: "))))
+
+		expect400(http.DefaultClient.Do(req))
+	})
+})
+
+var letters = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func randBytes(n int) []byte {
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return b
+}

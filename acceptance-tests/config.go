@@ -20,4 +20,25 @@ type Config struct {
 	HomePath         string `json:"homePath"`
 }
 
-func loadConfig() (C
+func loadConfig() (Config, error) {
+	releaseRepoPath, err := getEnvOrFail("REPO_ROOT")
+	if err != nil {
+		return Config{}, err
+	}
+
+	releaseVersion, err := getEnvOrFail("RELEASE_VERSION")
+	if err != nil {
+		return Config{}, err
+	}
+
+	boshCACert, err := getEnvOrFail("BOSH_CA_CERT")
+	if err != nil {
+		return Config{}, err
+	}
+
+	boshClient, err := getEnvOrFail("BOSH_CLIENT")
+	if err != nil {
+		return Config{}, err
+	}
+
+	boshClientSecret, err := ge

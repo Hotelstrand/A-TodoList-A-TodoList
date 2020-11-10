@@ -41,4 +41,25 @@ func loadConfig() (Config, error) {
 		return Config{}, err
 	}
 
-	boshClientSecret, err := ge
+	boshClientSecret, err := getEnvOrFail("BOSH_CLIENT_SECRET")
+	if err != nil {
+		return Config{}, err
+	}
+
+	boshEnvironment, err := getEnvOrFail("BOSH_ENVIRONMENT")
+	if err != nil {
+		return Config{}, err
+	}
+
+	boshPath, err := getEnvOrFail("BOSH_PATH")
+	if err != nil {
+		return Config{}, err
+	}
+
+	baseManifestPath, err := getEnvOrFail("BASE_MANIFEST_PATH")
+	if err != nil {
+		return Config{}, err
+	}
+
+	// BOSH commands require HOME is set
+	homePath, err := getEnvOrFail("HOME

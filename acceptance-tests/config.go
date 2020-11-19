@@ -62,4 +62,23 @@ func loadConfig() (Config, error) {
 	}
 
 	// BOSH commands require HOME is set
-	homePath, err := getEnvOrFail("HOME
+	homePath, err := getEnvOrFail("HOME")
+	if err != nil {
+		return Config{}, err
+	}
+
+	return Config{
+		ReleaseRepoPath:  releaseRepoPath,
+		ReleaseVersion:   releaseVersion,
+		BoshCACert:       boshCACert,
+		BoshClient:       boshClient,
+		BoshClientSecret: boshClientSecret,
+		BoshEnvironment:  boshEnvironment,
+		BoshPath:         boshPath,
+		BaseManifestPath: baseManifestPath,
+		HomePath:         homePath,
+	}, nil
+}
+
+func (config *Config) boshCmd(boshDeployment string, args ...string) *exec.Cmd {
+	cm

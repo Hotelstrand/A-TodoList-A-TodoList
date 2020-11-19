@@ -89,4 +89,17 @@ func (config *Config) boshCmd(boshDeployment string, args ...string) *exec.Cmd {
 		fmt.Sprintf("BOSH_ENVIRONMENT=%s", config.BoshEnvironment),
 		fmt.Sprintf("HOME=%s", config.HomePath),
 		fmt.Sprintf("BOSH_DEPLOYMENT=%s", boshDeployment),
-		"BOSH_NON_INTERACTIVE=
+		"BOSH_NON_INTERACTIVE=true",
+	}
+
+	return cmd
+}
+
+func getEnvOrFail(key string) (string, error) {
+	value := os.Getenv(key)
+	if value == "" {
+		return "", fmt.Errorf("required env var %s not found", key)
+	}
+
+	return value, nil
+}

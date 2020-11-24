@@ -23,4 +23,15 @@ var _ = Describe("Crash Test", func() {
 # Set grace period to 1s
 - type: replace
   path: /instance_groups/name=haproxy/jobs/name=haproxy/properties/ha_proxy/drain_frontend_grace_time?
-  value:
+  value: 1
+# Set drain period to 1s
+- type: replace
+  path: /instance_groups/name=haproxy/jobs/name=haproxy/properties/ha_proxy/drain_timeout?
+  value: 1
+`
+	It("Restarts if terminated by a crash", func() {
+		haproxyBackendPort := 12000
+		// Expect initial deployment to be failing due to lack of healthy backends
+		haproxyInfo, _ := deployHAProxy(baseManifestVars{
+			haproxyBackendPort:    haproxyBackendPort,
+			haproxyBackendS

@@ -34,4 +34,14 @@ var _ = Describe("Crash Test", func() {
 		// Expect initial deployment to be failing due to lack of healthy backends
 		haproxyInfo, _ := deployHAProxy(baseManifestVars{
 			haproxyBackendPort:    haproxyBackendPort,
-			haproxyBackendS
+			haproxyBackendServers: []string{"127.0.0.1"},
+			deploymentName:        deploymentNameForTestNode(),
+		}, []string{opsfileDrainTimeout}, map[string]interface{}{}, false)
+
+		// Verify that is in a failing state
+		Expect(boshInstances(deploymentNameForTestNode())[0].ProcessState).To(Or(Equal("failing"), Equal("unresponsive agent")))
+
+		closeLocalServer, localPort := startDefaultTestServer()
+		defer closeLocalServer()
+
+		closeTunnel := 

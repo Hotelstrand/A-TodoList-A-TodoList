@@ -51,4 +51,14 @@ var _ = Describe("Crash Test", func() {
 		// Since the backend is now listening, HAProxy healthcheck should start returning healthy
 		// and monit should in turn start reporting a healthy process
 		// We will up to wait one minute for the status to stabilise
-		E
+		Eventually(func() string {
+			return boshInstances(deploymentNameForTestNode())[0].ProcessState
+		}, time.Minute, time.Second).Should(Equal("running"))
+
+		By("The healthcheck health endpoint should report a 200 status code")
+		expect200(http.Get(fmt.Sprintf("http://%s:8080/health", haproxyInfo.PublicIP)))
+
+		By("Sending a request to HAProxy works")
+		expectTestServer200(http.Get(fmt.Sprintf("http://%s", haproxyInfo.PublicIP)))
+
+		By("Crash HAproxy - Sending a request 

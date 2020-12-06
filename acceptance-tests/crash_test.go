@@ -61,4 +61,17 @@ var _ = Describe("Crash Test", func() {
 		By("Sending a request to HAProxy works")
 		expectTestServer200(http.Get(fmt.Sprintf("http://%s", haproxyInfo.PublicIP)))
 
-		By("Crash HAproxy - Sending a request 
+		By("Crash HAproxy - Sending a request to HAProxy fails")
+		crashHAProxy(haproxyInfo)
+		_, err := http.Get(fmt.Sprintf("http://%s", haproxyInfo.PublicIP))
+		expectConnectionRefusedErr(err)
+
+		By("Eventually, HAproxy comes back up again")
+		Eventually(func() error {
+			_, err := http.Get(fmt.Sprintf("http://%s", haproxyInfo.PublicIP))
+			return err
+		}, time.Minute, time.Second).Should(Not(HaveOccurred()))
+	})
+
+	It("Does not restart if terminated by draining", func() {
+		haproxyBackendPo

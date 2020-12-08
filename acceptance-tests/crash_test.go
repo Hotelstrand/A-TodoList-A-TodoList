@@ -83,4 +83,13 @@ var _ = Describe("Crash Test", func() {
 		}, []string{opsfileDrainTimeout}, map[string]interface{}{}, false)
 
 		// Verify that is in a failing state
-		Expect(boshInstances(deploymen
+		Expect(boshInstances(deploymentNameForTestNode())[0].ProcessState).To(Or(Equal("failing"), Equal("unresponsive agent")))
+
+		closeLocalServer, localPort := startDefaultTestServer()
+		defer closeLocalServer()
+
+		closeTunnel := setupTunnelFromHaproxyToTestServer(haproxyInfo, haproxyBackendPort, localPort)
+		defer closeTunnel()
+
+		By("Waiting monit to report HAProxy is now healthy (due to having a healthy backend instance)")
+		// Since the backend is now li

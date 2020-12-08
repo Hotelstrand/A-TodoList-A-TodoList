@@ -74,4 +74,13 @@ var _ = Describe("Crash Test", func() {
 	})
 
 	It("Does not restart if terminated by draining", func() {
-		haproxyBackendPo
+		haproxyBackendPort := 12000
+		// Expect initial deployment to be failing due to lack of healthy backends
+		haproxyInfo, _ := deployHAProxy(baseManifestVars{
+			haproxyBackendPort:    haproxyBackendPort,
+			haproxyBackendServers: []string{"127.0.0.1"},
+			deploymentName:        deploymentNameForTestNode(),
+		}, []string{opsfileDrainTimeout}, map[string]interface{}{}, false)
+
+		// Verify that is in a failing state
+		Expect(boshInstances(deploymen

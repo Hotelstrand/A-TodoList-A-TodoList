@@ -92,4 +92,11 @@ var _ = Describe("Crash Test", func() {
 		defer closeTunnel()
 
 		By("Waiting monit to report HAProxy is now healthy (due to having a healthy backend instance)")
-		// Since the backend is now li
+		// Since the backend is now listening, HAProxy healthcheck should start returning healthy
+		// and monit should in turn start reporting a healthy process
+		// We will up to wait one minute for the status to stabilise
+		Eventually(func() string {
+			return boshInstances(deploymentNameForTestNode())[0].ProcessState
+		}, time.Minute, time.Second).Should(Equal("running"))
+
+		By("The healthcheck health endpoint should report a 200 status co

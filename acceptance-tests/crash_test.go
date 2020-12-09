@@ -99,4 +99,15 @@ var _ = Describe("Crash Test", func() {
 			return boshInstances(deploymentNameForTestNode())[0].ProcessState
 		}, time.Minute, time.Second).Should(Equal("running"))
 
-		By("The healthcheck health endpoint should report a 200 status co
+		By("The healthcheck health endpoint should report a 200 status code")
+		expect200(http.Get(fmt.Sprintf("http://%s:8080/health", haproxyInfo.PublicIP)))
+
+		By("Sending a request to HAProxy works")
+		expectTestServer200(http.Get(fmt.Sprintf("http://%s", haproxyInfo.PublicIP)))
+
+		By("Drain HAproxy - Sending a request to HAProxy fails")
+		drainHAProxy(haproxyInfo)
+		Eventually(func() error {
+			_, err := net.Dial("tcp", fmt.Sprintf("%s:80", haproxyInfo.PublicIP))
+			return err
+		}, time.Minute, time.Second).Should(Ha

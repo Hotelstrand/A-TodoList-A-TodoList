@@ -110,4 +110,13 @@ var _ = Describe("Crash Test", func() {
 		Eventually(func() error {
 			_, err := net.Dial("tcp", fmt.Sprintf("%s:80", haproxyInfo.PublicIP))
 			return err
-		}, time.Minute, time.Second).Should(Ha
+		}, time.Minute, time.Second).Should(HaveOccurred())
+
+		By("Consistently, HAproxy does not come back up again")
+		Consistently(func() error {
+			_, err := net.Dial("tcp", fmt.Sprintf("%s:80", haproxyInfo.PublicIP))
+			return err
+		}, 30*time.Second, time.Second).Should(HaveOccurred())
+	})
+
+})

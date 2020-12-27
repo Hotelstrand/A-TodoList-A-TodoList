@@ -180,3 +180,112 @@ var _ = Describe("Domain fronting", func() {
 	Context("When disable domain fronting is true", func() {
 		BeforeEach(func() {
 			disableDomainFronting = true
+		})
+
+		It("Disables domain fronting", func() {
+			By("Sending a request to HAProxy with a mismatched SNI and Host header it returns a 421")
+			req := buildRequest("https://haproxy.internal", "spoof.internal")
+			expect421(nonMTLSClient.Do(req))
+			expect421(mtlsClient.Do(req))
+
+			By("Sending a request to HAProxy with no Host header returns a 400")
+			expect400BadRequestNoHostHeader(haproxyInfo.PublicIP, tlsConfig)
+
+			By("Sending a request to HAProxy with a matching SNI and Host header it returns a 200 as normal")
+			req = buildRequest("https://haproxy.internal", "haproxy.internal")
+			expect200(nonMTLSClient.Do(req))
+			expect200(mtlsClient.Do(req))
+
+			By("Sending a request to HAProxy with a case-mismatched SNI and Host header it returns a 200 as normal")
+			req = buildRequest("https://haproxy.internal", "haproxy.internal")
+			// overwrite host field directly to skip canonicalization
+			req.Host = "HAPROXY.internal"
+			expect200(nonMTLSClient.Do(req))
+			expect200(mtlsClient.Do(req))
+
+			By("Sending a request to HAProxy with a matching SNI and Host header including the optional port it returns a 200 as normal")
+			req = buildRequest("https://haproxy.internal", "haproxy.internal:443")
+			expect200(nonMTLSClient.Do(req))
+			expect200(mtlsClient.Do(req))
+
+			By("Sending a request to HAProxy with no SNI it returns a 200, regardless of host header")
+			// Although we are using a 'spoofed' host header here, HAProxy
+			// should not care as there is no SNI in the request
+			req = buildRequest("https://haproxy.internal", "spoof.internal")
+			expect200(nonMTLSClientNoSNI.Do(req))
+			expect200(mtlsClientNoSNI.Do(req))
+		})
+	})
+
+	Context("When disable domain fronting is mtls_only", func() {
+		BeforeEach(func() {
+			disableDomainFronting = "mtls_only"
+		})
+
+		It("Disables domain fronting for MTLS requests only", func() {
+			By("Sending a request to HAProxy with a mismatched SNI and Host header it returns a 421 only for mTLS requests")
+			req := buildRequest("https://haproxy.internal", "spoof.internal")
+			expect200(nonMTLSClient.Do(req))
+			expect421(mtlsClient.Do(req))
+
+			By("Sending a request to HAProxy with no Host header returns a 400")
+			expect400BadRequestNoHostHeader(haproxyInfo.PublicIP, tlsConfig)
+
+			By("Sending a request to HAProxy with a matching SNI and Host header it returns a 200 as normal")
+			req = buildRequest("https://haproxy.internal", "haproxy.internal")
+			expect200(nonMTLSClient.Do(req))
+			expect200(mtlsClient.Do(req))
+
+			By("Sending a request to HAProxy with a case-mismatched SNI and Host header it returns a 200 as normal")
+			req = buildRequest("https://haproxy.internal", "haproxy.internal")
+			// overwrite host field directly to skip canonicalization
+			req.Host = "HAPROXY.internal"
+			expect200(nonMTLSClient.Do(req))
+			expect200(mtlsClient.Do(req))
+
+			By("Sending a request to HAProxy with a matching SNI and Host header including the optional port it returns a 200 as normal")
+			req = buildRequest("https://haproxy.internal", "haproxy.internal:443")
+			expect200(nonMTLSClient.Do(req))
+			expect200(mtlsClient.Do(req))
+
+			By("Sending a request to HAProxy with no SNI it returns a 200, regardless of host header")
+			// Although we are using a 'spoofed' host header here, HAProxy
+			// should not care as there is no SNI in the request
+			req = buildRequest("https://haproxy.internal", "spoof.internal")
+			expect200(nonMTLSClientNoSNI.Do(req))
+			expect200(mtlsClientNoSNI.Do(req))
+		})
+	})
+})
+
+func buildRequest(address string, hostHeader string) *http.Request {
+	req, err := http.NewRequest("GET", address, nil)
+	Expect(err).NotTo(HaveOccurred())
+	req.Host = hostHeader
+	return req
+}
+
+func expect400BadRequestNoHostHeader(haproxyIP string, tlsConfig *tls.Config) {
+	addr := fmt.Sprintf("%s:443", haproxyIP)
+	conn, err := tls.Dial("tcp", addr, tlsConfig)
+	Expect(err).ToNot(HaveOccurred())
+	defer conn.Close()
+
+	// Send an malformed HTTP request with a missing host header
+	_, err = conn.Write([]byte(strings.Join([]string{
+		"GET / HTTP/1.1",
+		"Content-Length: 0",
+		"Content-Type: text/plain",
+		"\r\n",
+	}, "\r\n")))
+	Expect(err).ToNot(HaveOccurred())
+
+	err = conn.SetDeadline(time.Now().Add(time.Second))
+	Expect(err).ToNot(HaveOccurred())
+
+	buffer := bytes.NewBuffer([]byte{})
+	io.Copy(buffer, conn)
+
+	Expect(buffer.String()).To(ContainSubstring("HTTP/1.1 400"))
+	Expect(buffer.String()).To(ContainSubstring("Bad Request: missing required Host header"))
+}

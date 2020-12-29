@@ -30,4 +30,13 @@ var _ = Describe("HTTP Health Check", func() {
 		}, []string{opsfileHTTPHealthcheck}, map[string]interface{}{}, false)
 
 		// Verify that is in a failing state
-		Expect(boshInstanc
+		Expect(boshInstances(deploymentNameForTestNode())[0].ProcessState).To(Or(Equal("failing"), Equal("unresponsive agent")))
+
+		closeLocalServer, localPort := startDefaultTestServer()
+		defer closeLocalServer()
+
+		closeTunnel := setupTunnelFromHaproxyToTestServer(haproxyInfo, haproxyBackendPort, localPort)
+		defer closeTunnel()
+
+		By("Waiting monit to report HAProxy is now healthy (due to having a healthy backend instance)")
+		// Since the backend is now listening, HAPr

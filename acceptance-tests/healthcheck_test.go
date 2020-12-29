@@ -20,4 +20,14 @@ var _ = Describe("HTTP Health Check", func() {
   value: true
 `
 
-	It("Correctly fails to start if there is no healthy backend", func(
+	It("Correctly fails to start if there is no healthy backend", func() {
+		haproxyBackendPort := 12000
+		// Expect initial deployment to be failing due to lack of healthy backends
+		haproxyInfo, _ := deployHAProxy(baseManifestVars{
+			haproxyBackendPort:    haproxyBackendPort,
+			haproxyBackendServers: []string{"127.0.0.1"},
+			deploymentName:        deploymentNameForTestNode(),
+		}, []string{opsfileHTTPHealthcheck}, map[string]interface{}{}, false)
+
+		// Verify that is in a failing state
+		Expect(boshInstanc

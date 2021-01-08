@@ -58,4 +58,16 @@ var _ = Describe("HTTP Health Check", func() {
 		// For this test we will use a second HAProxy as pre-existing healthy 'backend'
 		haproxyBackendPort := 12000
 		backendHaproxyInfo, _ := deployHAProxy(baseManifestVars{
-			haproxyBa
+			haproxyBackendPort:    haproxyBackendPort,
+			haproxyBackendServers: []string{"127.0.0.1"},
+			deploymentName:        backendDeploymentName,
+		}, []string{}, map[string]interface{}{}, true)
+		defer deleteDeployment(backendDeploymentName)
+
+		closeLocalServer, backendLocalPort := startDefaultTestServer()
+		defer closeLocalServer()
+
+		closeTunnel := setupTunnelFromHaproxyToTestServer(backendHaproxyInfo, haproxyBackendPort, backendLocalPort)
+		defer closeTunnel()
+
+		// N

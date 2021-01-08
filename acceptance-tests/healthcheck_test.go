@@ -70,4 +70,12 @@ var _ = Describe("HTTP Health Check", func() {
 		closeTunnel := setupTunnelFromHaproxyToTestServer(backendHaproxyInfo, haproxyBackendPort, backendLocalPort)
 		defer closeTunnel()
 
-		// N
+		// Now deploy test HAProxy with 'haproxy-backend' configured as backend
+		haproxyInfo, _ := deployHAProxy(baseManifestVars{
+			haproxyBackendPort:    80,
+			haproxyBackendServers: []string{backendHaproxyInfo.PublicIP},
+			deploymentName:        deploymentNameForTestNode(),
+		}, []string{opsfileHTTPHealthcheck}, map[string]interface{}{}, true)
+
+		// Verify that instance is in a running state
+		Expect(boshInstances(deploymentNam

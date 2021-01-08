@@ -47,4 +47,15 @@ var _ = Describe("HTTP Health Check", func() {
 		}, time.Minute, time.Second).Should(Equal("running"))
 
 		By("The healthcheck health endpoint should report a 200 status code")
-		expect200(http.Get(fmt.Sprintf("http://%s:8080/health
+		expect200(http.Get(fmt.Sprintf("http://%s:8080/health", haproxyInfo.PublicIP)))
+
+		By("Sending a request to HAProxy works")
+		expectTestServer200(http.Get(fmt.Sprintf("http://%s", haproxyInfo.PublicIP)))
+	})
+
+	It("Correctly starts if there is a healthy backend", func() {
+		backendDeploymentName := "haproxy-backend"
+		// For this test we will use a second HAProxy as pre-existing healthy 'backend'
+		haproxyBackendPort := 12000
+		backendHaproxyInfo, _ := deployHAProxy(baseManifestVars{
+			haproxyBa

@@ -78,4 +78,13 @@ var _ = Describe("HTTP Health Check", func() {
 		}, []string{opsfileHTTPHealthcheck}, map[string]interface{}{}, true)
 
 		// Verify that instance is in a running state
-		Expect(boshInstances(deploymentNam
+		Expect(boshInstances(deploymentNameForTestNode())[0].ProcessState).To(Equal("running"))
+
+		By("The healthcheck health endpoint should report a 200 status code")
+		expect200(http.Get(fmt.Sprintf("http://%s:8080/health", haproxyInfo.PublicIP)))
+
+		By("Sending a request to HAProxy works")
+		expectTestServer200(http.Get(fmt.Sprintf("http://%s", haproxyInfo.PublicIP)))
+
+		By("The healthcheck health endpoint does not use keep-alive")
+		conn, err := net.Dial("tcp", 

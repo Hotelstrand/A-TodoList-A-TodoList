@@ -87,4 +87,19 @@ var _ = Describe("HTTP Health Check", func() {
 		expectTestServer200(http.Get(fmt.Sprintf("http://%s", haproxyInfo.PublicIP)))
 
 		By("The healthcheck health endpoint does not use keep-alive")
-		conn, err := net.Dial("tcp", 
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s:8080", haproxyInfo.PublicIP))
+		defer conn.Close()
+		Expect(err).ToNot(HaveOccurred())
+
+		sendHTTP := func(conn net.Conn) string {
+			_, err := conn.Write([]byte(strings.Join([]string{
+				"GET /health HTTP/1.1",
+				fmt.Sprintf("Host: %s", haproxyInfo.PublicIP),
+				"Content-Length: 0",
+				"Content-Type: text/plain",
+				"\r\n",
+			}, "\r\n")))
+
+			Expect(err).ToNot(HaveOccurred())
+
+			// Too lazy to prope

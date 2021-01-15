@@ -102,4 +102,15 @@ var _ = Describe("HTTP Health Check", func() {
 
 			Expect(err).ToNot(HaveOccurred())
 
-			// Too lazy to prope
+			// Too lazy to properly parse headers? Just stop reading after a second!
+			_ = conn.SetReadDeadline(time.Now().Add(time.Second))
+
+			response, _ := io.ReadAll(conn)
+			return string(response)
+		}
+
+		response := sendHTTP(conn)
+		Expect(response).To(ContainSubstring("connection: close"))
+
+	})
+})

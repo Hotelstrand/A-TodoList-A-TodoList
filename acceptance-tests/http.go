@@ -41,4 +41,11 @@ func startLocalHTTPServer(tlsConfig *tls.Config, handler func(http.ResponseWrite
 }
 
 // Build an HTTP client with custom CA certificate pool which resolves hosts based on provided map
-func buildHTTPClient(caCerts []string, addressMap map[string]string
+func buildHTTPClient(caCerts []string, addressMap map[string]string, clientCerts []tls.Certificate, serverName string) *http.Client {
+	tlsConfig := buildTLSConfig(caCerts, clientCerts, serverName)
+	transport := &http.Transport{
+		TLSClientConfig: tlsConfig,
+		// Override DialContext to force resolve with alternative addresses
+		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+			if altAddr, ok := addressMap[strings.ToLower(addr)]; ok {
+				addr = a

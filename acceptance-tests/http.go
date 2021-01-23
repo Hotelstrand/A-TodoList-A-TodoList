@@ -22,4 +22,23 @@ func startLocalHTTPServer(tlsConfig *tls.Config, handler func(http.ResponseWrite
 	server := httptest.NewUnstartedServer(http.HandlerFunc(handler))
 	if tlsConfig != nil {
 		server.TLS = tlsConfig
-		server.S
+		server.StartTLS()
+	} else {
+		server.Start()
+	}
+
+	serverURL, err := url.Parse(server.URL)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	port, err := strconv.ParseInt(serverURL.Port(), 10, 64)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return server.Close, int(port), nil
+}
+
+// Build an HTTP client with custom CA certificate pool which resolves hosts based on provided map
+func buildHTTPClient(caCerts []string, addressMap map[string]string

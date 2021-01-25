@@ -83,4 +83,17 @@ func buildTLSConfig(caCerts []string, clientCerts []tls.Certificate, serverName 
 // Build an HTTP2 client with custom CA certificate pool which resolves hosts based on provided map
 func buildHTTP2Client(caCerts []string, addressMap map[string]string, clientCerts []tls.Certificate) *http.Client {
 
-	httpClient := buildHTTPClient(caCerts, a
+	httpClient := buildHTTPClient(caCerts, addressMap, clientCerts, "")
+	transport := httpClient.Transport.(*http.Transport)
+
+	http2.ConfigureTransport(transport)
+
+	// force HTTP2-only
+	transport.TLSClientConfig.NextProtos = []string{"h2"}
+
+	return &http.Client{Transport: transport}
+}
+
+func connectTLSALPNNegotiatedProtocol(protos []string, publicIP string, ca string, sni string) (string, error) {
+	config := buildTLSConfig([]string{ca}, []tls.Certificate{}, sni)
+	config.NextProt

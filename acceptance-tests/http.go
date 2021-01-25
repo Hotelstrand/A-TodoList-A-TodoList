@@ -67,4 +67,20 @@ func buildTLSConfig(caCerts []string, clientCerts []tls.Certificate, serverName 
 		caCertPool.AppendCertsFromPEM([]byte(caCert))
 	}
 
-	tlsConfig := &tls
+	tlsConfig := &tls.Config{
+		RootCAs:      caCertPool,
+		Certificates: clientCerts,
+	}
+
+	if serverName != "" {
+		tlsConfig.ServerName = serverName
+		tlsConfig.InsecureSkipVerify = true
+	}
+
+	return tlsConfig
+}
+
+// Build an HTTP2 client with custom CA certificate pool which resolves hosts based on provided map
+func buildHTTP2Client(caCerts []string, addressMap map[string]string, clientCerts []tls.Certificate) *http.Client {
+
+	httpClient := buildHTTPClient(caCerts, a

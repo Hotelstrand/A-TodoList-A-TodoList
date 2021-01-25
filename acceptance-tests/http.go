@@ -96,4 +96,12 @@ func buildHTTP2Client(caCerts []string, addressMap map[string]string, clientCert
 
 func connectTLSALPNNegotiatedProtocol(protos []string, publicIP string, ca string, sni string) (string, error) {
 	config := buildTLSConfig([]string{ca}, []tls.Certificate{}, sni)
-	config.NextProt
+	config.NextProtos = protos
+	conn, err := tls.Dial("tcp", fmt.Sprintf("%s:443", publicIP), config)
+	if err != nil {
+		return "", err
+	}
+	defer conn.Close()
+
+	return conn.ConnectionState().NegotiatedProtocol, nil
+}

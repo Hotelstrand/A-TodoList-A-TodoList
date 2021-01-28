@@ -17,4 +17,14 @@ var _ = Describe("keepalived", func() {
   path: /instance_groups/name=haproxy/jobs/name=keepalived?/properties/keepalived/vip?
   value: 10.245.0.99
 `
-		keepalivedVIP := "10.245.0.9
+		keepalivedVIP := "10.245.0.99"
+		haproxyBackendPort := 12000
+		haproxyInfo, _ := deployHAProxy(baseManifestVars{
+			haproxyBackendPort:    haproxyBackendPort,
+			haproxyBackendServers: []string{"127.0.0.1"},
+			deploymentName:        deploymentNameForTestNode(),
+		}, []string{opsfileKeepalived}, map[string]interface{}{}, true)
+		closeLocalServer, localPort := startDefaultTestServer()
+		defer closeLocalServer()
+
+		closeTunnel := setupTunnelFromHaproxyToTest

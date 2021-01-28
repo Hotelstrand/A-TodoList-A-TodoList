@@ -207,3 +207,21 @@ var _ = Describe("HTTPS Frontend", func() {
 			alpnProto, err = connectTLSALPNNegotiatedProtocol([]string{"h2"}, haproxyInfo.PublicIP, creds.HTTPSFrontend.CA, "haproxy.h2-http11.internal")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(alpnProto).To(Equal("h2"))
+
+			// H2+HTTP/1.1 endpoint should negotiate HTTP/1.1 if the client supports it
+			alpnProto, err = connectTLSALPNNegotiatedProtocol([]string{"http/1.1"}, haproxyInfo.PublicIP, creds.HTTPSFrontend.CA, "haproxy.h2-http11.internal")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(alpnProto).To(Equal("http/1.1"))
+
+			// H2 endpoint should not use ALPN if client does not support H2
+			alpnProto, err = connectTLSALPNNegotiatedProtocol([]string{"http/1.1"}, haproxyInfo.PublicIP, creds.HTTPSFrontend.CA, "haproxy.h2.internal")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(alpnProto).To(Equal(""))
+
+			// HTTP/1.1 endpoint should not use ALPN if client does not support HTTP/1.1
+			alpnProto, err = connectTLSALPNNegotiatedProtocol([]string{"h2"}, haproxyInfo.PublicIP, creds.HTTPSFrontend.CA, "haproxy.http11.internal")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(alpnProto).To(Equal(""))
+		})
+	})
+})

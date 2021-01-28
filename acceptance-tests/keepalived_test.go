@@ -27,4 +27,10 @@ var _ = Describe("keepalived", func() {
 		closeLocalServer, localPort := startDefaultTestServer()
 		defer closeLocalServer()
 
-		closeTunnel := setupTunnelFromHaproxyToTest
+		closeTunnel := setupTunnelFromHaproxyToTestServer(haproxyInfo, haproxyBackendPort, localPort)
+		defer closeTunnel()
+
+		By("Sending a request to HAProxy via keepalived virtual IP")
+		expectTestServer200(http.Get(fmt.Sprintf("http://%s", keepalivedVIP)))
+	})
+})

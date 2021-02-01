@@ -22,4 +22,17 @@ var _ = Describe("Lua scripting", func() {
   value: "http-request use-service lua.lua_test if { path /lua_test }"
 `
 
-		replyLuaCo
+		replyLuaContent := `
+local function lua_test(applet)
+    -- A small applet that returns the currently used Lua version
+
+    local response = string.format([[<html>
+    <body>Running %s</body>
+</html>]], _VERSION)
+
+    applet:set_status(200)
+    applet:add_header("content-length", string.len(response))
+    applet:add_header("content-type", "text/html")
+    applet:add_header("lua-version", _VERSION)
+    applet:start_response()
+    a

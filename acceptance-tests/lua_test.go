@@ -49,4 +49,13 @@ core.register_service("lua_test", "http", lua_test)
 			deploymentName:        deploymentNameForTestNode(),
 		}, []string{opsfileLua}, map[string]interface{}{}, false)
 
-		/
+		// Verify that is in a failing state
+		Expect(boshInstances(deploymentNameForTestNode())[0].ProcessState).To(Or(Equal("failing"), Equal("unresponsive agent")))
+
+		// upload Lua script file
+		uploadFile(haproxyInfo, strings.NewReader(replyLuaContent), "/var/vcap/packages/haproxy/lua_test.lua")
+
+		closeLocalServer, localPort := startDefaultTestServer()
+		defer closeLocalServer()
+
+		closeTunnel := setupTunnelFromHaproxyToTestServer(haproxyInfo, haproxyBacke

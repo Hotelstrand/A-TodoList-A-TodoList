@@ -35,4 +35,18 @@ local function lua_test(applet)
     applet:add_header("content-type", "text/html")
     applet:add_header("lua-version", _VERSION)
     applet:start_response()
-    a
+    applet:send(response)
+end
+
+core.register_service("lua_test", "http", lua_test)
+		`
+
+		haproxyBackendPort := 12000
+		// Expect initial deployment to be failing due to lack of healthy backends
+		haproxyInfo, _ := deployHAProxy(baseManifestVars{
+			haproxyBackendPort:    haproxyBackendPort,
+			haproxyBackendServers: []string{"127.0.0.1"},
+			deploymentName:        deploymentNameForTestNode(),
+		}, []string{opsfileLua}, map[string]interface{}{}, false)
+
+		/

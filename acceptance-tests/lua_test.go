@@ -58,4 +58,12 @@ core.register_service("lua_test", "http", lua_test)
 		closeLocalServer, localPort := startDefaultTestServer()
 		defer closeLocalServer()
 
-		closeTunnel := setupTunnelFromHaproxyToTestServer(haproxyInfo, haproxyBacke
+		closeTunnel := setupTunnelFromHaproxyToTestServer(haproxyInfo, haproxyBackendPort, localPort)
+		defer closeTunnel()
+
+		By("Waiting monit to report HAProxy is now healthy (the lua script was uploaded after start).")
+		// Since the backend is now listening, HAProxy healthcheck should start returning healthy
+		// and monit should in turn start reporting a healthy process
+		// We will up to wait one minute for the status to stabilise
+		Eventually(func() string {
+			return boshInstances(deploymentNameForTestNode()

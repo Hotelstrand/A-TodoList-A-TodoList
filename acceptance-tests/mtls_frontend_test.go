@@ -21,4 +21,15 @@ var _ = Describe("mTLS", func() {
   value:
   - snifilter:
     - a.haproxy.internal
-   
+    client_ca_file: ((client_a_ca.certificate))
+    verify: optional
+    ssl_pem:
+      cert_chain: ((https_frontend.certificate))((https_frontend_ca.certificate))
+      private_key: ((https_frontend.private_key))
+  - snifilter:
+    - b.haproxy.internal
+    client_ca_file: ((client_b_ca.certificate))
+    verify: required
+    ssl_pem:
+      cert_chain: ((https_frontend.certificate))((https_frontend_ca.certificate))
+      private_key: ((https_frontend.priva

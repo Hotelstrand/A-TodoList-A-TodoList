@@ -66,4 +66,14 @@ core.register_service("lua_test", "http", lua_test)
 		// and monit should in turn start reporting a healthy process
 		// We will up to wait one minute for the status to stabilise
 		Eventually(func() string {
-			return boshInstances(deploymentNameForTestNode()
+			return boshInstances(deploymentNameForTestNode())[0].ProcessState
+		}, time.Minute, time.Second).Should(Equal("running"))
+
+		By("Sending a request to HAProxy with Lua endpoint")
+		resp, err := http.Get(fmt.Sprintf("http://%s/lua_test", haproxyInfo.PublicIP))
+
+		expectLuaServer200(resp, err)
+		fmt.Printf("Server has Lua version %s", resp.Header.Get("Lua-Version"))
+
+	})
+})

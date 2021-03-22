@@ -53,4 +53,23 @@ var _ = Describe("mTLS", func() {
       alternative_names:
       - a.haproxy.internal
       - b.haproxy.internal
-# De
+# Declare client certs
+- type: replace
+  path: /variables?/-
+  value:
+    name: client_a_ca
+    type: certificate
+    options:
+      is_ca: true
+      common_name: bosh
+- type: replace
+  path: /variables?/-
+  value:
+    name: client_a
+    type: certificate
+    options:
+      ca: client_a_ca
+      common_name: a.haproxy.internal
+      alternative_names: [a.haproxy.internal]
+      extended_key_usage: [client_auth]
+- type: rep

@@ -109,4 +109,15 @@ var _ = Describe("mTLS", func() {
 	}
 
 	BeforeEach(func() {
-		var varsStoreReader varsSt
+		var varsStoreReader varsStoreReader
+		haproxyInfo, varsStoreReader = deployHAProxy(baseManifestVars{
+			haproxyBackendPort:    haproxyBackendPort,
+			haproxyBackendServers: []string{"127.0.0.1"},
+			deploymentName:        deploymentNameForTestNode(),
+		}, []string{opsfileMTLS}, map[string]interface{}{}, true)
+
+		err := varsStoreReader(&creds)
+		Expect(err).NotTo(HaveOccurred())
+
+		var localPort int
+		closeLocalServer, localPort = startDefaultTestS

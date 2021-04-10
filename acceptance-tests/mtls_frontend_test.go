@@ -94,4 +94,19 @@ var _ = Describe("mTLS", func() {
 
 	var creds struct {
 		HTTPSFrontend struct {
-		
+			Certificate string `yaml:"certificate"`
+			PrivateKey  string `yaml:"private_key"`
+			CA          string `yaml:"ca"`
+		} `yaml:"https_frontend"`
+		ClientA struct {
+			Certificate string `yaml:"certificate"`
+			PrivateKey  string `yaml:"private_key"`
+		} `yaml:"client_a"`
+		ClientB struct {
+			Certificate string `yaml:"certificate"`
+			PrivateKey  string `yaml:"private_key"`
+		} `yaml:"client_b"`
+	}
+
+	BeforeEach(func() {
+		var varsStoreReader varsSt

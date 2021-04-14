@@ -135,4 +135,14 @@ var _ = Describe("mTLS", func() {
 
 	It("Correctly terminates mTLS requests", func() {
 		clientCertA, err := tls.X509KeyPair([]byte(creds.ClientA.Certificate), []byte(creds.ClientA.PrivateKey))
-		Expect(err).NotTo(HaveO
+		Expect(err).NotTo(HaveOccurred())
+
+		addressMap := map[string]string{
+			"a.haproxy.internal:443": fmt.Sprintf("%s:443", haproxyInfo.PublicIP),
+			"b.haproxy.internal:443": fmt.Sprintf("%s:443", haproxyInfo.PublicIP),
+		}
+
+		httpClientA := buildHTTPClient([]string{creds.HTTPSFrontend.CA}, addressMap, []tls.Certificate{clientCertA}, "")
+
+		clientCertB, err := tls.X509KeyPair([]byte(creds.ClientB.Certificate), []byte(creds.ClientB.PrivateKey))
+		Expect

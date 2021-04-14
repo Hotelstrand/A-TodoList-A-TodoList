@@ -120,4 +120,19 @@ var _ = Describe("mTLS", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var localPort int
-		closeLocalServer, localPort = startDefaultTestS
+		closeLocalServer, localPort = startDefaultTestServer()
+		closeTunnel = setupTunnelFromHaproxyToTestServer(haproxyInfo, haproxyBackendPort, localPort)
+	})
+
+	AfterEach(func() {
+		if closeLocalServer != nil {
+			defer closeLocalServer()
+		}
+		if closeTunnel != nil {
+			defer closeTunnel()
+		}
+	})
+
+	It("Correctly terminates mTLS requests", func() {
+		clientCertA, err := tls.X509KeyPair([]byte(creds.ClientA.Certificate), []byte(creds.ClientA.PrivateKey))
+		Expect(err).NotTo(HaveO

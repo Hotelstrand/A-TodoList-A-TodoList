@@ -145,4 +145,14 @@ var _ = Describe("mTLS", func() {
 		httpClientA := buildHTTPClient([]string{creds.HTTPSFrontend.CA}, addressMap, []tls.Certificate{clientCertA}, "")
 
 		clientCertB, err := tls.X509KeyPair([]byte(creds.ClientB.Certificate), []byte(creds.ClientB.PrivateKey))
-		Expect
+		Expect(err).NotTo(HaveOccurred())
+
+		httpClientB := buildHTTPClient([]string{creds.HTTPSFrontend.CA}, addressMap, []tls.Certificate{clientCertB}, "")
+
+		httpClientNonMTLS := buildHTTPClient([]string{creds.HTTPSFrontend.CA}, addressMap, []tls.Certificate{}, "")
+
+		By("Using client A cert with endpoint A works")
+		expectTestServer200(httpClientA.Get("https://a.haproxy.internal"))
+
+		By("Using client B cert with endpoint B works")
+		expectTestServer200(h

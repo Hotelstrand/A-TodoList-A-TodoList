@@ -155,4 +155,14 @@ var _ = Describe("mTLS", func() {
 		expectTestServer200(httpClientA.Get("https://a.haproxy.internal"))
 
 		By("Using client B cert with endpoint B works")
-		expectTestServer200(h
+		expectTestServer200(httpClientB.Get("https://b.haproxy.internal"))
+
+		By("Using client B cert with endpoint A is not allowed")
+		_, err = httpClientB.Get("https://a.haproxy.internal")
+		expectTLSUnknownCertificateErr(err)
+
+		By("Using client A cert with endpoint B is not allowed")
+		_, err = httpClientA.Get("https://b.haproxy.internal")
+		expectTLSUnknownCertificateErr(err)
+
+		By("Making a non-mTLS request to an endpoint w

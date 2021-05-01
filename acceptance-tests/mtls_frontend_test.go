@@ -165,4 +165,11 @@ var _ = Describe("mTLS", func() {
 		_, err = httpClientA.Get("https://b.haproxy.internal")
 		expectTLSUnknownCertificateErr(err)
 
-		By("Making a non-mTLS request to an endpoint w
+		By("Making a non-mTLS request to an endpoint with optional mTLS works")
+		expectTestServer200(httpClientNonMTLS.Get("https://a.haproxy.internal"))
+
+		By("Making a non-mTLS request to an endpoint with required mTLS fails")
+		_, err = httpClientNonMTLS.Get("https://b.haproxy.internal")
+		expectTLSCertificateRequiredErr(err)
+	})
+})

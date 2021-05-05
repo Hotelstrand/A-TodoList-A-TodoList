@@ -23,4 +23,15 @@ var _ = Describe("Regex-based ACLs", func() {
 			haproxyBackendPort:    haproxyBackendPort,
 			haproxyBackendServers: []string{"127.0.0.1"},
 			deploymentName:        deploymentNameForTestNode(),
-		}, []string{opsfileRegexACLs}, map[string]interface{}{}
+		}, []string{opsfileRegexACLs}, map[string]interface{}{}, true)
+
+		closeLocalServer, localPort := startDefaultTestServer()
+		defer closeLocalServer()
+
+		closeTunnel := setupTunnelFromHaproxyToTestServer(haproxyInfo, haproxyBackendPort, localPort)
+		defer closeTunnel()
+
+		By("Positive regex matches are working in ACLs")
+		// path /foo should match '-m reg foo' ACL
+		resp, err := http.Get(fmt.Sprintf("http://%s/foo", haproxyInfo.PublicIP))
+		Expect(err).NotTo(Have

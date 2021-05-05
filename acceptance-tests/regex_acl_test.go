@@ -34,4 +34,13 @@ var _ = Describe("Regex-based ACLs", func() {
 		By("Positive regex matches are working in ACLs")
 		// path /foo should match '-m reg foo' ACL
 		resp, err := http.Get(fmt.Sprintf("http://%s/foo", haproxyInfo.PublicIP))
-		Expect(err).NotTo(Have
+		Expect(err).NotTo(HaveOccurred())
+		Expect(resp.StatusCode).To(Equal(429))
+
+		// path /bar should NOT match '-m reg foo' ACL
+		By("Negative regex matches are working in ACLs")
+		resp, err = http.Get(fmt.Sprintf("http://%s/bar", haproxyInfo.PublicIP))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(resp.StatusCode).To(Equal(401))
+	})
+})

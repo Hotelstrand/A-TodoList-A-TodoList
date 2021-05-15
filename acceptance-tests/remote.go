@@ -128,3 +128,79 @@ func startReverseSSHPortForwarder(user string, addr string, privateKey string, r
 				writeLog(fmt.Sprintf("Error dialing local port %d: %s\n", localPort, err.Error()))
 				return
 			}
+
+			// From https://sosedoff.com/2015/05/25/ssh-port-forwarding-with-go.html
+			copyConnections(remoteClient, localConn)
+		}
+	}()
+
+	go func() {
+		<-ctx.Done()
+		writeLog("Closing remote listener")
+		remoteListener.Close()
+	}()
+
+	return nil
+}
+
+func copyConnections(client net.Conn, remote net.Conn) {
+	chDone := make(chan bool)
+
+	// Start remote -> local data transfer
+	go func() {
+		_, err := io.Copy(client, remote) // blocks until EOF
+		if err != nil {
+			log.Println("error while copy remote->local:", err)
+		}
+		chDone <- true
+	}()
+
+	// Start local -> remote data transfer
+	go func() {
+		_, err := io.Copy(remote, client) // blocks until EOF
+		if err != nil {
+			log.Println("error while copy local->remote:", err)
+		}
+		chDone <- true
+	}()
+
+	<-chDone
+}
+
+func buildSSHClientConfig(user string, addr string, privateKey string) (*ssh.ClientConfig, error) {
+	key, err := ssh.ParsePrivateKey([]byte(privateKey))
+	if err != nil {
+		return nil, err
+	}
+
+	return &ssh.ClientConfig{
+		User:            user,
+		Timeout:         10 * time.Second,
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		Auth: []ssh.AuthMethod{
+			ssh.PublicKeys(key),
+		},
+	}, nil
+}
+
+func buildSSHClient(user string, addr string, privateKey string) (*ssh.Client, error) {
+	config, err := buildSSHClientConfig(user, addr, privateKey)
+	if err != nil {
+		return nil, err
+	}
+
+	writeLog(fmt.Sprintf("Connecting to %s:%d as user %s using private key\n", addr, 22, user))
+	return ssh.Dial("tcp", net.JoinHostPort(addr, "22"), config)
+}
+
+func checkListening(addr string) error {
+	conn, err := net.DialTimeout("tcp", addr, time.Second)
+	if err != nil {
+		return err
+	}
+	if conn != nil {
+		defer conn.Close()
+	}
+
+	return nil
+}

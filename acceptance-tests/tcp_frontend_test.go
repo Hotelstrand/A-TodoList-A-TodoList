@@ -37,4 +37,7 @@ var _ = Describe("TCP Frontend", func() {
 		closeTunnel := setupTunnelFromHaproxyToTestServer(haproxyInfo, tcpBackendPort, localPort)
 		defer closeTunnel()
 
-		By("Sending a request to the HAPr
+		By("Sending a request to the HAProxy TCP endpoint")
+		expectTestServer200(http.Get(fmt.Sprintf("http://%s:%d", haproxyInfo.PublicIP, tcpFrontendPort)))
+	})
+})

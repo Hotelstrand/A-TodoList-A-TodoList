@@ -31,4 +31,13 @@ var _ = Describe("HTTPS Frontend", func() {
   value: ((enable_http2))
 # Configure Disabling Backend HTTP2 Websockets
 - type: replace
-  path: 
+  path: /instance_groups/name=haproxy/jobs/name=haproxy/properties/ha_proxy/disable_backend_http2_websockets?
+  value: ((disable_backend_http2_websockets))
+# Configure CA and cert chain
+- type: replace
+  path: /instance_groups/name=haproxy/jobs/name=haproxy/properties/ha_proxy/crt_list?/-
+  value:
+    snifilter:
+    - haproxy.internal
+    ssl_pem:
+      cert_chain: ((https_frontend.certificate))((https_frontend_ca.certificat

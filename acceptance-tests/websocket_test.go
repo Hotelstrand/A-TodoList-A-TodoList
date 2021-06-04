@@ -62,4 +62,16 @@ var _ = Describe("HTTPS Frontend", func() {
       alternative_names: [haproxy.internal]
 `
 
-	var creds s
+	var creds struct {
+		HTTPSFrontend struct {
+			Certificate string `yaml:"certificate"`
+			PrivateKey  string `yaml:"private_key"`
+			CA          string `yaml:"ca"`
+		} `yaml:"https_frontend"`
+	}
+
+	JustBeforeEach(func() {
+		var varsStoreReader varsStoreReader
+		haproxyInfo, varsStoreReader = deployHAProxy(baseManifestVars{
+			haproxyBackendPort:    haproxyBackendPort,
+			haproxyBackendServers: []string{"127.0.0.1"}

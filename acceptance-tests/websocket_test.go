@@ -74,4 +74,16 @@ var _ = Describe("HTTPS Frontend", func() {
 		var varsStoreReader varsStoreReader
 		haproxyInfo, varsStoreReader = deployHAProxy(baseManifestVars{
 			haproxyBackendPort:    haproxyBackendPort,
-			haproxyBackendServers: []string{"127.0.0.1"}
+			haproxyBackendServers: []string{"127.0.0.1"},
+			deploymentName:        deploymentNameForTestNode(),
+		}, []string{opsfileHTTPS}, map[string]interface{}{
+			"enable_http2":                     enableHTTP2,
+			"disable_backend_http2_websockets": disableBackendHttp2Websockets,
+		}, true)
+
+		err := varsStoreReader(&creds)
+		Expect(err).NotTo(HaveOccurred())
+
+		var localPort int
+		closeLocalServer, localPort = startDefaultTestServer()
+		closeTunnel = setupTu

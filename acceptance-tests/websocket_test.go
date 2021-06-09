@@ -86,4 +86,14 @@ var _ = Describe("HTTPS Frontend", func() {
 
 		var localPort int
 		closeLocalServer, localPort = startDefaultTestServer()
-		closeTunnel = setupTu
+		closeTunnel = setupTunnelFromHaproxyToTestServer(haproxyInfo, haproxyBackendPort, localPort)
+
+		http1Client = buildHTTPClient(
+			[]string{creds.HTTPSFrontend.CA},
+			map[string]string{"haproxy.internal:443": fmt.Sprintf("%s:443", haproxyInfo.PublicIP)},
+			[]tls.Certificate{}, "",
+		)
+
+		http2Client = buildHTTP2Client(
+			[]string{creds.HTTPSFrontend.CA},
+			map[string]string{"haproxy.internal:443": fmt.Sprintf("%s:443", haproxyInfo.PublicIP

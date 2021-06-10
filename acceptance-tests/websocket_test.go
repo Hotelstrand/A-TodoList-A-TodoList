@@ -118,4 +118,16 @@ var _ = Describe("HTTPS Frontend", func() {
 
 		It("succeeds with a websocket", func() {
 			dialer := websocket.DefaultDialer
-			dia
+			dialer.TLSClientConfig = buildTLSConfig([]string{creds.HTTPSFrontend.CA}, []tls.Certificate{}, "")
+			dialer.NetDialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
+				if addr == "haproxy.internal:443" {
+					addr = fmt.Sprintf("%s:443", haproxyInfo.PublicIP)
+				}
+
+				return (&net.Dialer{
+					Timeout:   30 * time.Second,
+					KeepAlive: 30 * time.Second,
+				}).DialContext(ctx, network, addr)
+			}
+
+			By("Sending a r

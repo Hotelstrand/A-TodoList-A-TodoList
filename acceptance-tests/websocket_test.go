@@ -130,4 +130,14 @@ var _ = Describe("HTTPS Frontend", func() {
 				}).DialContext(ctx, network, addr)
 			}
 
-			By("Sending a r
+			By("Sending a request to HAProxy using HTTP 1.1")
+			resp, err := http1Client.Get("https://haproxy.internal:443")
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(resp.ProtoMajor).To(Equal(1))
+
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+			Eventually(gbytes.BufferReader(resp.Body)).Should(gbytes.Say("Hello cloud foundry"))
+
+			By("Sending a request to HAProxy using HTTP 2")
+			resp, err = http2Client.Get("https://haproxy.internal:443")

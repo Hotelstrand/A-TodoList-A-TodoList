@@ -96,4 +96,26 @@ var _ = Describe("HTTPS Frontend", func() {
 
 		http2Client = buildHTTP2Client(
 			[]string{creds.HTTPSFrontend.CA},
-			map[string]string{"haproxy.internal:443": fmt.Sprintf("%s:443", haproxyInfo.PublicIP
+			map[string]string{"haproxy.internal:443": fmt.Sprintf("%s:443", haproxyInfo.PublicIP)},
+			[]tls.Certificate{},
+		)
+	})
+
+	AfterEach(func() {
+		if closeLocalServer != nil {
+			defer closeLocalServer()
+		}
+		if closeTunnel != nil {
+			defer closeTunnel()
+		}
+	})
+
+	Context("When ha_proxy.disable_backend_http2_websockets is true", func() {
+		BeforeEach(func() {
+			enableHTTP2 = true
+			disableBackendHttp2Websockets = true
+		})
+
+		It("succeeds with a websocket", func() {
+			dialer := websocket.DefaultDialer
+			dia

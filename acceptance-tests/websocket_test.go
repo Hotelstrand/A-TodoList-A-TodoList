@@ -141,3 +141,15 @@ var _ = Describe("HTTPS Frontend", func() {
 
 			By("Sending a request to HAProxy using HTTP 2")
 			resp, err = http2Client.Get("https://haproxy.internal:443")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(resp.ProtoMajor).To(Equal(2))
+
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+			Eventually(gbytes.BufferReader(resp.Body)).Should(gbytes.Say("Hello cloud foundry"))
+
+			By("Sending a request using websockets")
+			websocketConn, _, err := dialer.Dial("wss://haproxy.internal:443", nil)
+			Expect(err).NotTo(HaveOccurred())
+			defer websocketConn.Close()
+
+			err = websocketCon

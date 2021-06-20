@@ -152,4 +152,11 @@ var _ = Describe("HTTPS Frontend", func() {
 			Expect(err).NotTo(HaveOccurred())
 			defer websocketConn.Close()
 
-			err = websocketCon
+			err = websocketConn.WriteMessage(websocket.TextMessage, []byte("hello via websockets"))
+			Expect(err).NotTo(HaveOccurred())
+			_, message, err := websocketConn.ReadMessage()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(string(message)).To(Equal("hello via websockets"))
+		})
+	})
+})

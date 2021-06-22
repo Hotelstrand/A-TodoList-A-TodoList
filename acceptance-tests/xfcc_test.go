@@ -38,4 +38,10 @@ type Certificate struct {
 		sanitize_set 									=> X-Forwarded-Client-Cert is removed for non-mTLS connections
 																	=> X-Forwarded-Client-Cert is overwritten for mTLS connections
 
-		forwar
+		forward_only_if_route_service => X-Forwarded-Client-Cert is removed for non-mTLS connections when X-Cf-Proxy-Signature header is not present
+																		 X-Forwarded-Client-Cert is forwarded for non-mTLS connections when X-Cf-Proxy-Signature header is present
+																		 X-Forwarded-Client-Cert is overwritten for mTLS connections
+*/
+var _ = Describe("forwarded_client_cert", func() {
+	opsfileForwardedClientCert := `---
+# Configure X-Forwar

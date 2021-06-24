@@ -44,4 +44,16 @@ type Certificate struct {
 */
 var _ = Describe("forwarded_client_cert", func() {
 	opsfileForwardedClientCert := `---
-# Configure X-Forwar
+# Configure X-Forwarded-Client-Cert handling
+- type: replace
+  path: /instance_groups/name=haproxy/jobs/name=haproxy/properties/ha_proxy/forwarded_client_cert?
+  value: ((forwarded_client_cert))
+- type: replace
+  path: /instance_groups/name=haproxy/jobs/name=haproxy/properties/ha_proxy/client_cert?
+  value: true
+
+# Configure CA and cert chain
+- type: replace
+  path: /instance_groups/name=haproxy/jobs/name=haproxy/properties/ha_proxy/crt_list?/-
+  value:
+    snifilter:

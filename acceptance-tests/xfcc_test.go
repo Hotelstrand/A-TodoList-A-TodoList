@@ -57,3 +57,22 @@ var _ = Describe("forwarded_client_cert", func() {
   path: /instance_groups/name=haproxy/jobs/name=haproxy/properties/ha_proxy/crt_list?/-
   value:
     snifilter:
+    - haproxy.internal
+    ssl_pem:
+      cert_chain: ((https_frontend.certificate))((https_frontend_ca.certificate))
+      private_key: ((https_frontend.private_key))
+    client_ca_file: ((client_ca_pem))
+
+- type: replace
+  path: /variables?/-
+  value:
+    name: https_frontend_ca
+    type: certificate
+    options:
+      is_ca: true
+      common_name: bosh
+- type: replace
+  path: /variables?/-
+  value:
+    name: https_frontend
+    type: c

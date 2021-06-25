@@ -89,4 +89,18 @@ var _ = Describe("forwarded_client_cert", func() {
 			PrivateKey  string `yaml:"private_key"`
 			CA          string `yaml:"ca"`
 		} `yaml:"https_frontend"`
-		ClientCe
+		ClientCert struct {
+			Certificate string `yaml:"certificate"`
+			PrivateKey  string `yaml:"private_key"`
+			CA          string `yaml:"ca"`
+		} `yaml:"client_cert"`
+	}
+	var clientCert *Certificate
+	var haproxyInfo haproxyInfo
+	var deployVars map[string]interface{}
+	var mtlsClient *http.Client
+	var nonMTLSClient *http.Client
+	var recordedHeaders http.Header
+	var request *http.Request
+
+	// 

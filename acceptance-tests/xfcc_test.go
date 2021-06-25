@@ -75,4 +75,18 @@ var _ = Describe("forwarded_client_cert", func() {
   path: /variables?/-
   value:
     name: https_frontend
-    type: c
+    type: certificate
+    options:
+      ca: https_frontend_ca
+      common_name: haproxy.internal
+      alternative_names: [haproxy.internal]
+`
+	var closeLocalServer func()
+	var closeSSHTunnel context.CancelFunc
+	var creds struct {
+		HTTPSFrontend struct {
+			Certificate string `yaml:"certificate"`
+			PrivateKey  string `yaml:"private_key"`
+			CA          string `yaml:"ca"`
+		} `yaml:"https_frontend"`
+		ClientCe

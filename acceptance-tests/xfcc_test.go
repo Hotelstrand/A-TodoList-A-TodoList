@@ -103,4 +103,13 @@ var _ = Describe("forwarded_client_cert", func() {
 	var recordedHeaders http.Header
 	var request *http.Request
 
-	// 
+	// These headers will be forwarded, overwritten or deleted
+	// depending on the value of ha_proxy.forwarded_client_cert
+	incomingRequestHeaders := map[string]string{
+		"X-Forwarded-Client-Cert": "my-client-cert",
+		"X-SSL-Client-Subject-Dn": "My App",
+		"X-SSL-Client-Subject-Cn": "app.mycert.com",
+		"X-SSL-Client-Issuer-Dn":  "ACME inc, USA",
+		"X-SSL-Client-Issuer-Cn":  "mycert.com",
+		"X-SSL-Client-Notbefore":  "Wednesday",
+		"X-SS

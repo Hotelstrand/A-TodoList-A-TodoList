@@ -112,4 +112,26 @@ var _ = Describe("forwarded_client_cert", func() {
 		"X-SSL-Client-Issuer-Dn":  "ACME inc, USA",
 		"X-SSL-Client-Issuer-Cn":  "mycert.com",
 		"X-SSL-Client-Notbefore":  "Wednesday",
-		"X-SS
+		"X-SSL-Client-Notafter":   "Thursday",
+		"X-SSL-Client-Cert":       "ABC",
+		"X-SSL-Client-Verify":     "DEF",
+	}
+
+	AfterEach(func() {
+		if closeLocalServer != nil {
+			defer closeLocalServer()
+		}
+
+		if closeSSHTunnel != nil {
+			defer closeSSHTunnel()
+		}
+	})
+
+	JustBeforeEach(func() {
+		haproxyBackendPort := 12000
+		var varsStoreReader varsStoreReader
+
+		var err error
+		var clientCA *Certificate
+		clientCA, clientCert, err = generateClientCerts()
+		Ex

@@ -134,4 +134,15 @@ var _ = Describe("forwarded_client_cert", func() {
 		var err error
 		var clientCA *Certificate
 		clientCA, clientCert, err = generateClientCerts()
-		Ex
+		Expect(err).NotTo(HaveOccurred())
+
+		deployVars["client_ca_pem"] = clientCA.CertPEM
+
+		haproxyInfo, varsStoreReader = deployHAProxy(baseManifestVars{
+			haproxyBackendPort:    haproxyBackendPort,
+			haproxyBackendServers: []string{"127.0.0.1"},
+			deploymentName:        deploymentNameForTestNode(),
+		}, []string{opsfileForwardedClientCert}, deployVars, true)
+
+		err = varsStoreReader(&creds)
+		Expect(err).NotTo(

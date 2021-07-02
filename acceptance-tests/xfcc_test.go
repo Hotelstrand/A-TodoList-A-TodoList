@@ -156,4 +156,18 @@ var _ = Describe("forwarded_client_cert", func() {
 		})
 		Expect(err).NotTo(HaveOccurred())
 
-		closeSSHTunnel = setupTunnelFromHaproxyToTestServer(haproxy
+		closeSSHTunnel = setupTunnelFromHaproxyToTestServer(haproxyInfo, haproxyBackendPort, localPort)
+
+		nonMTLSClient = buildHTTPClient(
+			[]string{creds.HTTPSFrontend.CA},
+			map[string]string{"haproxy.internal:443": fmt.Sprintf("%s:443", haproxyInfo.PublicIP)},
+			[]tls.Certificate{}, "",
+		)
+
+		mtlsClient = buildHTTPClient(
+			[]string{creds.HTTPSFrontend.CA},
+			map[string]string{"haproxy.internal:443": fmt.Sprintf("%s:443", haproxyInfo.PublicIP)},
+			[]tls.Certificate{clientCert.TLSCert}, "",
+		)
+
+		request, er

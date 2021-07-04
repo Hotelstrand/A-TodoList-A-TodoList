@@ -170,4 +170,18 @@ var _ = Describe("forwarded_client_cert", func() {
 			[]tls.Certificate{clientCert.TLSCert}, "",
 		)
 
-		request, er
+		request, err = http.NewRequest("GET", "https://haproxy.internal:443", nil)
+		Expect(err).NotTo(HaveOccurred())
+		for key, value := range incomingRequestHeaders {
+			request.Header.Set(key, value)
+		}
+	})
+
+	Describe("When forwarded_client_cert is sanitize_set", func() {
+		BeforeEach(func() {
+			deployVars = map[string]interface{}{
+				"forwarded_client_cert": "sanitize_set",
+			}
+		})
+
+		It("Correctly handles the X-Forwarded

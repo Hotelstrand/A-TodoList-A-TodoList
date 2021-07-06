@@ -194,4 +194,19 @@ var _ = Describe("forwarded_client_cert", func() {
 			}
 
 			By("Correctly replaces mTLS headers in mTLS requests")
-			resp, err = mtlsClient.Do(r
+			resp, err = mtlsClient.Do(request)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+
+			checkXFCCHeadersMatchCert(clientCert.X509Cert, recordedHeaders)
+		})
+	})
+
+	Describe("When forwarded_client_cert is always_forward_only", func() {
+		BeforeEach(func() {
+			deployVars = map[string]interface{}{
+				"forwarded_client_cert": "always_forward_only",
+			}
+		})
+
+		It("Correctly handles the X-Forwarded-Client-Cert and related mTLS heade

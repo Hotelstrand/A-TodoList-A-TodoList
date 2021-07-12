@@ -236,4 +236,14 @@ var _ = Describe("forwarded_client_cert", func() {
 			}
 		})
 
-		It("Correctly handles the X-Forwarded-Client
+		It("Correctly handles the X-Forwarded-Client-Cert and related mTLS headers", func() {
+			By("Correctly removes mTLS headers from non-mTLS requests")
+			resp, err := nonMTLSClient.Do(request)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+			for key := range incomingRequestHeaders {
+				Expect(recordedHeaders).NotTo(HaveKey(key))
+			}
+
+			By("Correctly forwards mTLS headers from mTLS requests")
+			

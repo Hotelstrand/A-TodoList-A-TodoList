@@ -246,4 +246,17 @@ var _ = Describe("forwarded_client_cert", func() {
 			}
 
 			By("Correctly forwards mTLS headers from mTLS requests")
-			
+			resp, err = mtlsClient.Do(request)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+
+			for key, value := range incomingRequestHeaders {
+				Expect(recordedHeaders.Get(key)).To(Equal(value))
+			}
+		})
+	})
+
+	Describe("When forwarded_client_cert is forward_only_if_route_service", func() {
+		BeforeEach(func() {
+			deployVars = map[string]interface{}{
+				"forwarded_client_c

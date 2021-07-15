@@ -279,4 +279,15 @@ var _ = Describe("forwarded_client_cert", func() {
 			Expect(resp.StatusCode).To(Equal(http.StatusOK))
 			Expect(recordedHeaders.Get("X-Cf-Proxy-Signature")).To(Equal("abc123"))
 			for key, value := range incomingRequestHeaders {
-				Expect(record
+				Expect(recordedHeaders.Get(key)).To(Equal(value))
+			}
+
+			By("Correctly replaces mTLS headers in mTLS requests")
+			resp, err = mtlsClient.Do(request)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+
+			checkXFCCHeadersMatchCert(clientCert.X509Cert, recordedHeaders)
+
+			// X-Cf-Proxy-Signature should be left intact
+			Expect(recordedHeaders.Get("X-Cf-Proxy-Signature")).To(Eq

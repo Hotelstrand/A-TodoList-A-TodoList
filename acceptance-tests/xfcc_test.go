@@ -290,4 +290,16 @@ var _ = Describe("forwarded_client_cert", func() {
 			checkXFCCHeadersMatchCert(clientCert.X509Cert, recordedHeaders)
 
 			// X-Cf-Proxy-Signature should be left intact
-			Expect(recordedHeaders.Get("X-Cf-Proxy-Signature")).To(Eq
+			Expect(recordedHeaders.Get("X-Cf-Proxy-Signature")).To(Equal("abc123"))
+		})
+	})
+})
+
+func checkXFCCHeadersMatchCert(expectedCert *x509.Certificate, headers http.Header) {
+	actualCert, err := x509.ParseCertificate([]byte(base64Decode(headers.Get("X-Forwarded-Client-Cert"))))
+	Expect(err).NotTo(HaveOccurred())
+
+	Expect(*actualCert).To(Equal(*expectedCert))
+
+	Expect(base64Decode(headers.Get("X-SSL-Client-Subject-Dn"))).To(Equal("/C=Vatican City/O=Víkî's Vergnügungspark/CN=haproxy.client"))
+	Expect(base64Decode(headers.Get

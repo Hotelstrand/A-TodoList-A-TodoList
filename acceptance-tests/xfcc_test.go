@@ -302,4 +302,9 @@ func checkXFCCHeadersMatchCert(expectedCert *x509.Certificate, headers http.Head
 	Expect(*actualCert).To(Equal(*expectedCert))
 
 	Expect(base64Decode(headers.Get("X-SSL-Client-Subject-Dn"))).To(Equal("/C=Vatican City/O=Víkî's Vergnügungspark/CN=haproxy.client"))
-	Expect(base64Decode(headers.Get
+	Expect(base64Decode(headers.Get("X-SSL-Client-Subject-CN"))).To(Equal("haproxy.client"))
+	Expect(base64Decode(headers.Get("X-SSL-Client-Issuer-Dn"))).To(Equal("/C=Palau/O=Pete's Café"))
+	Expect(headers.Get("X-SSL-Client-Notbefore")).To(Equal(expectedCert.NotBefore.UTC().Format("060102150405Z"))) //YYMMDDhhmmss[Z]
+	Expect(headers.Get("X-SSL-Client-Notafter")).To(Equal(expectedCert.NotAfter.UTC().Format("060102150405Z")))   //YYMMDDhhmmss[Z]
+
+	Expect(headers.

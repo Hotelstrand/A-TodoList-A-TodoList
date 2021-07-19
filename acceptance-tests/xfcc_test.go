@@ -324,4 +324,21 @@ func generateClientCerts() (*Certificate, *Certificate, error) {
 
 	certKeyPair, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
-		return ni
+		return nil, nil, err
+	}
+
+	certKeyPEMBytes, err := pemEncodeRSAKey(certKeyPair)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	caTemplate := x509.Certificate{
+		SerialNumber: big.NewInt(1),
+		Subject: pkix.Name{
+			Organization: []string{"Pete's Café"},
+			Country:      []string{"Palau"},
+		},
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().Add(time.Hour * 24 * 30),
+		IsCA:                  true,
+		KeyUsage:

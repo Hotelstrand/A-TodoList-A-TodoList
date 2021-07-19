@@ -307,4 +307,21 @@ func checkXFCCHeadersMatchCert(expectedCert *x509.Certificate, headers http.Head
 	Expect(headers.Get("X-SSL-Client-Notbefore")).To(Equal(expectedCert.NotBefore.UTC().Format("060102150405Z"))) //YYMMDDhhmmss[Z]
 	Expect(headers.Get("X-SSL-Client-Notafter")).To(Equal(expectedCert.NotAfter.UTC().Format("060102150405Z")))   //YYMMDDhhmmss[Z]
 
-	Expect(headers.
+	Expect(headers.Get("X-SSL-Client")).To(Equal("1"))
+	Expect(headers.Get("X-SSL-Client-Verify")).To(Equal("0"))
+}
+
+func generateClientCerts() (*Certificate, *Certificate, error) {
+	caKeyPair, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	caKeyPEMBytes, err := pemEncodeRSAKey(caKeyPair)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	certKeyPair, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		return ni

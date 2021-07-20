@@ -341,4 +341,17 @@ func generateClientCerts() (*Certificate, *Certificate, error) {
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().Add(time.Hour * 24 * 30),
 		IsCA:                  true,
-		KeyUsage:
+		KeyUsage:              x509.KeyUsageCertSign,
+		BasicConstraintsValid: true,
+	}
+
+	certTemplate := x509.Certificate{
+		SerialNumber: big.NewInt(1),
+		Subject: pkix.Name{
+			Organization: []string{"Víkî's Vergnügungspark"},
+			Country:      []string{"Vatican City"},
+			CommonName:   "haproxy.client",
+		},
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().Add(time.Hour * 24 * 30),
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsa

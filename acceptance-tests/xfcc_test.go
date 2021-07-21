@@ -373,4 +373,24 @@ func generateClientCerts() (*Certificate, *Certificate, error) {
 		return nil, nil, err
 	}
 
-	certDERBytes, err := x509.CreateCerti
+	certDERBytes, err := x509.CreateCertificate(rand.Reader, &certTemplate, &caTemplate, &certKeyPair.PublicKey, caKeyPair)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	cert, err := x509.ParseCertificate(certDERBytes)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	certPEMBytes, err := pemEncodeCert(certDERBytes)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	clientTLSCert, err := tls.X509KeyPair(certPEMBytes, certKeyPEMBytes)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return &Ce

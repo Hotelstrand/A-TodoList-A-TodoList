@@ -354,4 +354,23 @@ func generateClientCerts() (*Certificate, *Certificate, error) {
 		},
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().Add(time.Hour * 24 * 30),
-		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsa
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth},
+		BasicConstraintsValid: true,
+	}
+
+	caDERBytes, err := x509.CreateCertificate(rand.Reader, &caTemplate, &caTemplate, &caKeyPair.PublicKey, caKeyPair)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ca, err := x509.ParseCertificate(caDERBytes)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	caPEMBytes, err := pemEncodeCert(caDERBytes)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	certDERBytes, err := x509.CreateCerti

@@ -393,4 +393,20 @@ func generateClientCerts() (*Certificate, *Certificate, error) {
 		return nil, nil, err
 	}
 
-	return &Ce
+	return &Certificate{
+			X509Cert:      ca,
+			CertPEM:       string(caPEMBytes),
+			PrivateKey:    caKeyPair,
+			PrivateKeyPEM: string(caKeyPEMBytes),
+		}, &Certificate{
+			X509Cert:      cert,
+			CertPEM:       string(certPEMBytes),
+			PrivateKey:    certKeyPair,
+			PrivateKeyPEM: string(certKeyPEMBytes),
+			TLSCert:       clientTLSCert,
+		}, nil
+}
+
+func pemEncodeCert(derBytes []byte) ([]byte, error) {
+	pemBytes := new(bytes.Buffer)
+	err := pem.Encode(pemBytes, &pem.B

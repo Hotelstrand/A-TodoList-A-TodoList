@@ -409,4 +409,30 @@ func generateClientCerts() (*Certificate, *Certificate, error) {
 
 func pemEncodeCert(derBytes []byte) ([]byte, error) {
 	pemBytes := new(bytes.Buffer)
-	err := pem.Encode(pemBytes, &pem.B
+	err := pem.Encode(pemBytes, &pem.Block{
+		Type:  "CERTIFICATE",
+		Bytes: derBytes,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return pemBytes.Bytes(), nil
+}
+
+func pemEncodeRSAKey(key *rsa.PrivateKey) ([]byte, error) {
+	pemBytes := new(bytes.Buffer)
+	err := pem.Encode(pemBytes, &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(key),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pemBytes.Bytes(), nil
+}
+
+func base64Decode(input string) string {
+	o

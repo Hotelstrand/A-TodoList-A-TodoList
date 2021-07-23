@@ -435,4 +435,7 @@ func pemEncodeRSAKey(key *rsa.PrivateKey) ([]byte, error) {
 }
 
 func base64Decode(input string) string {
-	o
+	output, err := base64.StdEncoding.DecodeString(input)
+	Expect(err).NotTo(HaveOccurred())
+	return string(output)
+}

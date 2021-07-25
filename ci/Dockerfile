@@ -16,4 +16,9 @@ RUN echo "source /tmp/local-bosh/director/env" >> /root/.bashrc
 RUN echo "export PATH=\$PATH:\$GOPATH/bin" >> /root/.bashrc
 
 # Install Python libraries needed for scripts
-COPY scripts/requirements.txt /requirem
+COPY scripts/requirements.txt /requirements.txt
+RUN /usr/bin/python3 -m pip install -r /requirements.txt
+
+ENV GOPATH=/go
+RUN mkdir /go
+RUN go install "github.com/onsi/ginkgo/v2/ginkgo@${GINKGO_VERSION}"

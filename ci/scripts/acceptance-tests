@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+stemcell_jammy_path=$PWD/stemcell/*.tgz
+stemcell_bionic_path=$PWD/stemcell-bionic/*.tgz
+bpm_release_path=$PWD/bpm/*.tgz
+
+if [ -n "$FOCUS" ]; then
+  echo "------------------------------------------------------------------"
+  echo "FOCUS is set. Will only run tests matching '$FOCUS'"
+  echo "Docker won't be stopped after

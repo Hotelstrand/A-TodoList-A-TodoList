@@ -28,3 +28,16 @@ function stop_docker() {
 }
 
 if [ -z "$FOCUS" ]; then
+  trap stop_docker EXIT
+fi
+
+source /tmp/local-bosh/director/env
+
+echo "----- Creating candidate BOSH release..."
+bosh -n reset-release # in case dev_releases/ is in repo accidentally
+
+bosh create-release
+bosh upload-release --rebase
+release_final_version=$(spruce json dev_releases/*/index.yml | jq -r ".builds[].version" | sed -e "s%+.*%%")
+export RELEASE_VERSION="${release_final_version}.latest"
+echo "----- Created ${RELEASE_VERSION}

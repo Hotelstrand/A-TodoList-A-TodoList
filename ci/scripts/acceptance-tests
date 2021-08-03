@@ -40,4 +40,17 @@ bosh create-release
 bosh upload-release --rebase
 release_final_version=$(spruce json dev_releases/*/index.yml | jq -r ".builds[].version" | sed -e "s%+.*%%")
 export RELEASE_VERSION="${release_final_version}.latest"
-echo "----- Created ${RELEASE_VERSION}
+echo "----- Created ${RELEASE_VERSION}"
+
+echo "----- Uploading Jammy stemcell"
+bosh -n upload-stemcell $stemcell_jammy_path
+
+echo "----- Uploading Bionic stemcell"
+bosh -n upload-stemcell $stemcell_bionic_path
+
+echo "----- Uploading BPM"
+bosh -n upload-release $bpm_release_path
+
+echo "----- Uploading os-conf (used for tests only)"
+bosh -n upload-release --sha1 386293038ae3d00813eaa475b4acf63f8da226ef \
+  https://bosh.io/d/github.com/cloudfoundry/os

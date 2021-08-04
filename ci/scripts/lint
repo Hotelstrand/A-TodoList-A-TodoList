@@ -1,3 +1,12 @@
 #!/bin/bash
 
-set -euo pi
+set -euo pipefail
+
+cd ${REPO_ROOT}
+
+bundle package
+bundle exec rake lint
+
+pushd acceptance-tests
+  go vet
+popd

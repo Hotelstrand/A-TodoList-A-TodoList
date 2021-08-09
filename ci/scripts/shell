@@ -11,4 +11,20 @@ git submodule update --init --recursive --force
 
 echo "----- Starting BOSH"
 
-./
+./ci/scripts/start-bosh.sh
+
+function stop_docker() {
+  echo "----- stopping docker"
+  service docker stop
+}
+
+trap stop_docker EXIT
+
+source /tmp/local-bosh/director/env
+
+echo "----- Creating candidate BOSH release..."
+bosh -n reset-release # in case dev_releases/ is in repo accidentally
+
+bosh create-release
+bosh upload-release --rebase
+release_final_version=$(spruce json dev_releases/*/index.yml | jq -r ".builds[].version"

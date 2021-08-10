@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# ci/scripts/shipit
+#
+# Script for generating Github release / tag assets
+# and managing release notes for a BOSH Release pipeline
+#
+# author:  James Hunt <james@niftylogic.com>
+# created: 2016-03-30
+
+set -eu
+
+header() {
+	echo
+	echo "###############################################"
+	echo
+	echo "$*"
+	echo
+}
+
+: "${REPO_ROOT:?r

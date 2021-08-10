@@ -41,4 +41,7 @@ echo "----- Uploading os-conf (used for tests only)"
 bosh -n upload-release --sha1 386293038ae3d00813eaa475b4acf63f8da226ef \
   https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=22.1.2
 
-e
+export BOSH_PATH=$(which bosh)
+export BASE_MANIFEST_PATH="$PWD/manifests/haproxy.yml"
+
+bash

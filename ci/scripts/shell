@@ -27,4 +27,18 @@ bosh -n reset-release # in case dev_releases/ is in repo accidentally
 
 bosh create-release
 bosh upload-release --rebase
-release_final_version=$(spruce json dev_releases/*/index.yml | jq -r ".builds[].version"
+release_final_version=$(spruce json dev_releases/*/index.yml | jq -r ".builds[].version" | sed -e "s%+.*%%")
+export RELEASE_VERSION="${release_final_version}.latest"
+echo "----- Created ${RELEASE_VERSION}"
+
+echo "----- Uploading stemcell"
+bosh -n upload-stemcell $stemcell_path
+
+echo "----- Uploading BPM"
+bosh -n upload-release $bpm_release_path
+
+echo "----- Uploading os-conf (used for tests only)"
+bosh -n upload-release --sha1 386293038ae3d00813eaa475b4acf63f8da226ef \
+  https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=22.1.2
+
+e

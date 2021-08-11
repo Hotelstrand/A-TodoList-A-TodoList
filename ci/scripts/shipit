@@ -18,4 +18,9 @@ header() {
 	echo
 }
 
-: "${REPO_ROOT:?r
+: "${REPO_ROOT:?required}" # Contains the Git repo
+: "${RELEASE_ROOT:?required}" # Contains any information that is passed on to subsequent steps, e.g. GitHub publish
+: "${REPO_OUT:?required}" # Resulting repo state for subsequent steps
+: "${BRANCH:?required}" # The branch name, from which to build the release
+: "${GITHUB_OWNER:?required}" # The github organization / owner of the repo
+: "${VERSION_FROM:?required}" # The path to

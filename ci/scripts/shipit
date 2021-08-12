@@ -48,4 +48,18 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "${REPO_ROOT}"
 RELEASE_NAME=$(bosh int config/final.yml --path /name)
 
-# YAML needs to be indented. The GCP ser
+# YAML needs to be indented. The GCP service key is a multiline YAML and needs to be indented uniformly.
+# Bash does not allow variables in a sequence literal. $PAD is a 6 spaces indent.
+PAD=$(printf ' %.0s' {1..6})
+PADDED_GCP_SERVICE_KEY=$(sed -E 's/^(.*)$/'"${PAD}"'\1/g' <<<"${GCP_SERVICE_KEY}")
+
+cat > config/private.yml <<YAML
+---
+blobstore:
+  options:
+    credentials_source: static
+    json_key: |
+${PADDED_GCP_SERVICE_KEY}
+YAML
+
+header "Pulling in any git subm

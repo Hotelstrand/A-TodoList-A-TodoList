@@ -32,4 +32,20 @@ if [[ ! -f "${VERSION_FROM}" ]]; then
 fi
 VERSION=$(cat "${VERSION_FROM}")
 if [[ -z "${VERSION}" ]]; then
-  echo >&2 "Version file (${VERSION_FROM}) was empty.  Did you misconfigure Concourse?
+  echo >&2 "Version file (${VERSION_FROM}) was empty.  Did you misconfigure Concourse?"
+  exit 2
+fi
+
+if [[ ! -f "${REPO_ROOT}/ci/release_notes.md" ]]; then
+  echo >&2 "ci/release_notes.md not found.  Did you forget to write them?"
+  exit 1
+fi
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+###############################################################
+
+cd "${REPO_ROOT}"
+RELEASE_NAME=$(bosh int config/final.yml --path /name)
+
+# YAML needs to be indented. The GCP ser

@@ -62,4 +62,14 @@ blobstore:
 ${PADDED_GCP_SERVICE_KEY}
 YAML
 
-header "Pulling in any git subm
+header "Pulling in any git submodules..."
+git submodule update --init --recursive --force
+
+header "Create final release..."
+bosh -n create-release --final --version "${VERSION}"
+bosh -n create-release "releases/${RELEASE_NAME}/${RELEASE_NAME}-${VERSION}.yml" \
+              --tarball "releases/${RELEASE_NAME}/${RELEASE_NAME}-${VERSION}.tgz"
+cd -
+
+# SC2155 discourages variable assignment and export in the same line.
+RELEASE_TGZ=${REPO_ROOT}/releases/${RELE

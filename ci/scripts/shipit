@@ -72,4 +72,16 @@ bosh -n create-release "releases/${RELEASE_NAME}/${RELEASE_NAME}-${VERSION}.yml"
 cd -
 
 # SC2155 discourages variable assignment and export in the same line.
-RELEASE_TGZ=${REPO_ROOT}/releases/${RELE
+RELEASE_TGZ=${REPO_ROOT}/releases/${RELEASE_NAME}/${RELEASE_NAME}-${VERSION}.tgz
+# shellcheck disable=SC2155
+export SHA1=$(sha1sum "${RELEASE_TGZ}" | head -n1 | awk '{print $1}')
+echo "SHA1=${SHA1}"
+# shellcheck disable=SC2155
+export SHA256=$(sha256sum "${RELEASE_TGZ}" | head -n1 | awk '{print $1}')
+echo "SHA256=${SHA256}"
+
+
+
+mkdir -p "${RELEASE_ROOT}/artifacts"
+echo "v${VERSION}"                            > "${RELEASE_ROOT}/tag"
+echo "v${VERSION}"                  

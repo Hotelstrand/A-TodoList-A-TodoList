@@ -93,4 +93,16 @@ version() {
   pattern='s/VERSION=(.*)(\s?#.*)/\1/p'
   package=${2:-haproxy}
   # extract version and remove all spaces
-  sed -n -E "${pattern//VER
+  sed -n -E "${pattern//VERSION/${1:?}}" "${REPO_ROOT}/packages/${package}/packaging" | sed 's/ *//g'
+}
+
+HAPROXY_VERSION=$(version HAPROXY_VERSION)
+LUA_VERSION=$(version LUA_VERSION)
+SOCAT_VERSION=$(version SOCAT_VERSION)
+PCRE_VERSION=$(version PCRE_VERSION)
+KEEPALIVED_VERSION=$(version KEEPALIVED_VERSION keepalived)
+
+cat >> "${RELEASE_ROOT}/notes.md" <<EOF
+### Versions
+
+The following versions of upstream components are included in this hapr

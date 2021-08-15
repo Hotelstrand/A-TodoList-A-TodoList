@@ -105,4 +105,19 @@ KEEPALIVED_VERSION=$(version KEEPALIVED_VERSION keepalived)
 cat >> "${RELEASE_ROOT}/notes.md" <<EOF
 ### Versions
 
-The following versions of upstream components are included in this hapr
+The following versions of upstream components are included in this haproxy-boshrelease:
+
+| Component   | Version |
+| ----------- | ------- |
+| HAProxy     | \`${HAPROXY_VERSION}\` |
+| keepalived  | \`${KEEPALIVED_VERSION}\` |
+| Lua         | \`${LUA_VERSION}\` |
+| PCRE        | \`${PCRE_VERSION}\` |
+| socat       | \`${SOCAT_VERSION}\` |
+
+### Deployment
+\`\`\`yaml
+releases:
+- name: "${RELEASE_NAME}"
+  version: "${VERSION}"
+  url: "https://github.com/${GITHUB_OWNER}/${RELEASE_NAME}-boshrelease/releases/download/v${V

@@ -120,4 +120,20 @@ The following versions of upstream components are included in this haproxy-boshr
 releases:
 - name: "${RELEASE_NAME}"
   version: "${VERSION}"
-  url: "https://github.com/${GITHUB_OWNER}/${RELEASE_NAME}-boshrelease/releases/download/v${V
+  url: "https://github.com/${GITHUB_OWNER}/${RELEASE_NAME}-boshrelease/releases/download/v${VERSION}/${RELEASE_NAME}-${VERSION}.tgz"
+  sha1: "${SHA1}"
+
+# for deployments with sha256, use the following line instead:
+# sha1: "sha256:${SHA256}"
+\`\`\`
+EOF
+
+cat > "${RELEASE_ROOT}/notification" <<EOF
+<!here> New ${RELEASE_NAME} v${VERSION} released!
+EOF
+
+header "Update git repo with final release..."
+if [[ -z $(git config --global user.email) ]]; then
+  git config --global user.email "ci@starkandwayne.com"
+fi
+i

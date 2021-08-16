@@ -149,4 +149,13 @@ pushd "${REPO_ROOT}"
   git status
   git commit -m "release v${VERSION}"
 
-  # After creating a final r
+  # After creating a final release we will also create a dev release patches from haproxy-patches directory
+  echo "- haproxy/patches.tar.gz" >> packages/haproxy/spec
+  tar -czvf haproxy-patches.tar.gz haproxy-patches
+  bosh add-blob haproxy-patches.tar.gz haproxy/patches.tar.gz
+  bosh upload-blobs
+
+  bosh -n create-release --force --version "${VERSION}-patched" \
+    --tarball "../${RELEASE_NAME}_patched-${VERSION}.tgz"
+
+  # Undo changes to rep

@@ -136,4 +136,17 @@ header "Update git repo with final release..."
 if [[ -z $(git config --global user.email) ]]; then
   git config --global user.email "ci@starkandwayne.com"
 fi
-i
+if [[ -z $(git config --global user.name) ]]; then
+  git config --global user.name "CI Bot"
+fi
+
+pushd "${REPO_ROOT}"
+  for MANIFEST_PATH in manifests/*.yml; do
+    "${DIR}/update-manifest" "${GITHUB_OWNER}" "${RELEASE_NAME}" "${VERSION}" "${SHA1}" "${MANIFEST_PATH}"
+  done
+  git merge --no-edit "${BRANCH}"
+  git add -A
+  git status
+  git commit -m "release v${VERSION}"
+
+  # After creating a final r

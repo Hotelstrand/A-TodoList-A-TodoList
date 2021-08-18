@@ -158,4 +158,16 @@ pushd "${REPO_ROOT}"
   bosh -n create-release --force --version "${VERSION}-patched" \
     --tarball "../${RELEASE_NAME}_patched-${VERSION}.tgz"
 
-  # Undo changes to rep
+  # Undo changes to repo from creating dev release
+  git clean -df
+  git reset --hard
+popd
+
+mv "${RELEASE_NAME}_patched-${VERSION}.tgz" "${RELEASE_ROOT}/artifacts"
+
+PATCHED_RELEASE_TGZ=${RELEASE_ROOT}/artifacts/${RELEASE_NAME}_patched-${VERSION}.tgz
+# shellcheck disable=SC2155
+export PATCHED_SHA1=$(sha1sum "${PATCHED_RELEASE_TGZ}" | head -n1 | awk '{print $1}')
+echo "PATCHED_SHA1=${PATCHED_SHA1}"
+# shellcheck disable=SC2155
+export PATCHED_SHA25

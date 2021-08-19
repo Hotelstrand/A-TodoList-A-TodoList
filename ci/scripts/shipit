@@ -170,4 +170,17 @@ PATCHED_RELEASE_TGZ=${RELEASE_ROOT}/artifacts/${RELEASE_NAME}_patched-${VERSION}
 export PATCHED_SHA1=$(sha1sum "${PATCHED_RELEASE_TGZ}" | head -n1 | awk '{print $1}')
 echo "PATCHED_SHA1=${PATCHED_SHA1}"
 # shellcheck disable=SC2155
-export PATCHED_SHA25
+export PATCHED_SHA256=$(sha256sum "${PATCHED_RELEASE_TGZ}" | head -n1 | awk '{print $1}')
+echo "PATCHED_SHA256=${PATCHED_SHA256}"
+
+cat >> "${RELEASE_ROOT}/notes.md" <<EOF
+
+### Deployment (patched)
+\`\`\`yaml
+releases:
+- name: "${RELEASE_NAME}"
+  version: "${VERSION}"
+  url: "https://github.com/${GITHUB_OWNER}/${RELEASE_NAME}-boshrelease/releases/download/v${VERSION}/${RELEASE_NAME}_patched-${VERSION}.tgz"
+  sha1: "${PATCHED_SHA1}"
+
+# for deployments with sha256, use the following li

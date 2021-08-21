@@ -183,4 +183,14 @@ releases:
   url: "https://github.com/${GITHUB_OWNER}/${RELEASE_NAME}-boshrelease/releases/download/v${VERSION}/${RELEASE_NAME}_patched-${VERSION}.tgz"
   sha1: "${PATCHED_SHA1}"
 
-# for deployments with sha256, use the following li
+# for deployments with sha256, use the following line instead:
+# sha1: "sha256:${PATCHED_SHA256}"
+\`\`\`
+EOF
+
+# so that future steps in the pipeline can push our changes
+cp -a "${REPO_ROOT}" "${REPO_OUT}"
+
+cat > "${NOTIFICATION_OUT:-notifications}/message" <<EOS
+New ${RELEASE_NAME} v${VERSION} released. <https://github.com/${GITHUB_OWNER}/${RELEASE_NAME}-boshrelease/releases/tag/v${VERSION}|Release notes>.
+EOS

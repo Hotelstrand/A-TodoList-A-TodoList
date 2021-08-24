@@ -9,3 +9,21 @@ set -e
 : ${BLOB_DESTINATION:?required}
 
 VERSION=$(cat ${BLOB_DIR}/version)
+
+pushd ${REPO_ROOT:?required}
+
+cat <<EOF >config/private.yml
+---
+blobstore:
+  provider: s3
+  options:
+    access_key_id: ${AWS_ACCESS_KEY:?required}
+    secret_access_key: ${AWS_SECRET_KEY:?required}
+EOF
+
+blobs_to_remove=$(spruce json config/blobs.yml | jq -r "keys[] | select(test(\"${BLOB_CLEANUP}\"))")
+if [[ ! -z $blobs_to_remove ]]; then
+  echo "$blobs_to_remove" | xargs -L1 bosh remove-blob
+fi
+
+# expand ${VER

@@ -22,4 +22,15 @@ if [ -z "$CONCOURSE_PASSWORD" ]; then
     exit 1
 fi
 
-if [ ! -f "vars.ym
+if [ ! -f "vars.yml" ]; then
+    echo "Missing vars.yml. Please create it first."
+    exit 1
+fi
+
+
+fly -t "$CONCOURSE_TARGET" login -c "$CONCOURSE_URL" -u "$CONCOURSE_USER" -p "$CONCOURSE_PASSWORD"
+fly -t "$CONCOURSE_TARGET" validate-pipeline -c pipeline.yml
+fly -t "$CONCOURSE_TARGET" set-pipeline -p haproxy-boshrelease -c pipeline.yml --load-vars-from vars.yml
+fly -t "$CONCOURSE_TARGET" expose-pipeline -p haproxy-boshrelease
+
+echo "Done."

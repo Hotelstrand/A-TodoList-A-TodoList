@@ -6,4 +6,14 @@ This enables declaring an virtual IP (``keepalived.vip``) that will automaticall
 
 Prereqs:
  * The haproxy VMs must be within the same broadcast domain, i.e. receive multicast traffic sent to the 224.0.0.18 broadcast and IP protocol number 112.
-* The clients using this VIP must be within the [same broadcast domain](https://en.wikipedia.org/wiki/Broadcast_domain) a
+* The clients using this VIP must be within the [same broadcast domain](https://en.wikipedia.org/wiki/Broadcast_domain) as the haproxy vms and accepting ARP gratuitious. 
+
+
+# This feature has been successfully tested on the following IAAS :
+* Cloudstack w/ XenServer
+
+
+# Limitations and future enhancements
+* logs collection and monitoring/alerting : keepalived logs are sent to syslog and can t be retrieved using `bosh logs` you have to tail /var/log/syslog to get info
+* Health check period is hardcoded to 2s : we will add parameter for this
+* mcast_src_ip @IP is 224.0.0.18 : we will add parame

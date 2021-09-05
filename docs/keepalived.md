@@ -16,4 +16,7 @@ Prereqs:
 # Limitations and future enhancements
 * logs collection and monitoring/alerting : keepalived logs are sent to syslog and can t be retrieved using `bosh logs` you have to tail /var/log/syslog to get info
 * Health check period is hardcoded to 2s : we will add parameter for this
-* mcast_src_ip @IP is 224.0.0.18 : we will add parame
+* mcast_src_ip @IP is 224.0.0.18 : we will add parameter for this
+* Not yet email notification : we will add parameter for this
+* Hardcoded VRRP advertisement to 1 S (advert_int) triggering a new VRRP election and fail over. Not yet drain script handling to prevent downtime while bosh upgrades.
+* For the moment, KeepAlived is configured to use broadcast for network communication between nodes. Future versions will be able to use unicast to expose a VIP or control a distinct SD

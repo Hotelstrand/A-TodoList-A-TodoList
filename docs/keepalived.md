@@ -19,4 +19,14 @@ Prereqs:
 * mcast_src_ip @IP is 224.0.0.18 : we will add parameter for this
 * Not yet email notification : we will add parameter for this
 * Hardcoded VRRP advertisement to 1 S (advert_int) triggering a new VRRP election and fail over. Not yet drain script handling to prevent downtime while bosh upgrades.
-* For the moment, KeepAlived is configured to use broadcast for network communication between nodes. Future versions will be able to use unicast to expose a VIP or control a distinct SD
+* For the moment, KeepAlived is configured to use broadcast for network communication between nodes. Future versions will be able to use unicast to expose a VIP or control a distinct SDN system such as an AWS ElasticIP (through custom VRRP failover notification scripts)
+
+
+# testing
+## First verification
+* after setting up keepalived.vip parameter, connect to the instance with index 0 of your AZ. BOSH will configure this one as master
+* run `sudo ip a`
+* you should see the VIP (in example above, VIP is set as 10.234.250.201)
+
+```
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000

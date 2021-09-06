@@ -39,4 +39,14 @@ Prereqs:
 * The VIP is up, you can perform further testing and access your backend services using the VIP
 
 ## Failover scenario
-* Let s stop haproxy on 
+* Let s stop haproxy on first node by running `monit stop haproxy`
+* Let s run `ip a` on first node
+```
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 06:c9:f6:00:0a:38 brd ff:ff:ff:ff:ff:ff
+    inet 10.234.250.199/26 brd 10.234.250.255 scope global eth0
+       valid_lft forever preferred_lft forever
+```
+* no more VIP, let s look at our second node
+```
+2: eth0: <BROADCAST,MULTICAST

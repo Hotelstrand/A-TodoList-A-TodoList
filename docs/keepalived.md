@@ -49,4 +49,13 @@ Prereqs:
 ```
 * no more VIP, let s look at our second node
 ```
-2: eth0: <BROADCAST,MULTICAST
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 06:38:ce:00:0a:39 brd ff:ff:ff:ff:ff:ff
+    inet 10.234.250.200/26 brd 10.234.250.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet 10.234.250.201/32 scope global eth0
+       valid_lft forever preferred_lft forever
+```
+* It works ! If we look at logs on first node :
+```
+Dec  7 12:47:34 localhost Keepalived_vrrp[455

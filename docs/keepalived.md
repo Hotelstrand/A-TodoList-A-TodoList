@@ -61,4 +61,10 @@ Prereqs:
 Dec  7 12:47:34 localhost Keepalived_vrrp[4558]: VRRP_Script(check_haproxy) failed
 Dec  7 12:47:34 localhost Keepalived_vrrp[4558]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Effective priority = 101
 Dec  7 12:47:35 localhost Keepalived_vrrp[4558]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Received higher prio advert 102
-Dec  7 12:47:35 localhost Keepalived_vrrp[4558]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy
+Dec  7 12:47:35 localhost Keepalived_vrrp[4558]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Entering BACKUP STATE
+```
+and second node :
+```
+Dec  7 12:47:35 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) forcing a new MASTER election
+Dec  7 12:47:36 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Transition to MASTER STATE
+Dec  7 12:47:37 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalived

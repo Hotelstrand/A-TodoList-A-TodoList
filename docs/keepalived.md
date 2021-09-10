@@ -58,4 +58,7 @@ Prereqs:
 ```
 * It works ! If we look at logs on first node :
 ```
-Dec  7 12:47:34 localhost Keepalived_vrrp[455
+Dec  7 12:47:34 localhost Keepalived_vrrp[4558]: VRRP_Script(check_haproxy) failed
+Dec  7 12:47:34 localhost Keepalived_vrrp[4558]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Effective priority = 101
+Dec  7 12:47:35 localhost Keepalived_vrrp[4558]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Received higher prio advert 102
+Dec  7 12:47:35 localhost Keepalived_vrrp[4558]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy

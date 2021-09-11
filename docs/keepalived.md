@@ -67,4 +67,10 @@ and second node :
 ```
 Dec  7 12:47:35 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) forcing a new MASTER election
 Dec  7 12:47:36 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Transition to MASTER STATE
-Dec  7 12:47:37 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalived
+Dec  7 12:47:37 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Entering MASTER STATE
+```
+* Same scenario if you stop the master node :
+```
+Dec  7 12:55:52 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Received higher prio advert 103
+Dec  7 12:55:52 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Entering BACKUP STATE
+Dec  7 12:58:22 localhost Keepalived_vrrp[4544]: VRRP_Ins

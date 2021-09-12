@@ -73,4 +73,10 @@ Dec  7 12:47:37 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalive
 ```
 Dec  7 12:55:52 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Received higher prio advert 103
 Dec  7 12:55:52 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Entering BACKUP STATE
-Dec  7 12:58:22 localhost Keepalived_vrrp[4544]: VRRP_Ins
+Dec  7 12:58:22 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Transition to MASTER STATE
+Dec  7 12:58:23 localhost Keepalived_vrrp[4544]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Entering MASTER STATE
+```
+* If you kill the VM running the master node (using IAAS) :
+```
+Dec  8 14:01:34 localhost Keepalived_vrrp[11463]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Transition to MASTER STATE
+Dec  8 14:01:35 localhost Keepalived_vr

@@ -85,4 +85,14 @@ and after restarting the master node :
 ```
 Dec  8 14:02:55 localhost Keepalived_vrrp[11463]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Received lower prio advert 101, forcing new election
 Dec  8 14:02:56 localhost Keepalived_vrrp[11463]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Received higher prio advert 103
-Dec  8 14:02
+Dec  8 14:02:56 localhost Keepalived_vrrp[11463]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Entering BACKUP STATE
+```
+* Running the canary on master node :
+master node :
+```
+Dec  8 14:13:20 localhost Keepalived_vrrp[1046]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Effective priority = 101
+```
+
+slave node :
+```
+Dec  8 14:13:24 localhost Keepalived_vrrp[11463]: VRRP_Instance(hapro

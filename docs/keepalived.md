@@ -95,4 +95,7 @@ Dec  8 14:13:20 localhost Keepalived_vrrp[1046]: VRRP_Instance(haproxy_keepalive
 
 slave node :
 ```
-Dec  8 14:13:24 localhost Keepalived_vrrp[11463]: VRRP_Instance(hapro
+Dec  8 14:13:24 localhost Keepalived_vrrp[11463]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Transition to MASTER STATE
+Dec  8 14:13:25 localhost Keepalived_vrrp[11463]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Entering MASTER STATE
+Dec  8 14:13:33 localhost Keepalived_vrrp[11463]: VRRP_Instance(haproxy_keepalived_mysql_infra_check_haproxy) Received lower prio advert 101, forcing new election
+Dec  8 14:13:34 localhost Keepalived_vrrp[11463]: VRRP_Instance(haproxy_keepalived_mysql

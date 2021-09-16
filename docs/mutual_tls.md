@@ -1,4 +1,20 @@
 [haproxy-boshrelease][1] has two different features related to Mutual TLS -
 [authenticating itself][2] with a set of backend servers, and [passing through][3]
 end-user client certificates to backend apps. Both features can be used
-on their ow
+on their own, or in tandem, depending on the requirements of the infrastructure
+deployed.
+
+## Using HAProxy in front of Backends that require Mutual TLS
+
+If HAProxy is placed in front of backend servers that require
+Client SSL Certificates/Mutual TLS, you will want to ensure the
+following property is set:
+
+```
+properties:
+  haproxy:
+    backend_crt: |
+      ----- BEGIN CERTIFICATE -----
+      YOUR CERT PEM HERE
+      ----- END CERTIFICATE -----
+      ----

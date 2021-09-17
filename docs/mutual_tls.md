@@ -17,4 +17,20 @@ properties:
       ----- BEGIN CERTIFICATE -----
       YOUR CERT PEM HERE
       ----- END CERTIFICATE -----
-      ----
+      ----- BEGIN RSA PRIVATE KEY -----
+      YOUR KEY HERE
+      ----- END RSA PRIVATE KEY -----
+```
+
+If you wish to have HAProxy perform SSL verification on the backend
+it's connecting to, add the following properties to the mix:
+
+```
+properties:
+  haproxy:
+    backend_ssl: verify
+    backend_ca: |
+      ----- BEGIN CERTIFICATE -----
+      CA Certificate for validating backend certs
+      ----- END CERTIFICATE -----
+    backend_

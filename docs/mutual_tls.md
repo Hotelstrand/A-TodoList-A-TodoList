@@ -33,4 +33,11 @@ properties:
       ----- BEGIN CERTIFICATE -----
       CA Certificate for validating backend certs
       ----- END CERTIFICATE -----
-    backend_
+    backend_ssl_verifyhost: # Omit these if you only want to validate that the CA signed the backend
+    - backend-host.com      # server's cert, and not check hostnames + certificate Subjects
+```
+
+## Configuring HAProxy to Pass Client Certificates to Apps
+
+HAProxy can be configured to pass client certificates on to apps requiring them on the backend.
+This does not enforce mutual TLS at the HAP

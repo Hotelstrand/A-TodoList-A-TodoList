@@ -40,4 +40,10 @@ properties:
 ## Configuring HAProxy to Pass Client Certificates to Apps
 
 HAProxy can be configured to pass client certificates on to apps requiring them on the backend.
-This does not enforce mutual TLS at the HAP
+This does not enforce mutual TLS at the HAPrcxy level, nor does it enable it at the app level.
+Instead, it allows for HAProxy to accept client certificates optionally, which are then passed to
+backend apps via the `X-Forwarded-Client-Cert` HTTP Header. Apps must then be written to inspect that
+header, and perform a manual certificate validation based on the value of the `X-Forwarded-Client-Cert`
+header.
+
+To enable the mutual TLS passthrough, add the following property to your

@@ -46,4 +46,18 @@ backend apps via the `X-Forwarded-Client-Cert` HTTP Header. Apps must then be wr
 header, and perform a manual certificate validation based on the value of the `X-Forwarded-Client-Cert`
 header.
 
-To enable the mutual TLS passthrough, add the following property to your
+To enable the mutual TLS passthrough, add the following property to your manifest:
+
+```
+properties:
+  haproxy:
+    client_cert: true
+```
+
+The `haproxy.client_ca_file` can be optionally supplied for client cert validation, if custom CAs
+were used to issue the client certs.
+
+`ha_proxy.client_revocation_list` is an optional list of CRLs for HAProxy to use when validating
+certs, to ensure client certs have not been revoked.
+
+If HAProxy has trouble validating a client cert, it will refuse to serve the

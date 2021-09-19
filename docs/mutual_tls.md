@@ -60,4 +60,11 @@ were used to issue the client certs.
 `ha_proxy.client_revocation_list` is an optional list of CRLs for HAProxy to use when validating
 certs, to ensure client certs have not been revoked.
 
-If HAProxy has trouble validating a client cert, it will refuse to serve the
+If HAProxy has trouble validating a client cert, it will refuse to serve the request, unless
+that specific error has been ignored. This can be configured via `ha_proxy.client_cert_ignore_err`
+An exhaustive list of these error codes can be found here][4]
+
+[1]: https://github.com/cloudfoundry/haproxy-boshrelease
+[2]: #using-haproxy-in-front-of-backends-that-require-mutual-tls
+[3]: #configuring-haproxy-to-pass-client-certificates-to-apps
+[4]: https://wiki.openssl.org/index.php/Manual:Verify(1)

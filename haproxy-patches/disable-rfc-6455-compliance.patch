@@ -1,0 +1,10 @@
+--- src/mux_h1.c	2021-07-07 15:46:09.000000000 +0100
++++ src/mux_h1.updated.c	2021-08-04 12:29:07.000000000 +0100
+@@ -1396,20 +1396,6 @@
+ 		goto end;
+ 	}
+ 
+-	/* If websocket handshake, search for the websocket key */
+-	if ((h1m->flags & (H1_MF_CONN_UPG|H1_MF_UPG_WEBSOCKET)) ==
+-	    (H1_MF_CONN_UPG|H1_MF_UPG_WEBSOCKET)) {
+-		int w

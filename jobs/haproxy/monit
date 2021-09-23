@@ -1,0 +1,16 @@
+check process haproxy
+  with pidfile /var/vcap/sys/run/bpm/haproxy/haproxy.pid
+  start program "/var/vcap/jobs/bpm/bin/bpm start haproxy"
+  stop program "/var/vcap/jobs/bpm/bin/bpm stop haproxy"
+  group vcap
+
+<%-
+timeout=20
+if p("ha_proxy.ext_crt_list") then
+  timeout=p("ha_proxy.ext_crt_list_timeout")
+end
+-%>
+
+<%- if p("ha_proxy.enable_health_check_http") -%>
+
+<%- if not p("ha_proxy.disable_monit_health_

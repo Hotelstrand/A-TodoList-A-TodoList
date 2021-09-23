@@ -20,4 +20,4 @@
 -
  	if (h1m->err_pos >= 0)  {
  		/* Maybe we found an error during the parsing while we were
- 		 * configured n
+ 		 * configured not to block on that, so we have to capture it

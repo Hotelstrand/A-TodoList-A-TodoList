@@ -1,4 +1,19 @@
 ---
 name: haproxy
 
-description: "The HAProxy server can be used to terminate SSL in front of the Routers. Each HAProxy instance should point to multip
+description: "The HAProxy server can be used to terminate SSL in front of the Routers. Each HAProxy instance should point to multiple Routers."
+
+packages:
+- haproxy
+- ttar
+
+templates:
+  haproxy_wrapper.erb:          bin/haproxy_wrapper
+  reload.erb:                   bin/reload
+  drain.erb:                    bin/drain
+  pre-start.erb:                bin/pre-start
+  bpm.yml:                      config/bpm.yml
+  haproxy.config.erb:           config/haproxy.config
+  certs.ttar.erb:               config/certs.ttar
+  cidrs.ttar.erb:               config/cidrs.ttar
+  ssl_redirect.map.erb:         

@@ -16,4 +16,11 @@ templates:
   haproxy.config.erb:           config/haproxy.config
   certs.ttar.erb:               config/certs.ttar
   cidrs.ttar.erb:               config/cidrs.ttar
-  ssl_redirect.map.erb:         
+  ssl_redirect.map.erb:         config/ssl_redirect.map
+  backend-ca-certs.erb:         config/backend-ca-certs.pem
+  client-ca-certs.erb:          config/client-ca-certs.pem
+  backend-crt.erb:              config/backend-crt.pem
+  client-revocation-list.erb:   config/client-revocation-list.pem
+  blacklist_cidrs.txt.erb:      config/blacklist_cidrs.txt
+  whitelist_cidrs.txt.erb:      config/whitelist_cidrs.txt
+  trusted_domain_cidrs.txt.erb: conf

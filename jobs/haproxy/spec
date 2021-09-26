@@ -23,4 +23,24 @@ templates:
   client-revocation-list.erb:   config/client-revocation-list.pem
   blacklist_cidrs.txt.erb:      config/blacklist_cidrs.txt
   whitelist_cidrs.txt.erb:      config/whitelist_cidrs.txt
-  trusted_domain_cidrs.txt.erb: conf
+  trusted_domain_cidrs.txt.erb: config/trusted_domain_cidrs.txt
+
+consumes:
+  - name: http_backend
+    type: http-router
+    optional: true
+
+  - name: tcp_backend
+    type: ssh_proxy
+    optional: true
+
+  - name: tcp_router
+    type: tcp-router
+    optional: true
+
+properties:
+  ha_proxy.nbthread:
+    description: "Optional number of threads per VM"
+    default: 1
+  ha_proxy.syslog_server:
+    description: "An IPv4 address optionally followed by a colon and a UDP por

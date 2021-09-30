@@ -59,4 +59,11 @@ properties:
     default: 16384
   ha_proxy.max_rewrite:
     description: "Buffer size to use for header rewriting or appending. The default of haproxy is min(1024,buffer_size_bytes/2). Will be set to buffer_size_bytes/2 by haproxy if it is set to a larger value"
-  h
+  ha_proxy.internal_only_domains:
+    description: "Array of domains for internal-only apps/services (not hostnames for the apps/services)"
+    default: []
+  ha_proxy.trusted_domain_cidrs:
+    description: "Space separated trusted cidr blocks for internal_only_domains. You may alternatively provide a base64-encoded gzipped HAProxy cidr file, with each CIDR on a new line."
+    default: 0.0.0.0/32
+  ha_proxy.strict_sni:
+    description: "Optio

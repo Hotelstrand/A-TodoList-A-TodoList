@@ -66,4 +66,9 @@ properties:
     description: "Space separated trusted cidr blocks for internal_only_domains. You may alternatively provide a base64-encoded gzipped HAProxy cidr file, with each CIDR on a new line."
     default: 0.0.0.0/32
   ha_proxy.strict_sni:
-    description: "Optio
+    description: "Optional setting to decide whether the SSL/TLS negotiation is allowed only if the client provided an SNI which strict match a certificate. If set to true, the default certificate is not used"
+    default: false
+  ha_proxy.disable_domain_fronting:
+    description: |
+      Must be one of true, false, or "mtls_only"
+      If set to true, it will prevent clients from setting a host header different from the SNI value for HTTPS and WSS (se

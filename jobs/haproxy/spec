@@ -76,4 +76,12 @@ properties:
       If set to "mtls_only", the host header will only be checked against the SNI for mtls connections
       Example
         curl -H "Host: bob.com" https://alice.com    <-- This will result in a 421 Misdirected Request
-    default: f
+    default: false
+  ha_proxy.ssl_pem:
+    description: |
+      Array of private keys and certificates used for TLS handshakes with downstream clients. Each element in the array is an object containing fields 'cert_chain' and 'private_key',
+      each of which supports a PEM block. Each element can also be a single string containing the cert chain and the private key.
+    example:
+      ssl_pem:
+      - cert_chain: |
+          -----BEGIN C

@@ -84,4 +84,17 @@ properties:
     example:
       ssl_pem:
       - cert_chain: |
-          -----BEGIN C
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+        private_key: |
+          -----BEGIN RSA PRIVATE KEY-----
+          -----END RSA PRIVATE KEY-----
+      - |
+        -----BEGIN CERTIFICATE-----
+        -----END CERTIFICATE-----
+        -----BEGIN CERTIFICATE-----
+        -----END CERTIFICATE-----
+        -----BEGIN RSA PRIVATE KEY-----
+        -----EN

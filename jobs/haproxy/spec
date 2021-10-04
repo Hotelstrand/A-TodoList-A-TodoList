@@ -97,4 +97,10 @@ properties:
         -----BEGIN CERTIFICATE-----
         -----END CERTIFICATE-----
         -----BEGIN RSA PRIVATE KEY-----
-        -----EN
+        -----END RSA PRIVATE KEY-----
+    default: ~
+  ha_proxy.crt_list:
+    description: |
+      Array of private keys and certificates used for TLS handshakes with downstream clients. Each element in the array is an object containing at least the field 'ssl_pem'.
+      The field 'ssl_pem' itself is either an object containing fields 'cert_chain' and 'private_key', or a single string containing the cert chain and the private key.
+      The 

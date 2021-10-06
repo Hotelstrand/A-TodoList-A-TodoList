@@ -108,4 +108,9 @@ properties:
       - 'client_ca_file' (replaces ha_proxy.client_ca_file)
       - 'verify' (allowed values: [none|optional|required])
       - 'ssl_ciphers' (overrides ha_proxy.ssl_ciphers)
-      - 'ssl_ciphersuites' (overrides ha_proxy.ssl_ciph
+      - 'ssl_ciphersuites' (overrides ha_proxy.ssl_ciphersuites)
+      - 'ssl_min_version' (allowed values: [SSLv3 | TLSv1.0 | TLSv1.1 | TLSv1.2 | TLSv1.3])
+      - 'ssl_max_version' (allowed values: [SSLv3 | TLSv1.0 | TLSv1.1 | TLSv1.2 | TLSv1.3])
+      - 'client_revocation_list' (replaces ha_proxy.client_revocation_list)
+      - 'snifilter' (either a string or an array of strings)
+      The global option ha_proxy.client_cert has to be set to 'true', if there are crt_list

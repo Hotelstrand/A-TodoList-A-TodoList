@@ -113,4 +113,13 @@ properties:
       - 'ssl_max_version' (allowed values: [SSLv3 | TLSv1.0 | TLSv1.1 | TLSv1.2 | TLSv1.3])
       - 'client_revocation_list' (replaces ha_proxy.client_revocation_list)
       - 'snifilter' (either a string or an array of strings)
-      The global option ha_proxy.client_cert has to be set to 'true', if there are crt_list
+      The global option ha_proxy.client_cert has to be set to 'true', if there are crt_list entries with mutual auth configuration ('client_ca_file', 'client_revocation_list' and 'verify'!='none')
+      To avoid confusing configurations, it's not allowed to specify 'client_ca_file' and 'client_revocation_list' both globally AND in crt_list entries.
+    example:
+      crt_list:
+      - ssl_pem: |
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+         

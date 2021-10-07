@@ -134,4 +134,15 @@ properties:
             -----BEGIN RSA PRIVATE KEY-----
             -----END RSA PRIVATE KEY-----
         client_ca_file: |
-  
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+        verify: required
+        ssl_ciphers: AES:ALL:!aNULL:!eNULL:+RC4:@STRENGTH
+        ssl_ciphersuites: TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+        ssl_min_version: TLSv1.2
+        ssl_max_version: TLSv1.3
+        alpn:
+        - h2
+        - htt

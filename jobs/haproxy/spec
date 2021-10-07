@@ -122,4 +122,16 @@ properties:
           -----END CERTIFICATE-----
           -----BEGIN CERTIFICATE-----
           -----END CERTIFICATE-----
-         
+          -----BEGIN RSA PRIVATE KEY-----
+          -----END RSA PRIVATE KEY-----
+      - ssl_pem:
+          cert_chain: |
+            -----BEGIN CERTIFICATE-----
+            -----END CERTIFICATE-----
+            -----BEGIN CERTIFICATE-----
+            -----END CERTIFICATE-----
+          private_key: |
+            -----BEGIN RSA PRIVATE KEY-----
+            -----END RSA PRIVATE KEY-----
+        client_ca_file: |
+  

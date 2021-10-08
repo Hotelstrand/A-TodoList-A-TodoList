@@ -145,4 +145,17 @@ properties:
         ssl_max_version: TLSv1.3
         alpn:
         - h2
-        - htt
+        - http/1.1
+        client_revocation_list: |
+          -----BEGIN X509 CRL-----
+          -----END X509 CRL-----
+          -----BEGIN X509 CRL-----
+          -----END X509 CRL-----
+        snifilter:
+        - "*.domain.tld"
+        - "!secure.domain.tld"
+    default: ~
+  ha_proxy.ext_crt_list:
+    description: |
+      A flag denoting the use of additional certificates from external sources.
+      If set to true the contents of an external crt-list file located

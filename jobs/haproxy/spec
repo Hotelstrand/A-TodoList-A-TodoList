@@ -163,4 +163,12 @@ properties:
       started in daemon mode. So this feature does not work if "haproxy.syslog_server" is set to "stdout". If using this feature but not using internal certs,
       you should set ha_proxy.crt_list to be an empty array
     default: false
+  ha_proxy.ext_crt_list_file:
+    description: |
+      The location from which to load additional external certificates list
+    default: "/var/vcap/jobs/haproxy/config/ssl/ext/crt-list"
+  ha_proxy.ext_crt_list_timeout:
+    description: |
+      Timeout (in seconds) to wait for the external certificates list located at `ha_proxy.ext_crt_list_file` to appear during HAproxy startup
+    default: 60
   ha_proxy.ext_crt_l

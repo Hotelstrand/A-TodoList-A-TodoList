@@ -171,4 +171,11 @@ properties:
     description: |
       Timeout (in seconds) to wait for the external certificates list located at `ha_proxy.ext_crt_list_file` to appear during HAproxy startup
     default: 60
-  ha_proxy.ext_crt_l
+  ha_proxy.ext_crt_list_policy:
+    description: |
+      What to do if the external certificates list located at `ha_proxy.ext_crt_list_file` does not appear within the time
+      denoted by `ha_proxy.ext_crt_list_timeout`. Set to either 'fail' (HAproxy will not start) or 'continue' (HAproxy will start without external certificates)
+    default: "fail"
+  ha_proxy.reload_idle_close_on_response:
+    description: |
+      This option makes HAproxy wait for 

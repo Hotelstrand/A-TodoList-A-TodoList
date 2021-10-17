@@ -211,4 +211,10 @@ properties:
     description: "Enables port 4443 for backwards compatibility with WSS-based apps using the old CF haproxy. If true you must provide a valid SSL config via ssl_pem or crt_list"
     default: false
   ha_proxy.https_redirect_domains:
-    description: "For each domain in this array, a HTTPS redir
+    description: "For each domain in this array, a HTTPS redirect rule will be put in the config file. Redirect will be applied for all subdomains"
+    default: []
+  ha_proxy.https_redirect_all:
+    description: "If this is set to 'true', a https redirect rule for all http calls will be put in the config file"
+    default: false
+  ha_proxy.ssl_ciphers:
+    default: ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:E

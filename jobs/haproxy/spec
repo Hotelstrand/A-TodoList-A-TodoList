@@ -222,4 +222,15 @@ properties:
   ha_proxy.ssl_ciphersuites:
     example: TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
     description: "List of TLSv1.3 Ciphers that are passed to HAProxy, requires at least openssl version 1.1.1"
-  ha_proxy.hsts_enable
+  ha_proxy.hsts_enable:
+    default: false
+    description: "Enables HSTS(Strict-Transport-Security Header) for all the SSL/TLS listeners"
+  ha_proxy.hsts_max_age:
+    default: 31536000
+    description: "max-age value for the Strict-Transport-Security header"
+  ha_proxy.hsts_include_subdomains:
+    default: false
+    description: "This enables the includeSubDomains flag for HSTS."
+  ha_proxy.hsts_preload:
+    default: false
+    description: "This enables the preload flag for

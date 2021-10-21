@@ -257,4 +257,13 @@ properties:
     description: Uses the same version of HTTP for backend connections that was used for frontend connections (ie HTTP 1.1 or HTTP 2). Ignores the value of enable_http2. HTTP2 backend connections require that `ha_proxy.backend_ssl` is not `off`.
   ha_proxy.disable_backend_http2_websockets:
     default: false
-    description: "Forward websockets to the backend servers using HTTP/1.1, never HTTP/2. Does not apply to custom routed_backend_servers. Works around https://github.com/cloudfoundry/routing-release/issues/230. Overrides backend_match_http_protocol for 
+    description: "Forward websockets to the backend servers using HTTP/1.1, never HTTP/2. Does not apply to custom routed_backend_servers. Works around https://github.com/cloudfoundry/routing-release/issues/230. Overrides backend_match_http_protocol for websockets."
+
+  ha_proxy.connect_timeout:
+    description: "Timeout (in floating point seconds) used on connections from haproxy to a backend, while waiting for the TCP handshake to complete + connection to establish"
+    default:     5
+  ha_proxy.client_timeout:
+    description: "Timeout (in floating point seconds) used on connections from a client to haproxy that have gone inactive"
+    default:     30
+  ha_proxy.server_timeout:
+    descrip

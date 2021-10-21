@@ -254,4 +254,7 @@ properties:
     description: "Disable TLS 1.3 in HA Proxy"
   ha_proxy.backend_match_http_protocol:
     default: false
-    description: Uses the same version of HTTP for backend connections that was used for frontend connections (ie HTTP 1.1 or HTTP 2). I
+    description: Uses the same version of HTTP for backend connections that was used for frontend connections (ie HTTP 1.1 or HTTP 2). Ignores the value of enable_http2. HTTP2 backend connections require that `ha_proxy.backend_ssl` is not `off`.
+  ha_proxy.disable_backend_http2_websockets:
+    default: false
+    description: "Forward websockets to the backend servers using HTTP/1.1, never HTTP/2. Does not apply to custom routed_backend_servers. Works around https://github.com/cloudfoundry/routing-release/issues/230. Overrides backend_match_http_protocol for 

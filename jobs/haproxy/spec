@@ -266,4 +266,10 @@ properties:
     description: "Timeout (in floating point seconds) used on connections from a client to haproxy that have gone inactive"
     default:     30
   ha_proxy.server_timeout:
-    descrip
+    description: "Timeout (in floating point seconds) used on connections from haproxy to a backend, while waiting for data from the backend"
+    default:     30
+  ha_proxy.websocket_timeout:
+    description: "Timeout (in floating point seconds) used on websocket/tunnel traffic, when both ends of the conversation have become inactive"
+    default:     3600
+  ha_proxy.keepalive_timeout:
+    description: "Timeout (in floating point seconds) app

@@ -312,4 +312,9 @@ properties:
     description: "Optionally enable SSL verification for backend servers, one of `verify`, `noverify`, any other value assumes no ssl backend.  Setting `verify` requires `ha_proxy.backend_ca_file` key to be set. Note that `off` will disable all backend HTTP2 support regardless of other properties."
     default: "off"
   ha_proxy.backend_ssl_verifyhost:
-    description: "Optio
+    description: "Optional hostname to verify in the x509 certificate subject for SSL-enabled backend servers.  Requires `ha_proxy.backend_ssl` is set to `verify` when using this."
+  ha_proxy.backend_port:
+    description: "Listening port for Router"
+    default: 80
+  ha_proxy.compress_types:
+    description: "If this property is set, gzip compression will be activated for the mime types named in this property. definition like 'text/html text/pla

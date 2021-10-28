@@ -326,4 +326,8 @@ properties:
       routed_backend_servers:
         /images:
           servers: [10.0.0.2, 10.0.0.3]  # required - list of backend IPs to connect to
-          port: 4443       # required - po
+          port: 4443       # required - port haproxy should listen on
+          backend_ssl: "verify"  # optional - enables ssl backend, one of `verify`, `noverify`, any other value assumes no ssl backend.
+                                 # Setting `verify` requires `ha_proxy.backend_ca_file` key to be set.
+          backend_verifyhost: example.com # optional - hostname to verify in the x509 certificate subject for SSL-enabled backend servers
+                                          # only used if ba

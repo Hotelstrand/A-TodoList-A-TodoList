@@ -317,4 +317,13 @@ properties:
     description: "Listening port for Router"
     default: 80
   ha_proxy.compress_types:
-    description: "If this property is set, gzip compression will be activated for the mime types named in this property. definition like 'text/html text/pla
+    description: "If this property is set, gzip compression will be activated for the mime types named in this property. definition like 'text/html text/plain text/css'"
+    default: ""
+  ha_proxy.routed_backend_servers:
+    description: "Hash of the URL prefixes -> array of the router IPs acting as the HTTP/TCP backends (should include servers all Availability Zones being used)"
+    default: {}
+    example:
+      routed_backend_servers:
+        /images:
+          servers: [10.0.0.2, 10.0.0.3]  # required - list of backend IPs to connect to
+          port: 4443       # required - po

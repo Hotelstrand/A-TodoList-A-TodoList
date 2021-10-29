@@ -330,4 +330,8 @@ properties:
           backend_ssl: "verify"  # optional - enables ssl backend, one of `verify`, `noverify`, any other value assumes no ssl backend.
                                  # Setting `verify` requires `ha_proxy.backend_ca_file` key to be set.
           backend_verifyhost: example.com # optional - hostname to verify in the x509 certificate subject for SSL-enabled backend servers
-                                          # only used if ba
+                                          # only used if backend_ssl: `verify` is set
+          backend_use_http_health:  true    # optional, defaults to false. enables http based health checks for the backend
+          backend_http_health_port: 80      # optional, defaults to the port of the backend server. sets the port for the http backend health check
+          backend_http_health_uri:  /health # optional, defaults to /health. sets the URI for backend http health checks
+          backend_health_fall: 3  #

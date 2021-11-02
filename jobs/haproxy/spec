@@ -342,4 +342,15 @@ properties:
     description: "Hash of custom headers you wish you have set on each request. Spaces are automatically escaped, but any other haproxy delimiters will need to be escaped manually"
     example: |
       headers:
-        X-Application-ID: my-cu
+        X-Application-ID: my-custom-header
+        MyCustomHeader: 3
+
+  ha_proxy.rsp_headers:
+    description: "Hash of custom headers you wish you have set on each request. Spaces are automatically escaped, but any other haproxy delimiters will need to be escaped manually"
+    example: |
+      rsp_headers:
+        X-Application-ID: my-custom-header
+        MyCustomHeader: 3
+
+  ha_proxy.backend_crt:
+    description: "Provides client certificate to backend serv

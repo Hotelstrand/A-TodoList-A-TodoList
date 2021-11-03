@@ -362,4 +362,14 @@ properties:
       ******
       -----END PRIVATE KEY-----
   ha_proxy.client_cert:
- 
+    description: |
+      Enable haproxy mutual auth
+    default: false
+
+  ha_proxy.forwarded_client_cert:
+    description: |
+      This option lets you decide how to handle the X-Forwarded-Client-Cert (XFCC) http header on any https frontend.
+      On http frontends the `always_forward_only` option is active by default and can't be changed.
+      On https frontends your options are:
+
+      - always

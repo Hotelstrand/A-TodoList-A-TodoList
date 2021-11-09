@@ -377,4 +377,9 @@ properties:
           In the case where the connection between load balancer and HAProxy is mTLS, the client certificate received by HAProxy in the mTLS handshake will not be forwarded.
 
       - forward_only: Secure version of `always_forward_only`. Forward the X-Forwarded-Client-Cert header received from the client only when the client connection is mTLS. The following headers will also be forwarded for mTLS connections if they are present in the original request: X-SSL-Client, X-SSL-Client-Session-ID, X-SSL-Client-Verify, X-SSL-Client-Subject-DN, X-SSL-Client-Subject-CN, X-SSL-Client-Issuer-DN, X-SSL-Client-NotBefore, X-SSL-Client-NotAfter.
-          If the client connection does not use mTLS, these X-Forwarded-
+          If the client connection does not use mTLS, these X-Forwarded-Client-Cert and X-SSL-Client-* headers will be removed if they are present.
+          In the case where the connection between load balancer and HAProxy is mTLS, the client certificate received by HAProxy in the mTLS handshake will not be forwarded.
+
+      - sanitize_set: Most secure option. Strip any instances of XFCC headers from the client request.
+
+          When the client connection is mTLS, the following headers will be overwr

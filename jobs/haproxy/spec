@@ -390,4 +390,8 @@ properties:
 
             - X-SSL-Client-Session-ID: The SSL session ID of the client connection. Useful for debugging purposes.
 
-            - X-S
+            - X-SSL-Client-Verify: Contains the number 0 if the client certificate verification was successful. Otherwise it contains the appropriate OpenSSL return code (see https://github.com/openssl/openssl/blob/master/include/openssl/x509_vfy.h.in#L206)
+
+            - X-SSL-Client-Subject-DN: Contains the base64-encoded subject distinguished name of the client certificate
+
+            - X-SSL-Client-Subject-CN: Contains the base64-encoded subject common name of 

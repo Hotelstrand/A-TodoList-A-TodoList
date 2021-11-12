@@ -402,4 +402,9 @@ properties:
 
             - X-SSL-Client-NotAfter: Contains the expiration date of the client certificate in YYMMDDhhmmss[Z] format.
 
-      - forward_only_if_route_servi
+      - forward_only_if_route_service:
+          This option is useful to support Mutual TLS with CF Route Services.
+          When the client connection is not mTLS, the X-Forwarded-Client-Cert and X-SSL-Client-* headers will be removed UNLESS there is an X-Cf-Proxy-Signature header.
+          When the client connection is mTLS, the following headers will be overwritten in the request
+
+            - X-Forwarded-Client-Cert: Contains the client certifica

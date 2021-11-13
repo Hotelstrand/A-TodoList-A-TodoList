@@ -407,4 +407,10 @@ properties:
           When the client connection is not mTLS, the X-Forwarded-Client-Cert and X-SSL-Client-* headers will be removed UNLESS there is an X-Cf-Proxy-Signature header.
           When the client connection is mTLS, the following headers will be overwritten in the request
 
-            - X-Forwarded-Client-Cert: Contains the client certifica
+            - X-Forwarded-Client-Cert: Contains the client certificate in binary DER format (Base64 encoded). Backends should use this header to authenticate incoming requests.
+
+            - X-SSL-Client: Contains the number 1 if the request was made using a client certificate, 0 otherwise. For easy checks on the backend.
+
+            - X-SSL-Client-Session-ID: The SSL session ID of the client connection. Useful for debugging purposes.
+
+            - X-SSL-Client-Verify: Contains the number 0 if the 

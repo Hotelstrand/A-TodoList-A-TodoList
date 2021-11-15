@@ -425,4 +425,22 @@ properties:
 
             - X-SSL-Client-NotAfter: Contains the expiration date of the client certificate in YYMMDDhhmmss[Z] format.
 
-          This option is only secure if Gorouter is deployed behind Haproxy to validate that X-Cf-Proxy-Signature is coming from
+          This option is only secure if Gorouter is deployed behind Haproxy to validate that X-Cf-Proxy-Signature is coming from a route service.
+    default: sanitize_set
+
+  ha_proxy.legacy_xfcc_header_mapping:
+    default: false
+
+  ha_proxy.client_ca_file:
+    description: "path for CA certs to validate client certificate"
+    example: |
+      -----BEGIN CERTIFICATE-----
+      ******
+      -----END CERTIFICATE-----
+      -----BEGIN PRIVATE KEY-----
+      ******
+      -----END PRIVATE KEY-----
+
+  ha_proxy.client_cert_ignore_err:
+    description: |
+      Err

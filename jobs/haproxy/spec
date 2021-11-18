@@ -455,4 +455,13 @@ properties:
     description: "provide a list of revocation certs"
 
   ha_proxy.tcp:
-    description: "List of mappin
+    description: "List of mappings to perform tcp-based proxying on. See example for mapping datastructure and keys"
+    default: []
+    example:
+      tcp:
+        - name: wss        # required - name of backend
+          port: 4443       # required - port haproxy should listen on
+          backend_servers: # required - list of backend IPs to connect to
+          - 10.20.10.10
+          - 10.20.10.11
+          backend_servers_local: # optional - list of backend IPs which have

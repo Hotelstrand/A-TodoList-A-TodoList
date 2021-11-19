@@ -464,4 +464,8 @@ properties:
           backend_servers: # required - list of backend IPs to connect to
           - 10.20.10.10
           - 10.20.10.11
-          backend_servers_local: # optional - list of backend IPs which have
+          backend_servers_local: # optional - list of backend IPs which have priority routing (for example those in the same AZ). IPs must also be included in backend_servers.
+          - 10.20.10.10
+          balance: roundrobin # optional - sets algorithm used to select a server when doing load balancing
+          backend_port: 80 # optional - sets backend port - otherwise defaults to `port`
+          ssl: true        # optional - enables ssl, and uses the `ha_proxy.ssl_pem` provid

@@ -524,4 +524,13 @@ properties:
       - 172.168.4.1/32
       - 10.2.0.0/16
   ha_proxy.block_all:
-    description: "Optiona
+    description: "Optionally block all incoming traffic to http(s). Use in conjunction with whitelist."
+    default: false
+
+  ha_proxy.tcp_routing.port_range:
+    description: "A range of ports for haproxy to listen on to enable CF TCP Routing. Used only if 'tcp_router' link is present."
+    default: 1024-1123
+
+  ha_proxy.http_request_deny_conditions:
+      description: |
+        List of conditions to block http requests. Each condition consists of multiple rules combi

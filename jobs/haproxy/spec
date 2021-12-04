@@ -568,4 +568,13 @@ properties:
 
       Inside these scripts, any variable set is visible
       from any thread. This is the easiest and recommended way to load Lua programs
-      but it will 
+      but it will not scale well if a lot of Lua calls are performed, as only one
+      thread may be running on the global state at a time. A program loaded this
+      way will always see 0 in the "core.thread" variable. This directive can be
+      used multiple times.
+
+    default: []
+
+  ha_proxy.lua_scripts_per_thread:
+    description: |
+      A list of LUA scripts that HA Proxy should load per thread. These will need to be pr

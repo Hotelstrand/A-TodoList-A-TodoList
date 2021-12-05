@@ -583,4 +583,9 @@ properties:
 
       Inside these scripts, any global variable has a thread-local visibility so that each thread could
       see a different value. As such it is strongly recommended not to use global
-      variables in programs loaded this way. An independen
+      variables in programs loaded this way. An independent copy is loaded and
+      initialized for each thread, everything is done sequentially and in the
+      thread's numeric order from 1 to nbthread. If some operations need to be
+      performed only once, the program should check the "core.thread" variable to
+      figure what thread is being initialized. Programs loaded this way will run
+      concurrently on all threads and will be highly scalable. 

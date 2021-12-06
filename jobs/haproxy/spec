@@ -597,4 +597,15 @@ properties:
 
     default: []
 
-  ha_proxy.additional_unrest
+  ha_proxy.additional_unrestricted_volumes:
+    description: |
+      Map of Additional Unrestricted volumes to added so HA Proxy to give the ability to load external volumes under BPM. These will need to be provided
+      in a Map based on bpm unrestricted volume spec
+    default: ~
+
+
+  ha_proxy.backend_use_http_health:
+    description: |
+      Enables HTTP based health checks for the default backend
+    default: false
+  ha_proxy.backend_h

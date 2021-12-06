@@ -588,4 +588,13 @@ properties:
       thread's numeric order from 1 to nbthread. If some operations need to be
       performed only once, the program should check the "core.thread" variable to
       figure what thread is being initialized. Programs loaded this way will run
-      concurrently on all threads and will be highly scalable. 
+      concurrently on all threads and will be highly scalable. This is the
+      recommended way to load simple functions that register sample-fetches,
+      converters, actions or services once it is certain the program doesn't depend
+      on global variables. For the sake of simplicity, the directive is available
+      even if only one thread is used and even if threads are disabled (in which
+      case it will be equivalent to `lua_scripts`).
+
+    default: []
+
+  ha_proxy.additional_unrest

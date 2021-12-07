@@ -608,4 +608,11 @@ properties:
     description: |
       Enables HTTP based health checks for the default backend
     default: false
-  ha_proxy.backend_h
+  ha_proxy.backend_http_health_uri:
+    description: URI to request when checking the health of a backend
+    default: /health
+  ha_proxy.backend_http_health_port:
+    description: Port to check the backend health on
+    default: 8080
+  ha_proxy.backend_health_fall:
+    description: Number of consecutive unsuccessful health checks required before the server is considered unhealthy from a healthy state. The default value of 3 matches the default if the parameter is u

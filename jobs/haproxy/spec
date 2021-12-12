@@ -621,4 +621,16 @@ properties:
     description: Number of consecutive successful health checks required before the server is considered healthy from an unhealthy state. The default value of 2 matches the default if the parameter is undefined. This parameter will be ignored if ha_proxy.backend_use_http_health is false.
     default: 2
 
-  ha_proxy
+  ha_proxy.global_config:
+    description: |
+      A block of raw HAProxy config that will be added to the HA proxy global section
+
+  ha_proxy.default_config:
+    description: |
+      A block of raw HAProxy config that will be added to the HA proxy default section
+
+  ha_proxy.frontend_config:
+    description: |
+      A block of raw HAProxy config that will be added to each HA proxy frontend definition
+
+  ha_proxy.backend_

@@ -647,4 +647,14 @@ properties:
                Connection: close
                Content-Type: text/html
 
-   
+               <html><body><h1>503 Service Unavailable</h1>
+               No server is available to handle this request.
+               </body></html>
+  ha_proxy.tcp_backend_config:
+    description: |
+      A block of raw HAProxy config that will be added to the CF TCP Router + Generic TCP backend definitions
+
+  ha_proxy.raw_config:
+    description: |
+      A multiline text blob of an entire haproxy config. Overrides every other
+      option available, so you can provide yo

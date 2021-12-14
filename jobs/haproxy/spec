@@ -666,4 +666,12 @@ properties:
     description: Number of simultaneous connections HAProxy supports handling
     default: 64000
   ha_proxy.drain_enable:
-    description: Send SIGUSR1 signal to all haproxy processes in a drain scr
+    description: Send SIGUSR1 signal to all haproxy processes in a drain script in order to gracefully shutdown
+    default: false
+  ha_proxy.drain_timeout:
+    description: Time in seconds after SIGUSR1 signal is sent in the drain script until monit stops the processes
+    default: 30
+  ha_proxy.drain_frontend_grace_time:
+    description: Time in seconds after health checks have been shut down until SIGUSR1 signal is sent to make the frontends stop accepting connections
+    default: 0
+  ha_proxy.backend_pre

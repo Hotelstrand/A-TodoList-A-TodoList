@@ -657,4 +657,13 @@ properties:
   ha_proxy.raw_config:
     description: |
       A multiline text blob of an entire haproxy config. Overrides every other
-      option available, so you can provide yo
+      option available, so you can provide your own config, and do whatever
+      you want. Use at your own risk.
+  ha_proxy.max_open_files:
+    description: The number of file descriptors HAProxy can have open at one time
+    default: 256000
+  ha_proxy.max_connections:
+    description: Number of simultaneous connections HAProxy supports handling
+    default: 64000
+  ha_proxy.drain_enable:
+    description: Send SIGUSR1 signal to all haproxy processes in a drain scr

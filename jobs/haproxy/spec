@@ -682,4 +682,12 @@ properties:
     description: Enables ingress (frontend) and egress (backend) HTTP/2 ALPN negotiation. Egress (backend) HTTP protocol version may be overridden by `ha_proxy.backend_ssl`, `ha_proxy.disable_backend_http2_websockets` and `ha_proxy.backend_match_http_protocol`.
     default: false
   ha_proxy.always_allow_body_http10:
-    description: Always allow a body to be sent when using HTTP/1.0. By default HAProxy denies GET/HEAD/DELETE requests with a body when using HTTP/1.0 due to potential request smuggling attacks. See https://github.com/haproxy/haproxy/commit/e136bd12a32970bc90d862
+    description: Always allow a body to be sent when using HTTP/1.0. By default HAProxy denies GET/HEAD/DELETE requests with a body when using HTTP/1.0 due to potential request smuggling attacks. See https://github.com/haproxy/haproxy/commit/e136bd12a32970bc90d862d5fe09ea1952b62974
+    default: false
+
+  ha_proxy.requests_rate_limit.requests:
+    description: How many requests are allowed in the given time window from one IP address. See docs/rate_limiting.md
+  ha_proxy.requests_rate_limit.window_size:
+    description: Window size for counting requests. See docs/rate_limiting.md
+  ha_proxy.requests_rate_limit.table_size:
+    description: Size of the stick table in which the IPs and co

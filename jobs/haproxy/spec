@@ -690,4 +690,11 @@ properties:
   ha_proxy.requests_rate_limit.window_size:
     description: Window size for counting requests. See docs/rate_limiting.md
   ha_proxy.requests_rate_limit.table_size:
-    description: Size of the stick table in which the IPs and co
+    description: Size of the stick table in which the IPs and counters are stored. See docs/rate_limiting.md
+  ha_proxy.requests_rate_limit.block:
+    description: Whether or not to block requests. See docs/rate_limiting.md
+    default: false
+  ha_proxy.connections_rate_limit.connections:
+    description: How many connections are allowed in the given time window from one IP address. See docs/rate_limiting.md
+  ha_proxy.connections_rate_limit.window_size:
+    description: Window size for counting connections. Se

@@ -1,2 +1,7 @@
 <%
-if_p("
+if_p("ha_proxy.backend_crt") do |pem|
+%>
+<%= pem %>
+<%
+end
+%>

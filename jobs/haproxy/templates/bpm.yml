@@ -1,0 +1,28 @@
+
+processes:
+  - name: haproxy
+    executable: /var/vcap/jobs/haproxy/bin/haproxy_wrapper
+    additional_volumes:
+      - path: /var/vcap/jobs/haproxy/config/cidrs
+        writable: true
+      - path: /var/vcap/jobs/haproxy/config/ssl
+        writable: true
+      - path: /var/vcap/sys/run/haproxy
+        writable: true
+<%-
+   additional_volumes = []
+   if p("ha_proxy.syslog_server") && p("ha_proxy.syslog_server").chars.first == "/"
+      additional_volumes.push({"path" =>p("ha_proxy.syslog_server")})
+   end
+   if_p("ha_proxy.additional_unrestricted_volumes") do
+      additional_volumes.concat(p("ha_proxy.additional_unrestricted_volumes"))
+   end
+%>
+<%-  if additional_volumes then -%>
+    unsafe:
+      unrestricted_volumes: <%= additional_volumes.to_json %>
+<% end %>
+    limits:
+      open_files: <%= p("ha_proxy.max_open_files") %>
+    capabilities:
+      - NET_BIND_SERVICE

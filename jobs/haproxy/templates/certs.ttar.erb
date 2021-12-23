@@ -1,0 +1,108 @@
+
+<%
+if_p("ha_proxy.ssl_pem") do |pem|
+  if !pem.is_a?(Array)
+    pem = [pem]
+  end
+
+  pem.each_with_index do |cert, i|
+    pem_block = cert
+    if cert.is_a?(Hash)
+      pem_block = cert['cert_chain'].strip + "\n" + cert['private_key'].strip
+    end
+%>
+========================== 0600 /var/vcap/jobs/haproxy/config/ssl/cert-<%= i %>.pem
+<%= pem_block %>
+<%
+  end
+end
+%>
+<%
+if_p("ha_proxy.crt_list") do |crt_list|
+  if !crt_list.is_a?(Array)
+    crt_list = [crt_list]
+  end
+%>
+========================== 0600 /var/vcap/jobs/haproxy/config/ssl/crt-list
+<%
+  crt_list.each_with_index do |list_entry, i|
+    sslbindconf=""
+    if list_entry.key?("client_ca_file")
+      if_p("ha_proxy.client_ca_file") do
+        abort("Conflicting configuration. Please configure 'client_ca_file' either globally OR in 'crt_list' entries, but not both")
+      end
+      sslbindconf += " ca-file /var/vcap/jobs/haproxy/config/ssl/ca-file-"+i.to_s+".pem"
+    end
+    if list_entry.key?("client_revocation_list")
+      if_p("ha_proxy.client_revocation_list") do
+        abort("Conflicting configuration. Please configure 'client_revocation_list' either globally OR in 'crt_list' entries, but not both")
+      end
+      sslbindconf += " crl-file /var/vcap/jobs/haproxy/config/ssl/crl-file-"+i.to_s+".pem"
+    end
+    if list_entry.key?("verify")
+      sslbindconf += " verify " + list_entry["verify"]
+    end
+    if list_entry.key?("ssl_ciphers")
+      sslbindconf += " ciphers " + list_entry["ssl_ciphers"]
+    end
+    if list_entry.key?("ssl_ciphersuites")
+      sslbindconf += " ciphersuites " + list_entry["ssl_ciphersuites"]
+    end
+    if list_entry.key?("ssl_min_version")
+      sslbindconf += " ssl-min-ver " + list_entry["ssl_min_version"]
+    end
+    if list_entry.key?("ssl_max_version")
+      sslbindconf += " ssl-max-ver " + list_entry["ssl_max_version"]
+    end
+    if list_entry.key?("alpn")
+      sslbindconf += " alpn #{list_entry["alpn"].join(",")} "
+    end
+
+    if sslbindconf != ""
+      sslbindconf = " ["+sslbindconf.strip+"]"
+    end
+
+    snifilter=""
+    if list_entry.key?("snifilter")
+      if list_entry["snifilter"].is_a?(Array)
+        list_entry["snifilter"].each { |sni|  snifilter += " " + sni }
+      else
+        snifilter=" "+list_entry["snifilter"]
+      end
+    end
+
+%>/var/vcap/jobs/haproxy/config/ssl/cert-<%= i %>.pem<%= sslbindconf %><%= snifilter%>
+<%
+  end
+%>
+<%- if p("ha_proxy.ext_crt_list") == true -%>
+#OPTIONAL_EXT_CERTS
+<%- end -%>
+<%
+  crt_list.each_with_index do |list_entry, i|
+    pem_block = list_entry["ssl_pem"];
+    client_ca_file=""
+    if pem_block.is_a?(Hash)
+      pem_block = pem_block['cert_chain'].strip + "\n" + pem_block['private_key'].strip
+    end
+%>
+========================== 0600 /var/vcap/jobs/haproxy/config/ssl/cert-<%= i %>.pem
+<%= pem_block %>
+<%
+    if list_entry.key?("client_ca_file")
+      pem_block=list_entry["client_ca_file"];
+%>
+========================== 0600 /var/vcap/jobs/haproxy/config/ssl/ca-file-<%= i %>.pem
+<%= pem_block %>
+<%
+    end
+    if list_entry.key?("client_revocation_list")
+      pem_block=list_entry["client_revocation_list"];
+%>
+========================== 0600 /var/vcap/jobs/haproxy/config/ssl/crl-file-<%= i %>.pem
+<%= pem_block %>
+<%
+    end
+  end
+end
+%>

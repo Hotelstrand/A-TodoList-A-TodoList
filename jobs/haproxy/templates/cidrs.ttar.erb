@@ -1,0 +1,7 @@
+<%- 
+if_p('ha_proxy.cidrs_in_file') do |files| 
+  files.each do |file|
+    name = file["name"]
+    content = ""
+    file['cidrs'].each do |cidr|
+      content << cidr.str

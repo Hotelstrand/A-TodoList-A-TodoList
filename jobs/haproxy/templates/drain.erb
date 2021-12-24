@@ -5,4 +5,24 @@ set -e
 
 pidfile=/var/vcap/sys/run/bpm/haproxy/haproxy.pid
 sockfile=/var/vcap/sys/run/haproxy/stats.sock
-logfile=/var/v
+logfile=/var/vcap/sys/log/haproxy/drain.log
+lockfile=/var/vcap/sys/run/haproxy/drain.lock
+
+mkdir -p "$(dirname ${logfile})"
+
+<% if not p("ha_proxy.drain_enable") -%>
+echo "drain is disabled" >> ${logfile}
+echo 0
+exit 0
+<% else -%>
+
+if [[ -f ${lockfile} ]]; then
+  echo "$(date): draining already in progress" >> ${logfile}
+  echo 0
+  exit 0
+fi
+
+if [[ ! -f ${pidfile} ]]; then
+  echo "$(date): pidfile does not exist" >> ${logfile}
+  echo 0
+  ex

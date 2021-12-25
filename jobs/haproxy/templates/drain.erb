@@ -39,4 +39,16 @@ fi
 
 haproxy_wrapper_pid=$(pgrep -P "$pid" haproxy_wrapper)
 <%- if p("ha_proxy.syslog_server") == "stdout" || p("ha_proxy.syslog_server") == "stderr" -%>
-haproxy_maste
+haproxy_master_pid=$(pgrep -P "$haproxy_wrapper_pid" -x haproxy)
+<%- else -%>
+haproxy_master_pid=$(pgrep -P "$pid" -x haproxy)
+<%- end -%>
+
+<%- if p("ha_proxy.enable_health_check_http") -%>
+echo "disable frontend health_check_http_url" | /usr/local/bin/socat stdio unix-connect:${sockfile}
+echo "$(date): triggering grace period for process ${haproxy_master_pid}" >> ${logfile}
+sleep <%= p("ha_proxy.drain_frontend_grace_time") %>
+<%- end -%>
+
+touch ${lockfile}
+ki

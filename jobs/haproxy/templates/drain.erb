@@ -51,4 +51,14 @@ sleep <%= p("ha_proxy.drain_frontend_grace_time") %>
 <%- end -%>
 
 touch ${lockfile}
-ki
+kill -USR1 "${haproxy_master_pid}"
+echo "$(date): triggering drain for process ${haproxy_master_pid}" >> ${logfile}
+
+drain_time=0
+drain_timeout=<%= p("ha_proxy.drain_timeout") %>
+while kill -0 "${haproxy_master_pid}" 2>/dev/null; do
+  sleep 1;
+  drain_time=$((drain_time + 1))
+  if [ $drain_time -ge $drain_timeout ]; then
+    echo "$(date): Process ${haproxy_master_pid} still alive after ${drain_timeout} seconds. Forcing stop." >> ${logfile}
+   

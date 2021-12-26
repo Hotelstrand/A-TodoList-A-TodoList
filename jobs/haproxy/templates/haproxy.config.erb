@@ -402,3 +402,431 @@ frontend http-in
     <%- p("ha_proxy.internal_only_domains").each do |domain| -%>
     acl internal hdr(Host) -m sub <%= domain %>
     <%- end -%>
+    http-request deny if internal !private
+  <%- end -%>
+  <%- p('ha_proxy.routed_backend_servers').each do |prefix, data| -%>
+    <%-
+      prefix_hash = (Digest::SHA256.hexdigest prefix.to_s)[0..5]
+      acls = ["path_beg #{prefix}"].concat(data.fetch("additional_acls", []))
+      acl_hash = acls.each_with_index.map { |rule, i| ["routed_backend_#{prefix_hash}_#{i}", rule] }.to_h
+    -%>
+    <%- acl_hash.each do |name, rule| %>
+    acl <%= name %> <%= rule %>
+    <%- end -%>
+    use_backend http-routed-backend-<%= prefix_hash %> if <%= acl_hash.keys.join " " %>
+  <%- end -%>
+    acl xfp_exists hdr_cnt(X-Forwarded-Proto) gt 0
+    http-request add-header X-Forwarded-Proto "http" if ! xfp_exists
+  <%- if p("ha_proxy.https_redirect_all") -%>
+    redirect scheme https code 301 if !{ ssl_fc }
+  <%- end -%>
+  <%- unless p("ha_proxy.https_redirect_all") -%>
+    acl ssl_redirect hdr(host),lower,map_end(/var/vcap/jobs/haproxy/config/ssl_redirect.map,false) -m str true
+    redirect scheme https code 301 if ssl_redirect
+  <%- end -%>
+
+  <%- if p("ha_proxy.disable_backend_http2_websockets") -%>
+    # Send websockets to a backend that forces HTTP/1.1. This avoids bugs in Go & Gorouter's HTTP/2 websocket support
+    # https://github.com/cloudfoundry/routing-release/issues/230
+    # Note: first matching backend will be used when there are multiple use_backend directives
+    acl is_websocket hdr(Upgrade) -i WebSocket
+    acl is_websocket hdr_beg(Host) -i ws
+    use_backend http-routers-http1 if is_websocket
+  <%- end -%>
+# }}}
+<% end -%>
+
+<% if ssl_enabled -%>
+# HTTPS Frontend {{{
+frontend https-in
+    mode http
+    bind <%= p("ha_proxy.binding_ip") %>:443 <%= accept_proxy %> <%= tls_bind_options %> <%= v4v6 %> <%= default_alpn_config %>
+  <%- if disable_domain_fronting -%>
+    # Check whether the client is attempting domain fronting.
+    # Ensure a host header exists to check against
+    http-request deny deny_status 400 content-type text/plain string "400 Bad Request: missing required Host header" if { req.hdr_cnt(host) eq 0 }
+    # Ignore optional port in Host header when comparing to SNI
+    http-request set-var(txn.host) hdr(host),field(1,:),lower
+    acl ssl_sni_http_host_match ssl_fc_sni,lower,strcmp(txn.host) eq 0
+    <%- if disable_domain_fronting  == 'mtls_only' %>
+    http-request deny deny_status 421 if { ssl_fc_has_sni } { ssl_c_used } !ssl_sni_http_host_match
+    <%- elsif [true, "true"].include?(disable_domain_fronting) -%>
+    http-request deny deny_status 421 if { ssl_fc_has_sni } !ssl_sni_http_host_match
+    <%- end -%>
+  <%- end -%>
+  <%- if properties.ha_proxy.frontend_config -%>
+    <%= p("ha_proxy.frontend_config") %>
+  <%- end -%>
+  <%- if_p("ha_proxy.connections_rate_limit.table_size", "ha_proxy.connections_rate_limit.window_size") do -%>
+    tcp-request connection track-sc0 src table st_tcp_conn_rate
+    <%- if_p("ha_proxy.connections_rate_limit.block", "ha_proxy.connections_rate_limit.connections") do |block, connections| -%>
+      <%-if block -%>
+    tcp-request connection reject if { sc_conn_rate(0) gt <%= connections %> }
+      <%- end -%>
+    <%- end -%>
+  <%- end -%>
+  <%- if_p("ha_proxy.requests_rate_limit.table_size", "ha_proxy.requests_rate_limit.window_size") do -%>
+    http-request track-sc1 src table st_http_req_rate
+    <%- if_p("ha_proxy.requests_rate_limit.block", "ha_proxy.requests_rate_limit.requests") do |block, requests| -%>
+      <%-if block -%>
+    http-request deny status 429 if { sc_http_req_rate(1) gt <%= requests %> }
+      <%- end -%>
+    <%- end -%>
+  <%- end -%>
+  <%- if_p("ha_proxy.cidr_whitelist") do -%>
+    acl whitelist src -f /var/vcap/jobs/haproxy/config/whitelist_cidrs.txt
+    tcp-request content accept if whitelist
+  <%- end -%>
+  <%- if_p("ha_proxy.cidr_blacklist") do -%>
+    acl blacklist src -f /var/vcap/jobs/haproxy/config/blacklist_cidrs.txt
+    tcp-request content reject if blacklist
+  <%- end -%>
+  <%- if p("ha_proxy.block_all")  -%>
+    tcp-request content reject
+  <%- end -%>
+
+  <%- case mtls_header_deletion_policy -%>
+  <%- when :always -%>
+    http-request del-header X-Forwarded-Client-Cert
+    http-request del-header X-SSL-Client
+    http-request del-header X-SSL-Client-Session-ID
+    http-request del-header X-SSL-Client-Verify
+    http-request del-header X-SSL-Client-Subject-DN
+    http-request del-header X-SSL-Client-Subject-CN
+    http-request del-header X-SSL-Client-Issuer-DN
+    http-request del-header X-SSL-Client-NotBefore
+    http-request del-header X-SSL-Client-NotAfter
+  <%- when :non_mtls_only -%>
+    http-request del-header X-Forwarded-Client-Cert if ! { ssl_c_used }
+    http-request del-header X-SSL-Client            if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-Session-ID if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-Verify     if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-Subject-DN if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-Subject-CN if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-Issuer-DN  if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-NotBefore  if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-NotAfter   if ! { ssl_c_used }
+  <%- when :non_route_service_only -%>
+    acl route_service_request hdr(X-Cf-Proxy-Signature) -m found
+    http-request del-header X-Forwarded-Client-Cert if !route_service_request
+    http-request del-header X-SSL-Client            if !route_service_request
+    http-request del-header X-SSL-Client-Session-ID if !route_service_request
+    http-request del-header X-SSL-Client-Verify     if !route_service_request
+    http-request del-header X-SSL-Client-Subject-DN if !route_service_request
+    http-request del-header X-SSL-Client-Subject-CN if !route_service_request
+    http-request del-header X-SSL-Client-Issuer-DN  if !route_service_request
+    http-request del-header X-SSL-Client-NotBefore  if !route_service_request
+    http-request del-header X-SSL-Client-NotAfter   if !route_service_request
+  <%- end -%>
+
+  <%- if write_mtls_headers -%>
+    http-request set-header X-Forwarded-Client-Cert %[ssl_c_der,base64]          if { ssl_c_used }
+    http-request set-header X-SSL-Client            %[ssl_c_used]                if { ssl_c_used }
+    http-request set-header X-SSL-Client-Session-ID %[ssl_fc_session_id,hex]     if { ssl_c_used }
+    http-request set-header X-SSL-Client-Verify     %[ssl_c_verify]              if { ssl_c_used }
+    http-request set-header X-SSL-Client-NotBefore  %{+Q}[ssl_c_notbefore]       if { ssl_c_used }
+    http-request set-header X-SSL-Client-NotAfter   %{+Q}[ssl_c_notafter]        if { ssl_c_used }
+    <%- if p("ha_proxy.legacy_xfcc_header_mapping") %>
+    http-request set-header X-SSL-Client-Subject-DN %{+Q}[ssl_c_s_dn]            if { ssl_c_used }
+    http-request set-header X-SSL-Client-Subject-CN %{+Q}[ssl_c_s_dn(cn)]        if { ssl_c_used }
+    http-request set-header X-SSL-Client-Issuer-DN  %{+Q}[ssl_c_i_dn]            if { ssl_c_used }
+    <%- else %>
+    http-request set-header X-SSL-Client-Subject-DN %{+Q}[ssl_c_s_dn,base64]     if { ssl_c_used }
+    http-request set-header X-SSL-Client-Subject-CN %{+Q}[ssl_c_s_dn(cn),base64] if { ssl_c_used }
+    http-request set-header X-SSL-Client-Issuer-DN  %{+Q}[ssl_c_i_dn,base64]     if { ssl_c_used }
+    <%- end %>
+  <%- end -%>
+
+  <%- if p("ha_proxy.hsts_enable") -%>
+    http-response set-header Strict-Transport-Security max-age=<%= p("ha_proxy.hsts_max_age").to_i %>;<% if p("ha_proxy.hsts_include_subdomains") %>\ includeSubDomains;<% end %><% if p("ha_proxy.hsts_preload") %>\ preload;<% end %>
+  <%- end -%>
+    capture request header Host len 256
+    default_backend <%= backends.last[:name] %>
+  <%- if_p("ha_proxy.http_request_deny_conditions") do |conditions| -%>
+    <%- conditions.each do |condition| -%>
+      <%- acl_names="" -%>
+      <%- condition["condition"].each do |acl| -%>
+    acl <%= acl["acl_name"] %> <%= acl["acl_rule"] %>
+        <%- if acl.key?("negate") && acl["negate"] -%>
+          <%- acl_names=acl_names+"!"+acl["acl_name"]+" " -%>
+        <%- else %>
+          <%- acl_names=acl_names+acl["acl_name"]+" " -%>
+        <%- end -%>
+      <%- end -%>
+    http-request deny if <%= acl_names %>
+    <%- end -%>
+  <%- end -%>
+  <%- if_p("ha_proxy.headers") do |headers| -%>
+    <%- headers.each do |header, value| -%>
+    http-request add-header <%= header.gsub(/(?!:\\)( )/, '\ ') %> "<%= value.to_s.gsub(/(?!:\\) /, '\ ') %>"
+    <%- end -%>
+  <%- end -%>
+  <%- if_p("ha_proxy.rsp_headers") do |rsp_headers| -%>
+    <%- rsp_headers.each do |rsp_header, value| -%>
+    http-response add-header <%= rsp_header.gsub(/(?!:\\)( )/, '\ ') %> "<%= value.to_s.gsub(/(?!:\\) /, '\ ') %>"
+    <%- end -%>
+  <%- end -%>
+  <%- if p("ha_proxy.internal_only_domains").size > 0 -%>
+    acl private src -f /var/vcap/jobs/haproxy/config/trusted_domain_cidrs.txt
+    <%- p("ha_proxy.internal_only_domains").each do |domain| -%>
+    acl internal hdr(Host) -m sub <%= domain %>
+    <%- end -%>
+    http-request deny if internal !private
+  <%- end -%>
+  <%- p('ha_proxy.routed_backend_servers').each do |prefix, data| -%>
+    <%-
+      prefix_hash = (Digest::SHA256.hexdigest prefix.to_s)[0..5]
+      acls = ["path_beg #{prefix}"].concat(data.fetch("additional_acls", []))
+      acl_hash = acls.each_with_index.map { |rule, i| ["routed_backend_#{prefix_hash}_#{i}", rule] }.to_h
+    -%>
+    <%- acl_hash.each do |name, rule| %>
+    acl <%= name %> <%= rule %>
+    <%- end -%>
+    use_backend http-routed-backend-<%= prefix_hash %> if <%= acl_hash.keys.join " " %>
+  <%- end -%>
+    acl xfp_exists hdr_cnt(X-Forwarded-Proto) gt 0
+    http-request add-header X-Forwarded-Proto "https" if ! xfp_exists
+
+  <%- if p("ha_proxy.disable_backend_http2_websockets") -%>
+    # Send websockets to a backend that forces HTTP/1.1. This avoids bugs in Go & Gorouter's HTTP/2 websocket support
+    # https://github.com/cloudfoundry/routing-release/issues/230
+    # Note: first matching backend will be used when there are multiple use_backend directives
+    acl is_websocket hdr(Upgrade) -i WebSocket
+    acl is_websocket hdr_beg(Host) -i ws
+    use_backend http-routers-http1 if is_websocket
+  <%- end -%>
+
+  <%- if backend_match_http_protocol && backends.length == 2 -%>
+    # Ensure that backend protocol matches frontend protocol
+    # Note: first matching backend will be used when there are multiple use_backend directives
+    acl is_http2 ssl_fc_alpn,lower,strcmp(proc.h2_alpn_tag) eq 0
+    use_backend http-routers-http1 if ! is_http2
+    use_backend http-routers-http2 if is_http2
+  <%- end -%>
+# }}}
+<% end -%>
+
+<% if p("ha_proxy.enable_4443") -%>
+# HTTPS Websockets Frontend {{{
+frontend wss-in
+    mode http
+    bind <%= p("ha_proxy.binding_ip") %>:4443 <%= accept_proxy %> <%= tls_bind_options %> <%= v4v6 %>
+  <%- if disable_domain_fronting -%>
+    # Check whether the client is attempting domain fronting.
+    # Ensure a host header exists to check against
+    http-request deny deny_status 400 content-type text/plain string "400 Bad Request: missing required Host header" if { req.hdr_cnt(host) eq 0 }
+    # Ignore optional port in Host header when comparing to SNI
+    http-request set-var(txn.host) hdr(host),field(1,:),lower
+    acl ssl_sni_http_host_match ssl_fc_sni,lower,strcmp(txn.host) eq 0
+    <%- if disable_domain_fronting  == 'mtls_only' %>
+    http-request deny deny_status 421 if { ssl_fc_has_sni } { ssl_c_used } !ssl_sni_http_host_match
+    <%- elsif [true, "true"].include?(disable_domain_fronting) -%>
+    http-request deny deny_status 421 if { ssl_fc_has_sni } !ssl_sni_http_host_match
+    <%- end -%>
+  <%- end -%>
+  <%- if properties.ha_proxy.frontend_config -%>
+    <%= p("ha_proxy.frontend_config") %>
+  <%- end -%>
+  <%- if_p("ha_proxy.cidr_whitelist") do -%>
+    acl whitelist src -f /var/vcap/jobs/haproxy/config/whitelist_cidrs.txt
+    tcp-request content accept if whitelist
+  <%- end -%>
+  <%- if_p("ha_proxy.cidr_blacklist") do -%>
+    acl blacklist src -f /var/vcap/jobs/haproxy/config/blacklist_cidrs.txt
+    tcp-request content reject if blacklist
+  <%- end -%>
+  <%- if p("ha_proxy.block_all")  -%>
+    tcp-request content reject
+  <%- end -%>
+
+  <%- case mtls_header_deletion_policy -%>
+  <%- when :always -%>
+    http-request del-header X-Forwarded-Client-Cert
+    http-request del-header X-SSL-Client
+    http-request del-header X-SSL-Client-Session-ID
+    http-request del-header X-SSL-Client-Verify
+    http-request del-header X-SSL-Client-Subject-DN
+    http-request del-header X-SSL-Client-Subject-CN
+    http-request del-header X-SSL-Client-Issuer-DN
+    http-request del-header X-SSL-Client-NotBefore
+    http-request del-header X-SSL-Client-NotAfter
+  <%- when :non_mtls_only -%>
+    http-request del-header X-Forwarded-Client-Cert if ! { ssl_c_used }
+    http-request del-header X-SSL-Client            if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-Session-ID if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-Verify     if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-Subject-DN if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-Subject-CN if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-Issuer-DN  if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-NotBefore  if ! { ssl_c_used }
+    http-request del-header X-SSL-Client-NotAfter   if ! { ssl_c_used }
+  <%- when :non_route_service_only -%>
+    acl route_service_request hdr(X-Cf-Proxy-Signature) -m found
+    http-request del-header X-Forwarded-Client-Cert if !route_service_request
+    http-request del-header X-SSL-Client            if !route_service_request
+    http-request del-header X-SSL-Client-Session-ID if !route_service_request
+    http-request del-header X-SSL-Client-Verify     if !route_service_request
+    http-request del-header X-SSL-Client-Subject-DN if !route_service_request
+    http-request del-header X-SSL-Client-Subject-CN if !route_service_request
+    http-request del-header X-SSL-Client-Issuer-DN  if !route_service_request
+    http-request del-header X-SSL-Client-NotBefore  if !route_service_request
+    http-request del-header X-SSL-Client-NotAfter   if !route_service_request
+  <%- end -%>
+
+  <%- if write_mtls_headers -%>
+    http-request set-header X-Forwarded-Client-Cert %[ssl_c_der,base64]          if { ssl_c_used }
+    http-request set-header X-SSL-Client            %[ssl_c_used]                if { ssl_c_used }
+    http-request set-header X-SSL-Client-Session-ID %[ssl_fc_session_id,hex]     if { ssl_c_used }
+    http-request set-header X-SSL-Client-Verify     %[ssl_c_verify]              if { ssl_c_used }
+    http-request set-header X-SSL-Client-NotBefore  %{+Q}[ssl_c_notbefore]       if { ssl_c_used }
+    http-request set-header X-SSL-Client-NotAfter   %{+Q}[ssl_c_notafter]        if { ssl_c_used }
+    <%- if p("ha_proxy.legacy_xfcc_header_mapping") %>
+    http-request set-header X-SSL-Client-Subject-DN %{+Q}[ssl_c_s_dn]            if { ssl_c_used }
+    http-request set-header X-SSL-Client-Subject-CN %{+Q}[ssl_c_s_dn(cn)]        if { ssl_c_used }
+    http-request set-header X-SSL-Client-Issuer-DN  %{+Q}[ssl_c_i_dn]            if { ssl_c_used }
+    <%- else %>
+    http-request set-header X-SSL-Client-Subject-DN %{+Q}[ssl_c_s_dn,base64]     if { ssl_c_used }
+    http-request set-header X-SSL-Client-Subject-CN %{+Q}[ssl_c_s_dn(cn),base64] if { ssl_c_used }
+    http-request set-header X-SSL-Client-Issuer-DN  %{+Q}[ssl_c_i_dn,base64]     if { ssl_c_used }
+    <%- end %>
+  <%- end -%>
+
+  <%- if p("ha_proxy.hsts_enable") -%>
+    http-response set-header Strict-Transport-Security max-age=<%= p("ha_proxy.hsts_max_age").to_i %>;<% if p("ha_proxy.hsts_include_subdomains") %>\ includeSubDomains;<% end %><% if p("ha_proxy.hsts_preload") %>\ preload;<% end %>
+  <%- end -%>
+    capture request header Host len 256
+    default_backend <%= backends.last[:name] %>
+  <%- if_p("ha_proxy.http_request_deny_conditions") do |conditions| -%>
+    <%- conditions.each do |condition| -%>
+      <%- acl_names="" -%>
+      <%- condition["condition"].each do |acl| -%>
+    acl <%= acl["acl_name"] %> <%= acl["acl_rule"] %>
+        <%- if acl.key?("negate") && acl["negate"] -%>
+          <%- acl_names=acl_names+"!"+acl["acl_name"]+" " -%>
+        <%- else %>
+          <%- acl_names=acl_names+acl["acl_name"]+" " -%>
+        <%- end -%>
+      <%- end -%>
+    http-request deny if <%= acl_names %>
+    <%- end -%>
+  <%- end -%>
+  <%- if_p("ha_proxy.headers") do |headers| -%>
+    <%- headers.each do |header, value| -%>
+    http-request add-header <%= header.gsub(/(?!:\\)( )/, '\ ') %> "<%= value.to_s.gsub(/(?!:\\) /, '\ ') %>"
+    <%- end -%>
+  <%- end -%>
+  <%- if_p("ha_proxy.rsp_headers") do |rsp_headers| -%>
+    <%- rsp_headers.each do |rsp_header, value| -%>
+    http-response add-header <%= rsp_header.gsub(/(?!:\\)( )/, '\ ') %> "<%= value.to_s.gsub(/(?!:\\) /, '\ ') %>"
+    <%- end -%>
+  <%- end -%>
+  <%- if p("ha_proxy.internal_only_domains").size > 0 -%>
+    acl private src -f /var/vcap/jobs/haproxy/config/trusted_domain_cidrs.txt
+    <%- p("ha_proxy.internal_only_domains").each do |domain| -%>
+    acl internal hdr(Host) -m sub <%= domain %>
+    <%- end -%>
+    http-request deny if internal !private
+  <%- end -%>
+  <%- p('ha_proxy.routed_backend_servers').each do |prefix, data| -%>
+    <%-
+      prefix_hash = (Digest::SHA256.hexdigest prefix.to_s)[0..5]
+      acls = ["path_beg #{prefix}"].concat(data.fetch("additional_acls", []))
+      acl_hash = acls.each_with_index.map { |rule, i| ["routed_backend_#{prefix_hash}_#{i}", rule] }.to_h
+    -%>
+    <%- acl_hash.each do |name, rule| %>
+    acl <%= name %> <%= rule %>
+    <%- end -%>
+    use_backend http-routed-backend-<%= prefix_hash %> if <%= acl_hash.keys.join " " %>
+  <%- end -%>
+    acl xfp_exists hdr_cnt(X-Forwarded-Proto) gt 0
+    http-request add-header X-Forwarded-Proto "https" if ! xfp_exists
+
+  <%- if p("ha_proxy.disable_backend_http2_websockets") -%>
+    # Send websockets to a backend that forces HTTP/1.1. This avoids bugs in Go & Gorouter's HTTP/2 websocket support
+    # https://github.com/cloudfoundry/routing-release/issues/230
+    acl is_websocket hdr(Upgrade) -i WebSocket
+    acl is_websocket hdr_beg(Host) -i ws
+    use_backend http-routers-http1 if is_websocket
+  <%- end -%>
+
+  <%- if backend_match_http_protocol && backends.length == 2 -%>
+    # Ensure that backend protocol matches frontend protocol
+    # Note: first matching backend will be used when there are multiple use_backend directives
+    acl is_http2 ssl_fc_alpn,lower,strcmp(proc.h2_alpn_tag) eq 0
+    use_backend http-routers-http1 if ! is_http2
+    use_backend http-routers-http2 if is_http2
+  <%- end -%>
+# }}}
+<% end -%>
+
+<%-
+  backends.each do |backend|
+-%>
+# Backend <%= backend[:name] %> {{{
+backend <%= backend[:name] %>
+    mode http
+    balance roundrobin
+  <%- if p("ha_proxy.compress_types") != "" -%>
+    compression algo gzip
+    compression type <%= p("ha_proxy.compress_types") %>
+  <%- end -%>
+  <%- if properties.ha_proxy.backend_config -%>
+    <%= p("ha_proxy.backend_config") %>
+  <%- end -%>
+    <%- p('ha_proxy.custom_http_error_files', {}).keys.each do |status_code| -%>
+        errorfile <%= status_code %> /var/vcap/jobs/haproxy/errorfiles/custom<%=status_code%>.http
+    <%- end -%>
+    <%
+-%>
+  <%- if p("ha_proxy.backend_use_http_health") == true  -%>
+    option httpchk GET <%= p("ha_proxy.backend_http_health_uri") %>
+    <%- health_check_options = "port " + p("ha_proxy.backend_http_health_port").to_s -%>
+    <%- health_check_options += " fall " + p("ha_proxy.backend_health_fall").to_s -%>
+    <%- health_check_options += " rise " + p("ha_proxy.backend_health_rise").to_s -%>
+  <%- end -%>
+  <% backend_servers.each_with_index do |ip, index| %>
+    server node<%= index %> <%= ip %>:<%= backend_port -%> <%= resolvers -%><%= backend_crt -%>check inter 1000 <%= health_check_options %> <%= backend[:backend_ssl] %><%= backend[:alpn] %><%- if !backend_servers_local.empty? && !backend_servers_local.include?(ip)  -%> backup<%- end -%>
+  <% end %>
+# }}}
+<%- end %>
+
+
+# Routed Backends {{{
+<% p('ha_proxy.routed_backend_servers').each do |prefix, data| -%>
+  <%- prefix_hash = (Digest::SHA256.hexdigest prefix.to_s)[0..5] -%>
+backend http-routed-backend-<%= prefix_hash %>
+    mode http
+    balance roundrobin
+  <%- if p("ha_proxy.compress_types") != "" -%>
+    compression algo gzip
+    compression type <%= p("ha_proxy.compress_types") %>
+  <%- end -%>
+  <%- if properties.ha_proxy.backend_config -%>
+    <%= p("ha_proxy.backend_config") %>
+  <%- end -%>
+<%
+  resolvers = ""
+  if_p("ha_proxy.resolvers") do
+    resolvers = "resolvers default "
+  end
+  backend_ssl = ""
+
+  if (data["backend_ssl"] || "").downcase != "verify"
+    if data["backend_verifyhost"]
+      abort "Conflicting configuration: backend_ssl must be 'verify' to use backend_verifyhost in routed_backend_servers"
+    end
+  end
+
+  if data["backend_ssl"]
+    if data["backend_ssl"].downcase == "verify"
+      backend_ssl = "ssl verify required ca-file /var/vcap/jobs/haproxy/config/backend-ca-certs.pem "
+      if data["backend_verifyhost"]
+        backend_ssl += "verifyhost #{data["backend_verifyhost"]} "
+      end
+      backend_ssl += default_alpn_config
+    elsif data["backend_ssl"].downcase == "noverify"
+      backend_ssl = "ssl verify none "
+      backend_ssl += default_alpn_config
+    end
+  end
+-%>

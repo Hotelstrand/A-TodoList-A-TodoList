@@ -1,0 +1,404 @@
+
+<%- # see https://bosh.io/docs/jobs/#properties for documentation of bosh ERB templates -%>
+<% if properties.ha_proxy.raw_config -%>
+<%= p("ha_proxy.raw_config") %>
+<%- else -%>
+<%-
+require "digest"
+# Ruby Variables to make the template more readable
+
+# Stats Binding Variables {{{
+stat = p("ha_proxy.stats_bind").split(':')
+stat_prefix = stat[0] + ":";
+stat_port = stat[1].to_i;
+# }}}
+# Accept Proxy {{{
+accept_proxy = ""
+if p("ha_proxy.accept_proxy")
+  accept_proxy = "accept-proxy"
+end
+tcp_accept_proxy = accept_proxy
+if p("ha_proxy.disable_tcp_accept_proxy")
+  tcp_accept_proxy = ""
+end
+# }}}
+# Global SSL Flags {{{
+ssl_flags = "no-sslv3"
+if p("ha_proxy.disable_tls_10")
+  ssl_flags = "#{ssl_flags} no-tlsv10"
+end
+if p("ha_proxy.disable_tls_11")
+  ssl_flags = "#{ssl_flags} no-tlsv11"
+end
+if p("ha_proxy.disable_tls_12")
+  ssl_flags = "#{ssl_flags} no-tlsv12"
+end
+if p("ha_proxy.disable_tls_13")
+  ssl_flags = "#{ssl_flags} no-tlsv13"
+end
+if p("ha_proxy.disable_tls_tickets")
+  ssl_flags = "#{ssl_flags} no-tls-tickets"
+end
+# }}}
+# TLS Bind Options {{{
+mutual_tls_enabled = p("ha_proxy.client_cert")
+ssl_enabled = false
+crt_config = ""
+if_p("ha_proxy.ssl_pem") do
+  ssl_enabled = true
+  crt_config="crt /var/vcap/jobs/haproxy/config/ssl"
+  if_p("ha_proxy.client_ca_file") do
+    mutual_tls_enabled = true
+  end
+  if_p("ha_proxy.client_revocation_list") do
+    mutual_tls_enabled = true
+  end
+end
+if_p("ha_proxy.crt_list") do
+  if ssl_enabled
+    abort("Conflicting configuration. Please configure either 'ssl_pem' OR 'crt_list', but not both")
+  end
+  ssl_enabled=true
+  crt_config="crt-list /var/vcap/jobs/haproxy/config/ssl/crt-list"
+  p("ha_proxy.crt_list").each do |crt_entry|
+    if crt_entry.key?("client_ca_file") || crt_entry.key?(" client_revocation_list") || crt_entry["verify"] == "optional" || crt_entry["verify"] == "required"
+      mutual_tls_enabled = true
+    end
+  end
+end
+
+client_ca_certs = "/etc/ssl/certs/ca-certificates.crt"
+if_p("ha_proxy.client_ca_file") do
+  client_ca_certs = "/var/vcap/jobs/haproxy/config/client-ca-certs.pem"
+end
+
+strict_sni = ""
+if_p("ha_proxy.strict_sni") do |sni|
+  if sni
+    strict_sni = "strict-sni"
+  end
+end
+
+tls_options = "#{crt_config} #{strict_sni}"
+if mutual_tls_enabled
+  tls_options = "#{tls_options} ca-file #{client_ca_certs} verify optional"
+  if_p("ha_proxy.client_cert_ignore_err") do |ignore_errs|
+    tls_options = "#{tls_options} crt-ignore-err #{ignore_errs}"
+    tls_options = "#{tls_options} ca-ignore-err #{ignore_errs}"
+  end
+  if_p("ha_proxy.client_revocation_list") do
+    tls_options = "#{tls_options} crl-file /var/vcap/jobs/haproxy/config/client-revocation-list.pem"
+  end
+end
+
+tls_bind_options = "ssl #{tls_options}"
+# }}}
+# X-Forwarded-Client-Cert (XFCC) Option {{{
+mtls_header_deletion_policy = :never
+write_mtls_headers = false
+
+forwarded_client_cert_option = p("ha_proxy.forwarded_client_cert").downcase
+case forwarded_client_cert_option
+when "always_forward_only"
+  # NOP
+when "forward_only"
+  if mutual_tls_enabled
+    mtls_header_deletion_policy = :non_mtls_only
+  else
+    mtls_header_deletion_policy = :always
+  end
+when "sanitize_set"
+  mtls_header_deletion_policy = :always
+  write_mtls_headers = mutual_tls_enabled
+when "forward_only_if_route_service"
+  mtls_header_deletion_policy = :non_route_service_only
+  write_mtls_headers = mutual_tls_enabled
+else
+  abort("Unknown 'forwarded_client_cert' option: #{forwarded_client_cert_option}. Known options: 'always_forward_only', 'forward_only', 'sanitize_set', 'forward_only_if_route_service'")
+end
+
+disable_domain_fronting = p("ha_proxy.disable_domain_fronting")
+if ![true, false, "true", "false", "mtls_only"].include?(disable_domain_fronting)
+  abort("Unknown 'disable_domain_fronting' option: #{disable_domain_fronting}. Known options: true, false or 'mtls_only'")
+end
+
+# }}}
+# IPv4 and IPv6 binding (v4v6) Option {{{
+v4v6 = ""
+if_p("ha_proxy.v4v6") do
+  if p("ha_proxy.binding_ip") == "::"
+    v4v6 = "v4v6"
+  end
+end
+# }}}
+
+# ALPN Option {{{
+default_alpn_config = ""
+if p("ha_proxy.enable_http2")
+  default_alpn_config = "alpn h2,http/1.1 "
+end
+# }}}
+
+# Error checking
+  if !p("ha_proxy.drain_enable", false) && p("ha_proxy.drain_frontend_grace_time") > 0
+    abort "Conflicting configuration: drain_enable must be true to use drain_frontend_grace_time"
+  end
+
+  if !p("ha_proxy.hsts_enable", false)
+    if p("ha_proxy.hsts_include_subdomains")
+      abort "Conflicting configuration: hsts_enable must be true to use hsts_include_subdomains"
+    end
+    if p("ha_proxy.hsts_preload")
+      abort "Conflicting configuration: hsts_enable must be true to enable hsts_preload"
+    end
+  end
+
+  if p("ha_proxy.backend_ssl", "").downcase != "verify"
+    if p("ha_proxy.backend_ssl_verifyhost", false)
+      abort "Conflicting configuration: backend_ssl must be 'verify' to use backend_ssl_verifyhost"
+    end
+  end
+
+  if !p("ha_proxy.client_cert", nil)
+    if p("ha_proxy.client_cert_ignore_err", false)
+      abort "Conflicting configuration: must enable client_cert to use client_cert_ignore_err"
+    end
+
+    if p("ha_proxy.client_revocation_list", false)
+      abort "Conflicting configuration: must enable client_cert to use client_revocation_list"
+    end
+  end
+
+  if p("ha_proxy.enable_4443") && !ssl_enabled
+    abort "Conflicting configuration: if enable_4443 is true, you must provide a valid SSL config via ssl_pem or crt_list"
+  end
+
+  backend_servers = []
+  backend_servers_local = []
+  backend_port = nil
+  if_link("http_backend") do |backend|
+    backend_servers = backend.instances.map(&:address)
+    backend_port = backend.p("port", p("ha_proxy.backend_port"))
+
+    if p("ha_proxy.backend_prefer_local_az")
+      backend_servers_local = backend.instances.select{ |n| n.az == spec.az }.map(&:address)
+    end
+  end.else_if_p("ha_proxy.backend_servers") do |servers|
+    backend_servers = servers
+    backend_port = p("ha_proxy.backend_port")
+  end
+  resolvers = ""
+  if_p("ha_proxy.resolvers") do
+    resolvers = "resolvers default "
+  end
+  backend_crt = ""
+  if_p("ha_proxy.backend_crt") do
+    backend_crt = "crt /var/vcap/jobs/haproxy/config/backend-crt.pem "
+  end
+
+  backend_ssl = ""
+  if p("ha_proxy.backend_ssl").downcase == "verify"
+    backend_ssl = "ssl verify required ca-file /var/vcap/jobs/haproxy/config/backend-ca-certs.pem "
+    if_p("ha_proxy.backend_ssl_verifyhost") do | verify_hostname |
+      backend_ssl += "verifyhost #{verify_hostname} "
+    end
+  elsif p("ha_proxy.backend_ssl").downcase == "noverify"
+    backend_ssl = "ssl verify none "
+  end
+
+  backends = []
+  disable_backend_http2_websockets = p("ha_proxy.disable_backend_http2_websockets")
+  enable_http2 = p("ha_proxy.enable_http2")
+  backend_match_http_protocol = p("ha_proxy.backend_match_http_protocol")
+
+  if disable_backend_http2_websockets || (!enable_http2) || backend_match_http_protocol || backend_ssl == ""
+    alpn = backend_ssl != "" ? "alpn http/1.1 " : ""
+    backends += [{ name: "http-routers-http1", backend_ssl: backend_ssl, alpn: alpn }]
+  end
+
+  if backend_ssl != "" && (enable_http2 || backend_match_http_protocol)
+    backends += [{ name: "http-routers-http2", backend_ssl: backend_ssl, alpn: "alpn h2,http/1.1 " }]
+  end
+-%>
+
+global
+    log <%= p('ha_proxy.syslog_server') %> len <%= p('ha_proxy.log_max_length') %> format <%= p('ha_proxy.log_format') %> syslog <%= p('ha_proxy.log_level') %>
+    daemon
+  <%- if properties.ha_proxy.global_config -%>
+    <%= p("ha_proxy.global_config") %>
+  <%- end -%>
+  <%- if p("ha_proxy.nbthread") > 1 -%>
+    nbthread <%= p("ha_proxy.nbthread") %>
+  <%- end -%>
+    user vcap
+    group vcap
+    maxconn <%= p("ha_proxy.max_connections") %>
+    spread-checks 4
+  <%- if_p("ha_proxy.reload_hard_stop_after") do -%>
+    hard-stop-after <%= p("ha_proxy.reload_hard_stop_after") %>
+  <%- end -%>
+  <%- p("ha_proxy.lua_scripts").each do |script| -%>
+    lua-load <%= script %>
+  <%- end -%>
+  <%- p("ha_proxy.lua_scripts_per_thread").each do |script| -%>
+    lua-load-per-thread <%= script %>
+  <%- end -%>
+    tune.ssl.default-dh-param <%= p("ha_proxy.default_dh_param") %>
+    tune.bufsize <%= p("ha_proxy.buffer_size_bytes") %>
+  <%- if_p("ha_proxy.max_rewrite") do -%>
+    tune.maxrewrite <%= p("ha_proxy.max_rewrite") %>
+  <%- end -%>
+    stats socket /var/vcap/sys/run/haproxy/stats.sock mode 600 expose-fd listeners level admin
+    stats timeout 2m
+    ssl-default-bind-options <%= ssl_flags %>
+    ssl-default-bind-ciphers <%= p("ha_proxy.ssl_ciphers") %>
+  <%- if_p("ha_proxy.ssl_ciphersuites") do -%>
+    ssl-default-bind-ciphersuites <%= p("ha_proxy.ssl_ciphersuites") %>
+  <%- end -%>
+    ssl-default-server-options <%= ssl_flags %>
+    ssl-default-server-ciphers <%= p("ha_proxy.ssl_ciphers") %>
+  <%- if_p("ha_proxy.ssl_ciphersuites") do -%>
+    ssl-default-server-ciphersuites <%= p("ha_proxy.ssl_ciphersuites") %>
+  <%- end -%>
+  <%- if backend_match_http_protocol && backends.length == 2 -%>
+    set-var proc.h2_alpn_tag str(h2)
+  <%- end -%>
+  <%- if p("ha_proxy.always_allow_body_http10") %>
+    h1-accept-payload-with-any-method
+  <%- end %>
+
+defaults
+    log global
+    option log-health-checks
+    option log-separate-errors
+    maxconn <%= p("ha_proxy.max_connections") %>
+    option http-server-close
+    <%- if_p("ha_proxy.reload_idle_close_on_response") do -%>
+    option idle-close-on-response
+    <%- end -%>
+    option httplog
+    option forwardfor
+    option contstats
+  <%- if p("ha_proxy.backend_prefer_local_az") -%>
+    option allbackups
+  <%- end -%>
+    timeout connect         <%= (p("ha_proxy.connect_timeout").to_f    * 1000).to_i %>ms
+    timeout client          <%= (p("ha_proxy.client_timeout").to_f     * 1000).to_i %>ms
+    timeout server          <%= (p("ha_proxy.server_timeout").to_f     * 1000).to_i %>ms
+    timeout tunnel          <%= (p("ha_proxy.websocket_timeout").to_f  * 1000).to_i %>ms
+    timeout http-keep-alive <%= (p("ha_proxy.keepalive_timeout").to_f  * 1000).to_i %>ms
+    timeout http-request    <%= (p("ha_proxy.request_timeout").to_f    * 1000).to_i %>ms
+    timeout queue           <%= (p("ha_proxy.queue_timeout").to_f      * 1000).to_i %>ms
+    <%- if properties.ha_proxy.default_config -%>
+    <%= p("ha_proxy.default_config") %>
+    <%- end -%>
+
+<% if p("ha_proxy.stats_enable") -%>
+listen stats
+    bind <%= stat_prefix %><%= stat_port %>
+    acl private src <%= p("ha_proxy.trusted_stats_cidrs") %>
+    http-request deny unless private
+    mode http
+    stats enable
+    stats hide-version
+    stats realm "Haproxy Statistics"
+    stats uri /<%= p("ha_proxy.stats_uri") %>
+    stats auth <%= p("ha_proxy.stats_user") %>:<%= p("ha_proxy.stats_password") %>
+<% end -%>
+
+<% if p("ha_proxy.enable_health_check_http") %>
+listen health_check_http_url
+    bind :<%= p("ha_proxy.health_check_port") %>
+    mode http
+    option httpclose
+    monitor-uri /health
+    acl http-routers_down nbsrv(<%= backends.first[:name] %>) eq 0
+    monitor fail if http-routers_down
+<% end -%>
+
+<% if_p("ha_proxy.resolvers") do |resolvers| -%>
+resolvers default
+    hold valid <%= p("ha_proxy.dns_hold") %>
+    timeout retry <%= p("ha_proxy.resolve_retry_timeout") %>
+    resolve_retries <%= p("ha_proxy.resolve_retries") %>
+  <%- resolvers.each do |resolver| -%>
+    nameserver <%= resolver.keys[0] %> <%= resolver.values[0] %>:53
+  <%- end -%>
+<% end -%>
+
+<% if_p("ha_proxy.requests_rate_limit.table_size", "ha_proxy.requests_rate_limit.window_size") do |table_size, window_size| %>
+backend st_http_req_rate
+    stick-table type ip size <%= table_size %> expire <%= window_size %> store http_req_rate(<%= window_size %>)
+<% end %>
+
+<% if_p("ha_proxy.connections_rate_limit.table_size", "ha_proxy.connections_rate_limit.window_size") do |table_size, window_size| %>
+backend st_tcp_conn_rate
+    stick-table type ip size <%= table_size %> expire <%= window_size %> store conn_rate(<%= window_size %>)
+<% end %>
+
+<% unless p("ha_proxy.disable_http") -%>
+# HTTP Frontend {{{
+frontend http-in
+    mode http
+    bind <%= p("ha_proxy.binding_ip") %>:80 <%= accept_proxy %> <%= v4v6 %>
+  <%- if properties.ha_proxy.frontend_config -%>
+    <%= p("ha_proxy.frontend_config") %>
+  <%- end -%>
+  <%- if_p("ha_proxy.connections_rate_limit.table_size", "ha_proxy.connections_rate_limit.window_size") do -%>
+    tcp-request connection track-sc0 src table st_tcp_conn_rate
+    <%- if_p("ha_proxy.connections_rate_limit.block", "ha_proxy.connections_rate_limit.connections") do |block, connections| -%>
+      <%-if block -%>
+    tcp-request connection reject if { sc_conn_rate(0) gt <%= connections %> }
+      <%- end -%>
+    <%- end -%>
+  <%- end -%>
+  <%- if_p("ha_proxy.requests_rate_limit.table_size", "ha_proxy.requests_rate_limit.window_size") do -%>
+    http-request track-sc1 src table st_http_req_rate
+    <%- if_p("ha_proxy.requests_rate_limit.block", "ha_proxy.requests_rate_limit.requests") do |block, requests| -%>
+      <%-if block -%>
+    http-request deny status 429 if { sc_http_req_rate(1) gt <%= requests %> }
+      <%- end -%>
+    <%- end -%>
+  <%- end -%>
+  <%- if_p("ha_proxy.cidr_whitelist") do -%>
+    acl whitelist src -f /var/vcap/jobs/haproxy/config/whitelist_cidrs.txt
+    tcp-request content accept if whitelist
+  <%- end -%>
+  <%- if_p("ha_proxy.cidr_blacklist") do -%>
+    acl blacklist src -f /var/vcap/jobs/haproxy/config/blacklist_cidrs.txt
+    tcp-request content reject if blacklist
+  <%- end -%>
+  <%- if p("ha_proxy.block_all")  -%>
+    tcp-request content reject
+  <%- end -%>
+    capture request header Host len 256
+    default_backend <%= backends.last[:name] %>
+  <%- if_p("ha_proxy.http_request_deny_conditions") do |conditions| -%>
+    <%- conditions.each do |condition| -%>
+      <%- acl_names="" -%>
+      <%- condition["condition"].each do |acl| -%>
+    acl <%= acl["acl_name"] %> <%= acl["acl_rule"] %>
+        <%- if acl.key?("negate") && acl["negate"] -%>
+          <%- acl_names=acl_names+"!"+acl["acl_name"]+" " -%>
+        <%- else %>
+          <%- acl_names=acl_names+acl["acl_name"]+" " -%>
+        <%- end -%>
+      <%- end -%>
+    http-request deny if <%= acl_names %>
+    <%- end -%>
+  <%- end -%>
+  <%- if_p("ha_proxy.headers") do |headers| -%>
+    <%- headers.each do |header, value| -%>
+    http-request add-header <%= header.gsub(/(?!:\\)( )/, '\ ') %> "<%= value.to_s.gsub(/(?!:\\) /, '\ ') %>"
+    <%- end -%>
+  <%- end -%>
+  <%- if_p("ha_proxy.rsp_headers") do |rsp_headers| -%>
+    <%- rsp_headers.each do |rsp_header, value| -%>
+    http-response add-header <%= rsp_header.gsub(/(?!:\\)( )/, '\ ') %> "<%= value.to_s.gsub(/(?!:\\) /, '\ ') %>"
+    <%- end -%>
+  <%- end -%>
+  <%- if p("ha_proxy.internal_only_domains").size > 0 -%>
+    acl private src -f /var/vcap/jobs/haproxy/config/trusted_domain_cidrs.txt
+    <%- p("ha_proxy.internal_only_domains").each do |domain| -%>
+    acl internal hdr(Host) -m sub <%= domain %>
+    <%- end -%>

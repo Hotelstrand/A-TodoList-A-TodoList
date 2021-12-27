@@ -12,4 +12,21 @@ cleanup_daemon() {
   if [ -f ${PID_FILE} ]; then
     pkill -F ${PID_FILE} || true
   fi
-  rm -f /var/vcap
+  rm -f /var/vcap/sys/run/haproxy/*
+}
+
+reload_daemon() {
+    update_certs
+    echo "$(date): Reloading HAProxy"
+    # Relay the reload signal to the master process
+    kill -USR2 "$(cat ${PID_FILE})"
+    # Wait until master terminates
+    while kill -0 $(cat ${PID_FILE}) 2>/dev/null; do sleep 1; done;
+}
+
+update_certs() {
+  # reconstitute certs based on ttar file
+  mkdir -p /var/vcap/jobs/haproxy/config/ssl
+  ttar < /var/vcap/jobs/haproxy/config/certs.ttar
+
+  

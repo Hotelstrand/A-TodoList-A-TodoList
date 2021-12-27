@@ -830,3 +830,119 @@ backend http-routed-backend-<%= prefix_hash %>
     end
   end
 -%>
+  <%- if data["backend_use_http_health"] == true  -%>
+    <%- data["backend_http_health_port"] ||= data["port"] -%>
+    <%- data["backend_http_health_uri"] ||= "/health" -%>
+    option httpchk GET <%= data["backend_http_health_uri"] %>
+    <%- routed_health_check_options = " port " + data["backend_http_health_port"].to_s -%>
+    <%- if data["backend_health_fall"] -%>
+      <%- routed_health_check_options += " fall " + data["backend_health_fall"].to_s -%>
+    <%- end -%>
+    <%- if data["backend_health_rise"] -%>
+      <%- routed_health_check_options += " rise " + data["backend_health_rise"].to_s -%>
+    <%- end -%>
+  <%- end -%>
+  <% data["servers"].each_with_index do |ip, index| %>
+    server node<%= index %> <%= ip %>:<%= data["port"] %> <%= resolvers -%>check inter 1000<%= routed_health_check_options %> <%= backend_ssl %>
+  <% end %>
+<% end -%>
+# }}}
+
+# TCP Routing  {{{
+<% if_link("tcp_router") do |tcp_router| -%>
+
+frontend cf_tcp_routing
+    mode tcp
+    bind <%= p("ha_proxy.binding_ip") %>:<%= p("ha_proxy.tcp_routing.port_range") %> <%= v4v6 %>
+    default_backend cf_tcp_routers
+
+backend cf_tcp_routers
+    mode tcp
+  <%- if properties.ha_proxy.tcp_backend_config -%>
+    <%= p("ha_proxy.tcp_backend_config") %>
+  <%- end -%>
+    option httpchk GET /health
+  <% tcp_router.instances.each_with_index do |instance, index| %>
+    server node<%= index %> <%= instance.address %> check port 80 inter 1000
+  <% end %>
+<% end -%>
+
+# TCP Backends
+<%
+tcp = p("ha_proxy.tcp")
+if_link("tcp_backend") do |tcp_backend|
+  tcp << {
+    "name" => tcp_backend.instances.first.name || "link",
+    "backend_servers" => tcp_backend.instances.map(&:address),
+    "backend_servers_local" => tcp_backend.instances.select{ |n| n.az == spec.az }.map(&:address),
+    "port" => tcp_backend.p("port", p("ha_proxy.tcp_link_port")),
+    "backend_port" => tcp_backend.p("backend_port", p("ha_proxy.tcp_link_port")),
+    "health_check_http" => tcp_backend.p("health_check_http", p("ha_proxy.tcp_link_health_check_http", nil))
+  }
+end -%>
+<% tcp.each do |tcp_proxy| -%>
+frontend tcp-frontend_<%= tcp_proxy["name"]%>
+    mode tcp
+  <%- if tcp_proxy["ssl"] -%>
+    bind <%= p("ha_proxy.binding_ip") %>:<%= tcp_proxy["port"] %> <%= tcp_accept_proxy %> <%= tls_bind_options %> <%= v4v6 %>
+  <%- else -%>
+    bind <%= p("ha_proxy.binding_ip") %>:<%= tcp_proxy["port"] %> <%= v4v6 %>
+  <%- end -%>
+    default_backend tcp-<%= tcp_proxy["name"] %>
+
+backend tcp-<%= tcp_proxy["name"] %>
+    mode tcp
+  <%- if properties.ha_proxy.tcp_backend_config -%>
+    <%= p("ha_proxy.tcp_backend_config") %>
+  <%- end -%>
+  <%- if tcp_proxy["balance"] -%>
+    balance <%= tcp_proxy["balance"] %>
+  <%- end -%>
+<%
+  backend_port = tcp_proxy["port"]
+  if tcp_proxy["backend_port"]
+    backend_port = tcp_proxy["backend_port"]
+  end
+  backend_check_port = backend_port
+  if_p("ha_proxy.tcp_link_check_port") do
+    backend_check_port = p("ha_proxy.tcp_link_check_port")
+  end
+  resolvers = ""
+  if_p("ha_proxy.resolvers") do
+    resolvers = "resolvers default "
+  end
+  backend_ssl = ""
+
+  if (tcp_proxy["backend_ssl"] || "").downcase != "verify"
+    if tcp_proxy["backend_verifyhost"]
+      abort "Conflicting configuration: backend_ssl must be 'verify' to use backend_verifyhost in tcp backend configuration"
+    end
+  end
+
+  if tcp_proxy["backend_ssl"]
+    if tcp_proxy["backend_ssl"].downcase == "verify"
+      backend_ssl = "ssl verify required ca-file /var/vcap/jobs/haproxy/config/backend-ca-certs.pem "
+      if tcp_proxy["backend_verifyhost"]
+        backend_ssl += "verifyhost #{tcp_proxy["backend_verifyhost"]} "
+      end
+    elsif tcp_proxy["backend_ssl"].downcase == "noverify"
+      backend_ssl = "ssl verify none "
+    end
+  end
+-%>
+  <% tcp_proxy["backend_servers"].each_with_index do |ip, index| %>
+    server node<%= index %> <%= ip %>:<%= backend_port %> <%= resolvers -%>check port <%= backend_check_port -%> inter 1000 <%= backend_ssl %><%- if tcp_proxy["backend_servers_local"] && !tcp_proxy["backend_servers_local"].empty? && !tcp_proxy["backend_servers_local"].include?(ip)  -%> backup<%- end -%>
+  <% end %>
+
+  <%- if tcp_proxy["health_check_http"]  -%>
+listen health_check_http_tcp-<%= tcp_proxy["name"] %>
+    bind :<%= tcp_proxy["health_check_http"] %>
+    mode http
+    monitor-uri /health
+    acl tcp-<%= tcp_proxy["name"] %>-routers_down nbsrv(tcp-<%= tcp_proxy["name"] %>) eq 0
+    monitor fail if tcp-<%= tcp_proxy["name"] %>-routers_down
+  <%- end -%>
+<% end -%>
+
+# }}}
+<% end -%>

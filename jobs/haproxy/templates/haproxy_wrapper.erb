@@ -29,4 +29,10 @@ update_certs() {
   mkdir -p /var/vcap/jobs/haproxy/config/ssl
   ttar < /var/vcap/jobs/haproxy/config/certs.ttar
 
-  
+  <%- if p("ha_proxy.ext_crt_list") == true -%>
+  # wait for optional external certs
+  local ext_crt_list_file=<%= p("ha_proxy.ext_crt_list_file") %>
+  local timeout=<%= p("ha_proxy.ext_crt_list_timeout") %>
+  local policy=<%= p("ha_proxy.ext_crt_list_policy") %>
+  <%- if not ["fail", "continue"].include?(p("ha_proxy.ext_crt_list_policy"))
+       abort("ha_proxy.ext_crt_list_policy must be eithe

@@ -35,4 +35,16 @@ update_certs() {
   local timeout=<%= p("ha_proxy.ext_crt_list_timeout") %>
   local policy=<%= p("ha_proxy.ext_crt_list_policy") %>
   <%- if not ["fail", "continue"].include?(p("ha_proxy.ext_crt_list_policy"))
-       abort("ha_proxy.ext_crt_list_policy must be eithe
+       abort("ha_proxy.ext_crt_list_policy must be either 'fail' or 'continue'")
+      end -%>
+  mkdir -p $(dirname $ext_crt_list_file)
+  chmod o+rwx $(dirname $ext_crt_list_file)
+  local max_retries=$timeout
+  local retries=1
+  while [ ! -f $ext_crt_list_file ]; do
+    echo "$(date): $ext_crt_list_file missing ($retries/$max_retries). waiting..."
+    sleep 1
+    retries=$((retries + 1))
+    if [ $retries -gt $max_retries ]; then
+      if [ $policy == "fail" ]; then
+        echo "$(date): ERROR: $ext_crt_list_file still

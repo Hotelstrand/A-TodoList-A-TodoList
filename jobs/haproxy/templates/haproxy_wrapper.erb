@@ -47,4 +47,19 @@ update_certs() {
     retries=$((retries + 1))
     if [ $retries -gt $max_retries ]; then
       if [ $policy == "fail" ]; then
-        echo "$(date): ERROR: $ext_crt_list_file still
+        echo "$(date): ERROR: $ext_crt_list_file still missing after $max_retries seconds. Exiting."
+        cleanup_daemon
+        exit 1
+      fi
+      if [ $policy == "continue" ]; then
+        echo "$(date): WARNING: $ext_crt_list_file still missing after $max_retries seconds. Continuing without external certificates."
+        break
+      fi
+    fi
+  done
+  if [ -f $ext_crt_list_file ]; then
+    echo "$(date): $ext_crt_list_file found."
+  fi
+
+  # merge optional external certs
+ 

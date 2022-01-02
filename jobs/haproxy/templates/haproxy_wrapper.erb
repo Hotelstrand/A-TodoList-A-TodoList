@@ -75,4 +75,21 @@ update_certs
 mkdir -p /var/vcap/jobs/haproxy/config/cidrs
 ttar < /var/vcap/jobs/haproxy/config/cidrs.ttar
 
-#clean up leftover
+#clean up leftovers from previous run
+cleanup_daemon
+
+# ensure we shut down the daemonized process correctly on exit
+trap shutdown QUIT INT TERM EXIT
+
+# enable hitless reloads
+trap reload_daemon USR2
+
+<%-
+  flags=[]
+  cat_pipe=''
+
+  # Enable background mode only if syslog is not configured to output to stdout/stderr
+  run_in_foreground = p('ha_proxy.syslog_server') == "stdout" || p('ha_proxy.syslog_server') == "stderr"
+
+  if run_in_foreground
+    flags +

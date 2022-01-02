@@ -62,4 +62,17 @@ update_certs() {
   fi
 
   # merge optional external certs
- 
+  if grep -q OPTIONAL_EXT_CERTS /var/vcap/jobs/haproxy/config/ssl/crt-list; then
+    sed -i -e '/OPTIONAL_EXT_CERTS/r <%= p("ha_proxy.ext_crt_list_file") %>' /var/vcap/jobs/haproxy/config/ssl/crt-list
+  fi
+  <%- end -%>
+}
+
+# unpack base certs and add optional external certs
+update_certs
+
+# reconstitute cidrs based on ttar file
+mkdir -p /var/vcap/jobs/haproxy/config/cidrs
+ttar < /var/vcap/jobs/haproxy/config/cidrs.ttar
+
+#clean up leftover

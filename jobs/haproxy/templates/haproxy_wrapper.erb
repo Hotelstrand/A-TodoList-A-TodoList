@@ -92,4 +92,20 @@ trap reload_daemon USR2
   run_in_foreground = p('ha_proxy.syslog_server') == "stdout" || p('ha_proxy.syslog_server') == "stderr"
 
   if run_in_foreground
-    flags +
+    flags += ['-V', '-db']
+    cat_pipe='| cat -'
+  else
+    flags += ['-D']
+  end
+
+  if p('ha_proxy.master_cli_enable')
+    flags += ['-S', p('ha_proxy.master_cli_bind')]
+  end
+-%>
+
+# Start up
+echo "$(date): Starting HAProxy"
+haproxy -f ${CONFIG} -W -p ${PID_FILE} <%= flags.join(' ') %> <%= cat_pipe %>
+
+# wait for the HAProxy main process to terminate non-gracefully (drain)
+while [ -f ${DRAIN_LOCK} ] || kill -0 $(cat ${PID_FILE}) 2>/dev/null; do sleep 1; done;

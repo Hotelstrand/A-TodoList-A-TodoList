@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+<%- if p("ha_proxy.reload_max_instances") -%>
+max_instances=<%= p("ha_proxy.reload_max_instances") %>
+<%- else -%>
+max_instances=0
+<%- end -%>
+
+pidfile=/var/vcap/sys/run/bpm/haproxy/haproxy.pid
+
+if [[

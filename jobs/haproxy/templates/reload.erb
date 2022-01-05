@@ -10,4 +10,16 @@ max_instances=0
 
 pidfile=/var/vcap/sys/run/bpm/haproxy/haproxy.pid
 
-if [[
+if [[ ! -f ${pidfile} ]]; then
+  echo "$(date): pidfile $pidfile does not exist"
+  exit 1
+fi
+
+pid="$(cat ${pidfile})"
+haproxy_wrapper_pid=$(pgrep -P "$pid" haproxy_wrapper)
+<%- if p('ha_proxy.syslog_server') == "stdout" || p('ha_proxy.syslog_server') == "stderr" -%>
+haproxy_master_pid=$(pgrep -P "$haproxy_wrapper_pid" -x haproxy)
+<%- else -%>
+haproxy_master_pid=$(pgrep -P "$pid" -x haproxy)
+<%- end -%>
+haproxy_instance

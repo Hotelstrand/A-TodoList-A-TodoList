@@ -29,4 +29,10 @@ if [[ -n $haproxy_wrapper_pid ]]; then
     echo "Reloading HAProxy (pid: ${haproxy_wrapper_pid}). Instances: ${haproxy_instances}/${max_instances}"
     kill -USR2 -"${haproxy_wrapper_pid}"
   else
-    echo "Could not reload HAproxy. Maximum instances reached 
+    echo "Could not reload HAproxy. Maximum instances reached (${haproxy_instances}/${max_instances}). Exiting."
+    exit 1
+  fi
+else
+  echo "Could not find HAproxy pid. Exiting."
+  exit 1
+fi

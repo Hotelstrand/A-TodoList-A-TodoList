@@ -1,0 +1,10 @@
+# generated from whitelist_cidrs.txt.erb
+<%
+require "base64"
+require 'zlib'
+require 'stringio'
+
+if_p("ha_proxy.cidr_whitelist") do |cidrs|
+  uncompressed = ''
+  if cidrs.is_a?(Array)
+    uncompressed

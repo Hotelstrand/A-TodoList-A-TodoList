@@ -5,4 +5,21 @@ BIN_DIR=${PKG_DIR}/bin
 SBIN_DIR=${PKG_DIR}/sbin
 CONF_DIR=${APP_DIR}/config
 RUN_DIR=/var/vcap/sys/run/keepalived
-LOG_DIR=/var/vca
+LOG_DIR=/var/vcap/sys/log/keepalived
+
+source /var/vcap/packages/keepalived/common/utils.sh
+
+interface_for_ip() {
+    local ip=$1
+    local network=""
+
+    for route in $(ip route show scope link | cut -d " " -f1); do
+        if [[ $(ip_in_network $route $ip) == 0 ]]; then
+            network=$route
+            break
+        fi
+    done
+
+    if [[ -z $network ]]; then
+        echo "Could not determine an interface for requested VIP: $ip"
+        

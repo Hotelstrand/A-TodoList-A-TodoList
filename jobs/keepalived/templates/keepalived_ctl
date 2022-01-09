@@ -1,0 +1,8 @@
+#!/bin/bash
+APP_DIR=/var/vcap/jobs/keepalived
+PKG_DIR=/var/vcap/packages/keepalived
+BIN_DIR=${PKG_DIR}/bin
+SBIN_DIR=${PKG_DIR}/sbin
+CONF_DIR=${APP_DIR}/config
+RUN_DIR=/var/vcap/sys/run/keepalived
+LOG_DIR=/var/vca

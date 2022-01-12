@@ -22,4 +22,20 @@ interface_for_ip() {
 
     if [[ -z $network ]]; then
         echo "Could not determine an interface for requested VIP: $ip"
-        
+        exit 1
+    fi
+
+    interface=$(ip route show scope link | grep "${network}" | cut -d " " -f3)
+    if [[ -z ${interface} ]]; then
+        echo "Could not find the previously found network ${network} in the routing tables. Something is very wrong"
+        exit 1
+    fi
+    echo "${interface}"
+}
+
+binary_ip() {
+    string_ip=$1
+    i=1
+    binary_ip=0
+    for octet in $(echo "$string_ip" | tr -s "." " "); do
+       

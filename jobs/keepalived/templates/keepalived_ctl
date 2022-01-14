@@ -60,4 +60,22 @@ ip_in_network() {
 
     net_ip_binary=$(binary_ip "$net_ip")
     target_ip_binary=$(binary_ip "$target_ip")
-  
+    net_mask_binary=$(binary_mask "$net_mask")
+
+    if [[ $(($net_ip_binary&$net_mask_binary)) == $(($target_ip_binary&$net_mask_binary)) ]]; then
+        echo 0
+    else
+        echo 1
+    fi
+}
+
+exec >>${LOG_DIR}/keepalived.log 2>&1
+
+case $1 in
+
+  start)
+    echo "Starting keepalived... ($(date))"
+    mkdir -p $RUN_DIR $LOG_DIR
+    chown -R vcap:vcap $RUN_DIR $LOG_DIR
+
+    <% if p("keepalived.in

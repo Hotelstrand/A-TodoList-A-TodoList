@@ -1,0 +1,46 @@
+
+---
+name: haproxy
+
+addons:
+- name: bpm
+  jobs:
+  - name: bpm
+    release: bpm
+
+instance_groups:
+- name: haproxy
+  azs: [z1]
+  instances: 1
+  vm_type: default
+  stemcell: default
+  networks: [{name: default}]
+  jobs:
+  - name: haproxy
+    release: haproxy
+    properties:
+      ha_proxy:
+        backend_port: ((haproxy-backend-port))
+        backend_servers: ((haproxy-backend-servers))
+
+update:
+  canaries: 1
+  max_in_flight: 1
+  canary_watch_time: 1000-30000
+  update_watch_time: 1000-30000
+  serial: false
+
+stemcells:
+  - alias: default
+    os: ubuntu-jammy
+    version: latest
+
+releases:
+- name: bpm
+  version: 1.1.19
+  url: https://bosh.io/d/github.com/cloudfoundry/bpm-release?v=1.1.19
+  sha1: 669baca975c6def518c7e736dbf189cfb438475b
+- name: haproxy
+  version: 11.17.3
+  url: https://github.com/cloudfoundry/haproxy-boshrelease/releases/download/v11.17.3/haproxy-11.17.3.tgz
+  sha1: c088eb4fc82d1d5588fe1de561b358da4031df84

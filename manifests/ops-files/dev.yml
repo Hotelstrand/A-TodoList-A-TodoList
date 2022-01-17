@@ -1,2 +1,6 @@
 - type: replace
-  pat
+  path: /releases/name=haproxy
+  value:
+    name: haproxy
+    url: .
+    version: create

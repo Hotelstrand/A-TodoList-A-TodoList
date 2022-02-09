@@ -1,12 +1,13 @@
+
 name: haproxy
-version: 10.1.1
-commit_hash: b515c85
+version: 10.3.0
+commit_hash: a9cac87
 uncommitted_changes: false
 jobs:
 - name: haproxy
-  version: fd724fce4b6918dc20615f9b7de1f8c59a12866c8c7c83d960d709b6bf1e0048
-  fingerprint: fd724fce4b6918dc20615f9b7de1f8c59a12866c8c7c83d960d709b6bf1e0048
-  sha1: sha256:072554255618f9f555c48f43f1f2e38639e839a3b3eec66755a5baf868ea598c
+  version: 35360de5d7dc109875481d692ff3182497a3430615ba8f029b1db8ac98c9dc66
+  fingerprint: 35360de5d7dc109875481d692ff3182497a3430615ba8f029b1db8ac98c9dc66
+  sha1: sha256:6905f4c4ac9cde5e25f12b76597e9c4d14ba84561a56ccfada486c8637928e1f
   packages:
   - haproxy
   - ttar

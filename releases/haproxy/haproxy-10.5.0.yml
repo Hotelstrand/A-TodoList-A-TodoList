@@ -1,0 +1,7 @@
+name: haproxy
+version: 10.5.0
+commit_hash: e6d793c
+uncommitted_changes: false
+jobs:
+- name: haproxy
+  version: b38bc3ebf737f31173fcc7249dca5d78a8

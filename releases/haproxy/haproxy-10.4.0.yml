@@ -3,4 +3,15 @@ version: 10.4.0
 commit_hash: ba05c5e
 uncommitted_changes: false
 jobs:
-- n
+- name: haproxy
+  version: b38bc3ebf737f31173fcc7249dca5d78a81badf7
+  fingerprint: b38bc3ebf737f31173fcc7249dca5d78a81badf7
+  sha1: 24c30946d4e003cb60ff8c97527d15a853aa0ec6
+- name: keepalived
+  version: 36363894908a667505634790b2c0797e65d9fe24
+  fingerprint: 36363894908a667505634790b2c0797e65d9fe24
+  sha1: 55ed7b54191408aa5f8c20be0d0ff3d7afe248d9
+packages:
+- name: haproxy
+  version: 2424c7da57db19cdb6ddd52dc43cdc6a9dd00ead
+  fingerprint:

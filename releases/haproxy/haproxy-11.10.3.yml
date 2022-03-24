@@ -25,4 +25,12 @@ packages:
 - name: keepalived
   version: 0f2c371f17a3628c2788a2ff219eea30716e220db69566dc71361cecf62c45c8
   fingerprint: 0f2c371f17a3628c2788a2ff219eea30716e220db69566dc71361cecf62c45c8
-  sha1: sha256:07db
+  sha1: sha256:07db5c9b7f4477f01e64ee02bf58bf1341593c43fa7947ed6c7b460a96c5699c
+  dependencies: []
+- name: ttar
+  version: 8cdfde2f1ddc5f1c22b003002a473fbb1455e02b14167401d7fdd5856fec77b5
+  fingerprint: 8cdfde2f1ddc5f1c22b003002a473fbb1455e02b14167401d7fdd5856fec77b5
+  sha1: sha256:fbae990ea3ed13523b62d7a8ccea6c485c680aa40fbb78c11e4f7cfc92c1863f
+  dependencies: []
+license:
+  version: eba49a3e88a4329d6b7943df92467659a9badda7319648d5

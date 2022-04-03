@@ -13,4 +13,15 @@ jobs:
 - name: keepalived
   version: db24c81e600a163a0dc2c7fd02165fae9a0483a08e33baf39222fa8cf701d63a
   fingerprint: db24c81e600a163a0dc2c7fd02165fae9a0483a08e33baf39222fa8cf701d63a
-  sha1: sha256:92d8f1996f108950d19400fb0af33350892599b3f921a0a81f7baebacacc
+  sha1: sha256:92d8f1996f108950d19400fb0af33350892599b3f921a0a81f7baebacacc11fb
+  packages:
+  - keepalived
+packages:
+- name: haproxy
+  version: c0f1f4922e1858ab83f50c39a98a9433bb3050da84ac441992b75ee77d79e946
+  fingerprint: c0f1f4922e1858ab83f50c39a98a9433bb3050da84ac441992b75ee77d79e946
+  sha1: sha256:35dccf91aa482e4296d931bcc12869c9cf0c49a6a673ff1c34d44239e506d155
+  dependencies: []
+- name: keepalived
+  version: 5673650294b9071d6ca549b956f96fbaa454d67c17eafac9db257b10e0d90ed5
+  fingerprint: 5673650294b9071d6ca549b956f96

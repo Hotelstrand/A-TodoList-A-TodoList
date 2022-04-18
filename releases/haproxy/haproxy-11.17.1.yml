@@ -19,4 +19,12 @@ jobs:
 packages:
 - name: haproxy
   version: c5f5280dfb17079024bb0472fe4c06dc63ce3acf3ae281aa8f9423ad45b92c89
-  fingerprint: c5f5280dfb17079024bb047
+  fingerprint: c5f5280dfb17079024bb0472fe4c06dc63ce3acf3ae281aa8f9423ad45b92c89
+  sha1: sha256:2db73824dceeb59f8357d58398d22a05e8c0fc497b15af706601bf145f584f3d
+  dependencies: []
+- name: keepalived
+  version: 5673650294b9071d6ca549b956f96fbaa454d67c17eafac9db257b10e0d90ed5
+  fingerprint: 5673650294b9071d6ca549b956f96fbaa454d67c17eafac9db257b10e0d90ed5
+  sha1: sha256:85c6b7fae949614d0b6c9615ee7480d0091e42cced5fd714ff903127412df88d
+  dependencies: []
+- name: tt

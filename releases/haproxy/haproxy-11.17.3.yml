@@ -1,6 +1,7 @@
+
 name: haproxy
-version: 11.17.2
-commit_hash: 9f1ba7d
+version: 11.17.3
+commit_hash: eccf69f
 uncommitted_changes: false
 jobs:
 - name: haproxy
@@ -18,9 +19,9 @@ jobs:
   - keepalived
 packages:
 - name: haproxy
-  version: 24d9ac3cde42b3ec9e8da8350460d2fd53c578843e3bb3e7063b4c43903d0d5b
-  fingerprint: 24d9ac3cde42b3ec9e8da8350460d2fd53c578843e3bb3e7063b4c43903d0d5b
-  sha1: sha256:4249f84a167456bd82dee16052737f567fc29506e0bbbfefd54f5a928029ed76
+  version: 1dbab1a1bf0922bf46417a29c1c0a5cd75bfc32bb84ffca58c44fbcb03b6a74e
+  fingerprint: 1dbab1a1bf0922bf46417a29c1c0a5cd75bfc32bb84ffca58c44fbcb03b6a74e
+  sha1: sha256:0e3640ce7a3c3d5583bd20e631564c1c6c9cf7b984a79f1220f13715861e27ea
   dependencies: []
 - name: keepalived
   version: 5673650294b9071d6ca549b956f96fbaa454d67c17eafac9db257b10e0d90ed5

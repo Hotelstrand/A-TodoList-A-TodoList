@@ -27,4 +27,12 @@ packages:
   fingerprint: 14aa689351e2083295d9f29e17330f15c4b21e775773f3e1f393395b212dd733
   sha1: sha256:77ff9d693c9398cc73319e6a5ffdfb96215c90a04c3f530f04610a19d284272f
   dependencies: []
-- n
+- name: ttar
+  version: 8cdfde2f1ddc5f1c22b003002a473fbb1455e02b14167401d7fdd5856fec77b5
+  fingerprint: 8cdfde2f1ddc5f1c22b003002a473fbb1455e02b14167401d7fdd5856fec77b5
+  sha1: sha256:fbae990ea3ed13523b62d7a8ccea6c485c680aa40fbb78c11e4f7cfc92c1863f
+  dependencies: []
+license:
+  version: eba49a3e88a4329d6b7943df92467659a9badda7319648d5e78d45d7f1a19bc4
+  fingerprint: eba49a3e88a4329d6b7943df92467659a9badda7319648d5e78d45d7f1a19bc4
+  sha1: sha256:4462ba848d

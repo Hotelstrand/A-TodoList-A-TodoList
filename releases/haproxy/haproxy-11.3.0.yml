@@ -8,4 +8,15 @@ jobs:
   fingerprint: 26863285f38dbbb9ff13af31ddaf56bed21a69820cfeb125fd48f756f2d3dde6
   sha1: sha256:3b732ca1f5e232fc9fc0b776f660fb6b42e92776e4e800af71e73ad5bfbb6b04
   packages:
- 
+  - haproxy
+  - ttar
+- name: keepalived
+  version: db24c81e600a163a0dc2c7fd02165fae9a0483a08e33baf39222fa8cf701d63a
+  fingerprint: db24c81e600a163a0dc2c7fd02165fae9a0483a08e33baf39222fa8cf701d63a
+  sha1: sha256:92d8f1996f108950d19400fb0af33350892599b3f921a0a81f7baebacacc11fb
+  packages:
+  - keepalived
+packages:
+- name: haproxy
+  version: f9b337d82659fa5d2134611428b9ad536da00acdee434f5fc1b9bfa9ff5a75d5
+  fingerprint: f9b33

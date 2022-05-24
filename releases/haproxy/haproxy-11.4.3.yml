@@ -1,0 +1,9 @@
+name: haproxy
+version: 11.4.3
+commit_hash: 2b03e07
+uncommitted_changes: false
+jobs:
+- name: haproxy
+  version: 518d703960514f4f988eab6e3f47fac46db69d4e04e16e6ee02b41d1b1f37958
+  fingerprint: 518d703960514f4f988eab6e3f47fac46db69d4e04e16e6ee02b41d1b1f37958
+  sha1: sha256:f4792af50f5a3ed444

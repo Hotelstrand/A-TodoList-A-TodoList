@@ -18,4 +18,10 @@ jobs:
   - keepalived
 packages:
 - name: haproxy
- 
+  version: 18eee50698f69418b8393afdf2a7a22b263a143ce1321f7837eece6d29c035cb
+  fingerprint: 18eee50698f69418b8393afdf2a7a22b263a143ce1321f7837eece6d29c035cb
+  sha1: sha256:c79786eebc0b3e25f8b640869d524d397b376a466f94ac2bbd6dc253aba98e7e
+  dependencies: []
+- name: keepalived
+  version: e4fa4bdeebe4647ca5d65b3b9b688e5971f12ca8081be323aaca3575beeeea54
+  fingerprint: e4fa4bdeebe4647ca5d6

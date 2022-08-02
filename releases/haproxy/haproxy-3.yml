@@ -1,0 +1,10 @@
+---
+packages:
+- name: haproxy
+  version: 630ad6d6e1d3cab4547ce104f3019b483f354613
+  fingerprint: 630ad6d6e1d3cab4547ce104f3019b483f354613
+  sha1: c3b76f7f41dc290f12658a7e3dfd88f25040e89e
+  dependencies: []
+jobs:
+- name: haproxy
+  ver

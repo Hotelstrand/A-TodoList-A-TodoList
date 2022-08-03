@@ -1,3 +1,4 @@
+
 ---
 packages:
 - name: haproxy
@@ -7,14 +8,14 @@ packages:
   dependencies: []
 jobs:
 - name: haproxy
-  version: 609a877093630e79ecc882a2b4d27bb6b3daa52f
-  fingerprint: 609a877093630e79ecc882a2b4d27bb6b3daa52f
-  sha1: f2486ceaaefc4a058d04e6e5ee60225c8f8d52f6
+  version: 80b93eb5ec29caea58b0c501fd78cc6030505849
+  fingerprint: 80b93eb5ec29caea58b0c501fd78cc6030505849
+  sha1: cdf1496c9b3a598fd7c3423233c227def2d2a221
 license:
   version: 1128a8ae7526393e7fbf22a18a92b4d0dfdd78c0
   fingerprint: 1128a8ae7526393e7fbf22a18a92b4d0dfdd78c0
   sha1: a519125dcf6220495de8f2a487c5d2bb8df6e348
-commit_hash: dccf2d2a
+commit_hash: c69b17cc
 uncommitted_changes: true
 name: cf-haproxy
-version: '6'
+version: '7'

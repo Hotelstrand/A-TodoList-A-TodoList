@@ -1,3 +1,4 @@
+
 ---
 packages:
 - name: haproxy
@@ -5,16 +6,21 @@ packages:
   fingerprint: 9c86ced8448e9810347630666c9299bb41d80038
   sha1: ad57803a69bf12dd13f1e5160851c740c1b7a71b
   dependencies: []
+- name: ttar
+  version: 3d35c54bf484b59a22c9bf783ff62d08eb30353f
+  fingerprint: 3d35c54bf484b59a22c9bf783ff62d08eb30353f
+  sha1: 6380c6e9e3a2e92f32ca75a37922099343110b68
+  dependencies: []
 jobs:
 - name: haproxy
-  version: 609a877093630e79ecc882a2b4d27bb6b3daa52f
-  fingerprint: 609a877093630e79ecc882a2b4d27bb6b3daa52f
-  sha1: f2486ceaaefc4a058d04e6e5ee60225c8f8d52f6
+  version: fb65ead3ad623e5c3215c5a39a9338ff251ac286
+  fingerprint: fb65ead3ad623e5c3215c5a39a9338ff251ac286
+  sha1: a1ec7dc27c1da561109c6b5182c442ba195b9b08
 license:
   version: 1128a8ae7526393e7fbf22a18a92b4d0dfdd78c0
   fingerprint: 1128a8ae7526393e7fbf22a18a92b4d0dfdd78c0
   sha1: a519125dcf6220495de8f2a487c5d2bb8df6e348
-commit_hash: dccf2d2a
-uncommitted_changes: true
+commit_hash: 60180ae2
+uncommitted_changes: false
 name: cf-haproxy
-version: '6'
+version: 8.0.0

@@ -1,0 +1,6 @@
+---
+packages:
+- name: haproxy
+  version: c356c54dc206681cdfb485c9b1b043f3c042a466
+  fingerprint: c356c54dc206681cdfb485c9b1b043f3c042a466
+  sha1: 200551b887e7be

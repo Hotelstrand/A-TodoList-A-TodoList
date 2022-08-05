@@ -13,4 +13,16 @@ packages:
 - name: ttar
   version: 3d35c54bf484b59a22c9bf783ff62d08eb30353f
   fingerprint: 3d35c54bf484b59a22c9bf783ff62d08eb30353f
-  sha1: 6380c6e9e3a2e9
+  sha1: 6380c6e9e3a2e92f32ca75a37922099343110b68
+  dependencies: []
+jobs:
+- name: haproxy
+  version: 1427b7b682f3af321634540c6114b68222ba7c04
+  fingerprint: 1427b7b682f3af321634540c6114b68222ba7c04
+  sha1: 6b9c49072a66decdd6d424107346c562599589a9
+- name: keepalived
+  version: fe7cd4e4e83121311ce20234d0f95c43c48a49ad
+  fingerprint: fe7cd4e4e83121311ce20234d0f95c43c48a49ad
+  sha1: 9829f1737e2190dca51ed572a6830ce8d5f79afe
+license:
+  version: 1128a8ae7526393e7fbf2

@@ -25,4 +25,10 @@ jobs:
   fingerprint: fe7cd4e4e83121311ce20234d0f95c43c48a49ad
   sha1: 9829f1737e2190dca51ed572a6830ce8d5f79afe
 license:
-  version: 1128a8ae7526393e7fbf2
+  version: 1128a8ae7526393e7fbf22a18a92b4d0dfdd78c0
+  fingerprint: 1128a8ae7526393e7fbf22a18a92b4d0dfdd78c0
+  sha1: a519125dcf6220495de8f2a487c5d2bb8df6e348
+commit_hash: 183113cf
+uncommitted_changes: true
+name: haproxy
+version: 8.0.11

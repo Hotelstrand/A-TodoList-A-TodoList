@@ -14,4 +14,15 @@ packages:
   version: c356c54dc206681cdfb485c9b1b043f3c042a466
   fingerprint: c356c54dc206681cdfb485c9b1b043f3c042a466
   sha1: 200551b887e7be2ef38a2de29004acc36ee9284d
-  dependencies:
+  dependencies: []
+jobs:
+- name: keepalived
+  version: 594f0e97ffdca3e776fe250bff12281b1a2aa1d4
+  fingerprint: 594f0e97ffdca3e776fe250bff12281b1a2aa1d4
+  sha1: 17d35e79462ccad896dbeab126a4185183a3a746
+- name: haproxy
+  version: 1427b7b682f3af321634540c6114b68222ba7c04
+  fingerprint: 1427b7b682f3af321634540c6114b68222ba7c04
+  sha1: 6b9c49072a66decdd6d424107346c562599589a9
+license:
+  version: 1128a8ae75263

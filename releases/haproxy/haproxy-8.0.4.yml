@@ -17,4 +17,9 @@ jobs:
   sha1: 84095d2e56997b213dfa104e6df384971b359651
 license:
   version: 1128a8ae7526393e7fbf22a18a92b4d0dfdd78c0
-  fingerprint: 1128a8ae7526393e7fbf22a18a92b4d0d
+  fingerprint: 1128a8ae7526393e7fbf22a18a92b4d0dfdd78c0
+  sha1: a519125dcf6220495de8f2a487c5d2bb8df6e348
+commit_hash: 189639cd
+uncommitted_changes: true
+name: cf-haproxy
+version: 8.0.4

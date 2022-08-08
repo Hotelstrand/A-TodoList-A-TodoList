@@ -6,4 +6,15 @@ packages:
   sha1: ad57803a69bf12dd13f1e5160851c740c1b7a71b
   dependencies: []
 - name: ttar
-  version: 3d
+  version: 3d35c54bf484b59a22c9bf783ff62d08eb30353f
+  fingerprint: 3d35c54bf484b59a22c9bf783ff62d08eb30353f
+  sha1: 6380c6e9e3a2e92f32ca75a37922099343110b68
+  dependencies: []
+jobs:
+- name: haproxy
+  version: 33ec6e4e3dc3945cb453fa8c23b5de12eb5dd20d
+  fingerprint: 33ec6e4e3dc3945cb453fa8c23b5de12eb5dd20d
+  sha1: 84095d2e56997b213dfa104e6df384971b359651
+license:
+  version: 1128a8ae7526393e7fbf22a18a92b4d0dfdd78c0
+  fingerprint: 1128a8ae7526393e7fbf22a18a92b4d0d

@@ -1,0 +1,10 @@
+---
+packages:
+- name: haproxy
+  version: 8d0eb7d0c8c7f601f47b522093dc259fbb776876
+  fingerprint: 8d0eb7d0c8c7f601f47b522093dc259fbb776876
+  sha1: 1344ede54cf0ff6fb1df7a69e8dadbab4826743d
+  dependencies: []
+- name: ttar
+  version: 3d35c54bf484b59a22c9bf783ff62d08eb30353f
+  fingerprint: 3d35c54bf484b59a22c9bf783ff62d08eb30

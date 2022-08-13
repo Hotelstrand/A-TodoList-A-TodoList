@@ -21,4 +21,5 @@ license:
   sha1: a519125dcf6220495de8f2a487c5d2bb8df6e348
 commit_hash: f06ab148
 uncommitted_changes: true
-name: ha
+name: haproxy
+version: 8.0.9

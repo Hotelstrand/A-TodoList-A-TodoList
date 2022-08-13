@@ -22,4 +22,13 @@ jobs:
   sha1: 129c1de5622c2d0f03d94722bab9ae8dd6eaeb7e
 - name: keepalived
   version: 594f0e97ffdca3e776fe250bff12281b1a2aa1d4
-  fingerprint: 594f0e97ffdca3e776fe25
+  fingerprint: 594f0e97ffdca3e776fe250bff12281b1a2aa1d4
+  sha1: 17d35e79462ccad896dbeab126a4185183a3a746
+license:
+  version: ab1231b48830d561c18cade29dcad86c2925fb8c
+  fingerprint: ab1231b48830d561c18cade29dcad86c2925fb8c
+  sha1: 2a7ca21fe822bec0406bddc4ae0fcebee6cad6e5
+commit_hash: 5bd12d80
+uncommitted_changes: true
+name: haproxy
+version: 8.1.0

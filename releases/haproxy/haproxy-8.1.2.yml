@@ -26,4 +26,9 @@ jobs:
   sha1: 17d35e79462ccad896dbeab126a4185183a3a746
 license:
   version: ab1231b48830d561c18cade29dcad86c2925fb8c
-  fing
+  fingerprint: ab1231b48830d561c18cade29dcad86c2925fb8c
+  sha1: 2a7ca21fe822bec0406bddc4ae0fcebee6cad6e5
+commit_hash: '62700747'
+uncommitted_changes: true
+name: haproxy
+version: 8.1.2

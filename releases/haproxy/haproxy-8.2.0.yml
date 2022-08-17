@@ -1,0 +1,9 @@
+---
+packages:
+- name: haproxy
+  version: f52bd20fbd4f1c9dae29d71410bcb5d3f38c0f96
+  fingerprint: f52bd20fbd4f1c9dae29d71410bcb5d3f38c0f96
+  sha1: aa94f7d242185623117a2be2b75c4ddbdb31d100
+  dependencies: []
+- name: keepalived
+  

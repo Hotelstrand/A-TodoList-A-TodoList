@@ -1,0 +1,7 @@
+name: haproxy
+version: 8.6.0
+commit_hash: 9defb9b
+uncommitted_changes: false
+jobs:
+- name: haproxy
+  version: d3520b21f0ad2fd9efb5765eb4b48da59231

@@ -1,2 +1,16 @@
 name: haproxy
-version: 8.
+version: 8.7.0
+commit_hash: b42e11f
+uncommitted_changes: false
+jobs:
+- name: haproxy
+  version: 38d1f6b8b918f3139b305770f4e1c24880c0791d
+  fingerprint: 38d1f6b8b918f3139b305770f4e1c24880c0791d
+  sha1: 23df5ea28284488f18948c3c1092b81ad18d6c03
+- name: keepalived
+  version: 84406eddb7ecf0fc572728ed8935f6c144df737c
+  fingerprint: 84406eddb7ecf0fc572728ed8935f6c144df737c
+  sha1: 568d617856ecec4502d94e6fb1f48e15926e8287
+packages:
+- name: haproxy
+  version: ac5b3c05f0ac9

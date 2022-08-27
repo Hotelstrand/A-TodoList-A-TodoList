@@ -13,4 +13,13 @@ packages:
 jobs:
 - name: haproxy
   version: fb65ead3ad623e5c3215c5a39a9338ff251ac286
-  f
+  fingerprint: fb65ead3ad623e5c3215c5a39a9338ff251ac286
+  sha1: a1ec7dc27c1da561109c6b5182c442ba195b9b08
+license:
+  version: 1128a8ae7526393e7fbf22a18a92b4d0dfdd78c0
+  fingerprint: 1128a8ae7526393e7fbf22a18a92b4d0dfdd78c0
+  sha1: a519125dcf6220495de8f2a487c5d2bb8df6e348
+commit_hash: '88368197'
+uncommitted_changes: true
+name: cf-haproxy
+version: '8'

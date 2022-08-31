@@ -1,0 +1,6 @@
+name: haproxy
+version: 9.2.1
+commit_hash: "9854707"
+uncommitted_changes: false
+jobs:
+- name: ha

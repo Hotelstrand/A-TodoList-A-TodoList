@@ -25,4 +25,9 @@ packages:
 - name: ttar
   version: d48223c69c8c097c64caad1055e0ff024b8f1133
   fingerprint: d48223c69c8c097c64caad1055e0ff024b8f1133
-  sha1: a2ec3b66ca8fdcb2c71b690b8cfd15
+  sha1: a2ec3b66ca8fdcb2c71b690b8cfd156fd94c8de3
+  dependencies: []
+license:
+  version: ab1231b48830d561c18cade29dcad86c2925fb8c
+  fingerprint: ab1231b48830d561c18cade29dcad86c2925fb8c
+  sha1: 2a7ca21fe822bec0406bddc4ae0fcebee6cad6e5

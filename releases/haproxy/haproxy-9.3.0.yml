@@ -1,0 +1,10 @@
+name: haproxy
+version: 9.3.0
+commit_hash: 66eda42
+uncommitted_changes: false
+jobs:
+- name: haproxy
+  version: 3b8dfaebdfc0521ef9aef5a651288c79134324b9
+  fingerprint: 3b8dfaebdfc0521ef9aef5a651288c79134324b9
+  sha1: 78ffe5134f9ec7921fe0c5510bd14586d9863085
+- name: keepa

@@ -7,4 +7,16 @@ jobs:
   version: 3b8dfaebdfc0521ef9aef5a651288c79134324b9
   fingerprint: 3b8dfaebdfc0521ef9aef5a651288c79134324b9
   sha1: 78ffe5134f9ec7921fe0c5510bd14586d9863085
-- name: keepa
+- name: keepalived
+  version: 84406eddb7ecf0fc572728ed8935f6c144df737c
+  fingerprint: 84406eddb7ecf0fc572728ed8935f6c144df737c
+  sha1: 568d617856ecec4502d94e6fb1f48e15926e8287
+packages:
+- name: haproxy
+  version: 28d8cff22ea14a2fa07e1e8d597a44190359dd57
+  fingerprint: 28d8cff22ea14a2fa07e1e8d597a44190359dd57
+  sha1: 61f21d01672038fe29b76194a72e6ab004070ab9
+  dependencies: []
+- name: keepalived
+  version: a8e18e8e2a5159e933377c8d8af36978a1f4cbf0
+  fingerprint: a8e

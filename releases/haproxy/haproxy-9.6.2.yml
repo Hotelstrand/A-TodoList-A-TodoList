@@ -5,4 +5,14 @@ uncommitted_changes: false
 jobs:
 - name: haproxy
   version: 87cc57aabc055a28934317999babb3ec9f409bd8a3a9a61e60d29fa8a9430125
-  fingerprint: 87cc57aabc055a2893
+  fingerprint: 87cc57aabc055a28934317999babb3ec9f409bd8a3a9a61e60d29fa8a9430125
+  sha1: sha256:f9d351217b0769c031f5909fc0602ef00fc437c6b4ce8418f3f37a2fba546906
+  packages:
+  - haproxy
+  - ttar
+- name: keepalived
+  version: db24c81e600a163a0dc2c7fd02165fae9a0483a08e33baf39222fa8cf701d63a
+  fingerprint: db24c81e600a163a0dc2c7fd02165fae9a0483a08e33baf39222fa8cf701d63a
+  sha1: sha256:92d8f1996f108950d19400fb0af33350892599b3f921a0a81f7baebacacc11fb
+  packages:
+  - keepalived

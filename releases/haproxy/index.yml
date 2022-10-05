@@ -1,0 +1,104 @@
+
+builds:
+  00ed62e3-a529-4308-7099-9f3133584e49:
+    version: 9.4.2
+  098f2c5b-6245-4b06-5832-6fac079ecc8f:
+    version: 10.0.0
+  11003551-045a-4825-64e5-ebaa48f5cc2a:
+    version: 8.7.0
+  1a236603-c926-4c9e-5f05-995d242305fc:
+    version: 11.16.0
+  1e5fe65e-9a2f-42ea-6eeb-1e085234d0c4:
+    version: 11.5.0
+  2042d6cb-1fab-49b9-45ff-cf092ade9c04:
+    version: 11.13.0
+  20941ee7-2a87-42c3-9df7-1ae233c1d002:
+    version: 8.0.10
+  24c968f2-54a2-4411-4f33-adef01ff5cf4:
+    version: 11.7.0
+  24fa66cb-3141-45e7-9dc0-84c9067582d5:
+    version: 8.2.0
+  29634395-eb7a-4793-4897-32359a99f9fb:
+    version: 11.8.1
+  2c765105-da0a-4e82-8db5-0e95805af095:
+    version: 8.1.0
+  337502a4-bb82-4bfa-76dc-2b8f79943d6e:
+    version: 11.17.2
+  3454495f-658e-4a5b-6cf0-e790b9d55d85:
+    version: 11.10.1
+  34d9a1e1-b0d3-404f-47a1-2fa4d974ac9d:
+    version: 11.10.2
+  3803d9f8-6df8-4eaf-5d83-280b2aae39ab:
+    version: 9.7.0
+  3f6209ae-8a60-4623-4700-f38b344f0f50:
+    version: 11.2.0
+  41bcfed2-7f91-4413-b40a-312306372e70:
+    version: 8.0.12
+  45386eef-7ab9-45f5-acf8-4545d37eabf4:
+    version: "1"
+  455dc8b6-8b06-43f1-af10-5079f4858f5e:
+    version: 8.0.9
+  49cea072-30d5-4b47-4db2-47007bbaadc7:
+    version: 11.4.0
+  4a8b1ff5-c8ea-4b76-a1d0-99e76b8778c0:
+    version: 8.0.4
+  4ad9a47e-b42a-4d28-5d07-a7682be83aa4:
+    version: 11.12.0
+  53d69e13-909b-42da-56c6-6abb3b9e6203:
+    version: 9.1.0
+  629cf530-f528-40ab-56e2-eb9fd5ebacb0:
+    version: 10.6.0
+  64711483-b4b1-48da-7e31-13cf6fbc47b6:
+    version: 11.4.2
+  65e27428-15dc-49f1-53a0-e00547ec9331:
+    version: 11.11.0
+  67641731-8395-4522-827d-0699dc8e7a1e:
+    version: "4"
+  678db2df-6efc-4281-bd7e-9ad1527c0043:
+    version: 8.0.3
+  6835aef3-32a8-4899-8064-f836a623e9cf:
+    version: 8.0.6
+  6970ba57-f65d-4902-44f6-393598d7fad3:
+    version: 10.5.0
+  6a7b59be-870d-4078-7a07-45ba342f6a56:
+    version: 9.2.1
+  6c0aefe4-7d23-411d-6ef6-db191108ff9d:
+    version: 11.0.0
+  6ccd0cb9-2cc4-4769-5149-a1da340ed967:
+    version: 11.4.3
+  6ceb8dca-6ccd-4937-becd-5790169c405c:
+    version: 8.3.0
+  6f23ec35-2bb7-40f2-7d3e-7c7850466500:
+    version: 9.8.0
+  72c7f0af-2bef-499e-4b8a-50e6621f104e:
+    version: 8.4.1
+  76efef84-d87f-41d3-4d8d-075e7429f65f:
+    version: 11.10.0
+  7a783aa5-7900-40fc-76aa-9e8f32fd77f1:
+    version: 11.4.1
+  7d5d9cda-28ec-4fa4-4f10-7efc1b1b7ab5:
+    version: 10.4.0
+  8240ec82-50b2-4db8-5291-8c8c5afe50aa:
+    version: 8.6.0
+  89584dd7-3539-4fd3-6aa3-47ad9ef5127e:
+    version: 8.4.2
+  8cf54349-2966-4de5-6586-616b3e081cbc:
+    version: 8.9.0
+  8dba8b97-7c1c-4cb4-995a-fd6406c4d8d5:
+    version: 8.0.0
+  8dd931e9-c5c9-49fc-47b5-70a155effcf1:
+    version: 9.6.1
+  8f745b03-f739-493a-68c5-730fe8480bc8:
+    version: 9.5.0
+  8fbbe148-8637-43d9-71d9-f42373b4cd9f:
+    version: 11.17.3
+  9580fb1d-45db-4dfd-b901-d48fc241d093:
+    version: 8.0.1
+  971544a1-4ce2-4197-5f97-67d66f2e7e9a:
+    version: 9.3.0
+  9f1ede25-cd42-4269-7864-66a765834b62:
+    version: 8.5.0
+  9fc07dfb-2003-4fdf-402a-22e34df0b738:
+    version: 11.6.0
+  a6653ae8-5598-48c1-44dd-bafd7f25c50b:
+    version: 9.4.0

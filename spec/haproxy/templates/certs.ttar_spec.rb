@@ -18,4 +18,19 @@ describe 'config/certs.ttar' do
       let(:ssl_pem) do
         [{
           'cert_chain' => 'cert_chain 0 contents',
-          'private_key' => 'private_k
+          'private_key' => 'private_key 0 contents'
+        }, {
+          'cert_chain' => 'cert_chain 1 contents',
+          'private_key' => 'private_key 1 contents'
+        }]
+      end
+
+      it 'has the correct contents' do
+        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/cert-0.pem')).to eq(<<~EXPECTED)
+
+          cert_chain 0 contents
+          private_key 0 contents
+
+        EXPECTED
+
+        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/conf

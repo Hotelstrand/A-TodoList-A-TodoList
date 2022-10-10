@@ -33,4 +33,23 @@ describe 'config/certs.ttar' do
 
         EXPECTED
 
-        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/conf
+        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/cert-1.pem')).to eq(<<~EXPECTED)
+
+          cert_chain 1 contents
+          private_key 1 contents
+
+
+        EXPECTED
+      end
+    end
+
+    context 'when ssl_pem is provided as an array of strings' do
+      let(:ssl_pem) do
+        [
+          'cert 0 contents',
+          'cert 1 contents'
+        ]
+      end
+
+      it 'has the correct contents' do
+        expect(ttar_entry(ttar, '/var/vcap/jobs/

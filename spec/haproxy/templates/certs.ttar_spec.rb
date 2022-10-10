@@ -71,4 +71,21 @@ describe 'config/certs.ttar' do
       let(:ssl_pem) { 'cert 0 contents' }
 
       it 'has the correct contents' do
-        expect
+        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/cert-0.pem').strip).to eq('cert 0 contents')
+      end
+    end
+  end
+
+  describe 'ha_proxy.crt_list' do
+    describe 'ha_proxy.crt_list[].ssl_pem' do
+      let(:ttar) do
+        template.render({
+          'ha_proxy' => {
+            'crt_list' => [{
+              'ssl_pem' => ssl_pem
+            }]
+          }
+        })
+      end
+
+      context 'when ssl_pem is a s

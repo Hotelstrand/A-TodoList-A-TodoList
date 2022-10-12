@@ -138,4 +138,18 @@ describe 'config/certs.ttar' do
     end
 
     describe 'ha_proxy.crt_list[].client_ca_file' do
-      let(:t
+      let(:ttar) do
+        template.render({
+          'ha_proxy' => {
+            'crt_list' => [{
+              'ssl_pem' => 'ssl_pem contents',
+              'client_ca_file' => 'client_ca_file contents'
+            }]
+          }
+        })
+      end
+
+      it 'references the client ca file in the crt-list' do
+        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/crt-list')).to eq(<<~EXPECTED)
+
+ 

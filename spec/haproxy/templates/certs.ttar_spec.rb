@@ -102,4 +102,22 @@ describe 'config/certs.ttar' do
         it 'is referenced in the crt-list' do
           expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/crt-list')).to eq(<<~EXPECTED)
 
-           
+            /var/vcap/jobs/haproxy/config/ssl/cert-0.pem
+
+
+          EXPECTED
+        end
+      end
+
+      context 'when ssl_pem is an array' do
+        let(:ssl_pem) do
+          {
+            'cert_chain' => 'cert_chain 0 contents',
+            'private_key' => 'private_key 0 contents'
+          }
+        end
+
+        it 'has the correct contents' do
+          expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/cert-0.pem')).to eq(<<~EXPECTED)
+
+            cert_chain 0

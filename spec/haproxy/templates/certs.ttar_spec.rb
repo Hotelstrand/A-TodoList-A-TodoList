@@ -168,4 +168,17 @@ describe 'config/certs.ttar' do
 
       context 'when ha_proxy.client_ca_file is also configured globally' do
         let(:ttar) do
-          templa
+          template.render({
+            'ha_proxy' => {
+              'crt_list' => [{
+                'client_ca_file' => 'client_ca_file contents'
+              }],
+              'client_ca_file' => 'client_ca_file contents'
+            }
+          })
+        end
+
+        it 'aborts with a meaningful error message' do
+          expect do
+            ttar
+          end.to raise_error(/Conflicting confi

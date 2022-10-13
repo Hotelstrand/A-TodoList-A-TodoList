@@ -152,4 +152,20 @@ describe 'config/certs.ttar' do
       it 'references the client ca file in the crt-list' do
         expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/crt-list')).to eq(<<~EXPECTED)
 
- 
+          /var/vcap/jobs/haproxy/config/ssl/cert-0.pem [ca-file /var/vcap/jobs/haproxy/config/ssl/ca-file-0.pem]
+
+
+        EXPECTED
+      end
+
+      it 'has the correct ca file contents' do
+        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/ca-file-0.pem')).to eq(<<~EXPECTED)
+
+          client_ca_file contents
+
+        EXPECTED
+      end
+
+      context 'when ha_proxy.client_ca_file is also configured globally' do
+        let(:ttar) do
+          templa

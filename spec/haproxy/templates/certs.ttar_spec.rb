@@ -222,4 +222,21 @@ describe 'config/certs.ttar' do
               'crt_list' => [{
                 'client_revocation_list' => 'client_revocation_list contents'
               }],
-              'client_revocation_list' => 'client_revocation_li
+              'client_revocation_list' => 'client_revocation_list contents'
+            }
+          })
+        end
+
+        it 'aborts with a meaningful error message' do
+          expect do
+            ttar
+          end.to raise_error(/Conflicting configuration. Please configure 'client_revocation_list' either globally OR in 'crt_list' entries, but not both/)
+        end
+      end
+    end
+
+    describe 'ha_proxy.crt_list[].verify' do
+      let(:ttar) do
+        template.render({
+          'ha_proxy' => {
+            'crt_list' => [{

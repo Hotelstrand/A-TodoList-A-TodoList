@@ -208,4 +208,18 @@ describe 'config/certs.ttar' do
       end
 
       it 'has the correct crl file contents' do
-        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/crl-file-
+        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/crl-file-0.pem')).to eq(<<~EXPECTED)
+
+          client_revocation_list contents
+
+        EXPECTED
+      end
+
+      context 'when ha_proxy.client_revocation_list is also configured globally' do
+        let(:ttar) do
+          template.render({
+            'ha_proxy' => {
+              'crt_list' => [{
+                'client_revocation_list' => 'client_revocation_list contents'
+              }],
+              'client_revocation_list' => 'client_revocation_li

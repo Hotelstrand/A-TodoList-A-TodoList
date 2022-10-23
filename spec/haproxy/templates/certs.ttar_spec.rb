@@ -257,4 +257,24 @@ describe 'config/certs.ttar' do
       end
     end
 
-    describe 'ha_proxy.crt_list[].sn
+    describe 'ha_proxy.crt_list[].snifilter' do
+      let(:ttar) do
+        template.render({
+          'ha_proxy' => {
+            'crt_list' => [{
+              'snifilter' => snifilter,
+              'ssl_pem' => 'ssl_pem contents'
+            }]
+          }
+        })
+      end
+
+      context 'when snilter is an array' do
+        let(:snifilter) do
+          [
+            '*.domain.tld',
+            '!secure.domain.tld'
+          ]
+        end
+
+        it '

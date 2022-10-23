@@ -277,4 +277,18 @@ describe 'config/certs.ttar' do
           ]
         end
 
-        it '
+        it 'is included in the crt list' do
+          expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/crt-list')).to eq(<<~EXPECTED)
+
+            /var/vcap/jobs/haproxy/config/ssl/cert-0.pem *.domain.tld !secure.domain.tld
+
+
+          EXPECTED
+        end
+      end
+
+      context 'when snilter is a string' do
+        let(:snifilter) { '*.domain.tld' }
+
+        it 'is included in the crt list' do
+          expect(ttar_entry(ttar, '/var/vcap/jo

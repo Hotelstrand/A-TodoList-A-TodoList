@@ -240,3 +240,21 @@ describe 'config/certs.ttar' do
         template.render({
           'ha_proxy' => {
             'crt_list' => [{
+              'verify' => 'required',
+              'ssl_pem' => 'ssl_pem contents'
+            }]
+          }
+        })
+      end
+
+      it 'is included in the crt list' do
+        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/crt-list')).to eq(<<~EXPECTED)
+
+          /var/vcap/jobs/haproxy/config/ssl/cert-0.pem [verify required]
+
+
+        EXPECTED
+      end
+    end
+
+    describe 'ha_proxy.crt_list[].sn

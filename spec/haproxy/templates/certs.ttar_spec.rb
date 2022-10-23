@@ -291,4 +291,20 @@ describe 'config/certs.ttar' do
         let(:snifilter) { '*.domain.tld' }
 
         it 'is included in the crt list' do
-          expect(ttar_entry(ttar, '/var/vcap/jo
+          expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/crt-list')).to eq(<<~EXPECTED)
+
+            /var/vcap/jobs/haproxy/config/ssl/cert-0.pem *.domain.tld
+
+
+          EXPECTED
+        end
+      end
+    end
+
+    describe 'ha_proxy.crt_list[].ssl_ciphers' do
+      let(:ttar) do
+        template.render({
+          'ha_proxy' => {
+            'crt_list' => [{
+              'ssl_ciphers' => 'AES:ALL:!aNULL:!eNULL:+RC4:@STRENGTH',
+              'ssl_pem' => 'ssl_pem contents'

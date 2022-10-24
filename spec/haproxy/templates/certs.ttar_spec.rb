@@ -308,3 +308,21 @@ describe 'config/certs.ttar' do
             'crt_list' => [{
               'ssl_ciphers' => 'AES:ALL:!aNULL:!eNULL:+RC4:@STRENGTH',
               'ssl_pem' => 'ssl_pem contents'
+            }]
+          }
+        })
+      end
+
+      it 'is included in the crt list' do
+        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/crt-list')).to eq(<<~EXPECTED)
+
+          /var/vcap/jobs/haproxy/config/ssl/cert-0.pem [ciphers AES:ALL:!aNULL:!eNULL:+RC4:@STRENGTH]
+
+
+        EXPECTED
+      end
+    end
+
+    describe 'ha_proxy.crt_list[].ssl_ciphersuites' do
+      let(:ttar) do
+       

@@ -338,4 +338,20 @@ describe 'config/certs.ttar' do
       it 'is included in the crt list' do
         expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/crt-list')).to eq(<<~EXPECTED)
 
-          /var/vcap/jobs/haproxy/
+          /var/vcap/jobs/haproxy/config/ssl/cert-0.pem [ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384]
+
+
+        EXPECTED
+      end
+    end
+  end
+
+  describe 'ha_proxy.crt_list[].ssl_min_version' do
+    let(:ttar) do
+      template.render({
+        'ha_proxy' => {
+          'crt_list' => [{
+            'ssl_min_version' => 'TLSv1.2',
+            'ssl_pem' => 'ssl_pem contents'
+          }]
+        }

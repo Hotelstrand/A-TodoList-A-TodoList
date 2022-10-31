@@ -515,4 +515,21 @@ describe 'config/certs.ttar' do
       end
 
       it 'is referenced in the crt list' do
-        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/crt-l
+        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/crt-list')).to eq(<<~EXPECTED)
+
+          /var/vcap/jobs/haproxy/config/ssl/cert-0.pem
+          /var/vcap/jobs/haproxy/config/ssl/cert-1.pem
+
+          #OPTIONAL_EXT_CERTS
+
+        EXPECTED
+      end
+
+      it 'has the correct internal certificate contents' do
+        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/cert-0.pem')).to eq(<<~EXPECTED)
+
+          ssl_pem 0 contents
+
+        EXPECTED
+
+        expect(ttar_entry(ttar, '/var/v

@@ -482,4 +482,22 @@ describe 'config/certs.ttar' do
   describe 'ha_proxy.ext_crt_list' do
     context 'when there are no internal certificates' do
       let(:ttar) do
- 
+        template.render({
+          'ha_proxy' => {
+            'crt_list' => [],
+            'ext_crt_list' => true
+          }
+        })
+      end
+
+      it 'is referenced in the crt list' do
+        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/crt-list')).to eq(<<~EXPECTED)
+
+
+          #OPTIONAL_EXT_CERTS
+
+        EXPECTED
+      end
+    end
+
+    context 'when there are also internal certific

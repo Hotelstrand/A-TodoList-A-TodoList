@@ -532,4 +532,18 @@ describe 'config/certs.ttar' do
 
         EXPECTED
 
-        expect(ttar_entry(ttar, '/var/v
+        expect(ttar_entry(ttar, '/var/vcap/jobs/haproxy/config/ssl/cert-1.pem')).to eq(<<~EXPECTED)
+
+          ssl_pem 1 contents
+
+        EXPECTED
+      end
+    end
+  end
+
+  context 'when no certificate-related properties are provided' do
+    it 'is empty' do
+      expect(template.render({})).to be_a_blank_string
+    end
+  end
+end

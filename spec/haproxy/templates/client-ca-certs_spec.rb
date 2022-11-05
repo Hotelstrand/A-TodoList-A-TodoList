@@ -16,4 +16,8 @@ describe 'config/client-ca-certs.pem' do
 
     context 'when ha_proxy.client_ca_file is not provided' do
       it 'is empty' do
-        expect(template.render({})).
+        expect(template.render({})).to be_a_blank_string
+      end
+    end
+  end
+end

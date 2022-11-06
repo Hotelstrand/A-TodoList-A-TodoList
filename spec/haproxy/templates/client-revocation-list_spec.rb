@@ -10,4 +10,14 @@ describe 'config/client-revocation-list.pem' do
       expect(template.render({
         'ha_proxy' => {
           'client_revocation_list' => 'foobarbaz'
-        
+        }
+      })).to eq("\nfoobarbaz\n\n")
+    end
+
+    context 'when ha_proxy.client_revocation_list is not provided' do
+      it 'is empty' do
+        expect(template.render({})).to be_a_blank_string
+      end
+    end
+  end
+end

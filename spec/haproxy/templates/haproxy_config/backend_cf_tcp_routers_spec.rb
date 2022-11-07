@@ -38,4 +38,17 @@ describe 'config/haproxy.config backend cf_tcp_routers' do
     end
   end
 
-  it 'has the co
+  it 'has the correct servers' do
+    expect(backend_cf_tcp_routers).to include('server node0 tcp.cf.com check port 80 inter 1000')
+  end
+
+  context 'when no tcp_router link is provided' do
+    let(:haproxy_conf) do
+      parse_haproxy_config(template.render(properties))
+    end
+
+    it 'is not included' do
+      expect(haproxy_conf).not_to have_key('backend cf_tcp_routers')
+    end
+  end
+end

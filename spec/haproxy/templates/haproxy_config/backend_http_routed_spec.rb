@@ -60,3 +60,278 @@ describe 'config/haproxy.config backend http-routed-backend-X' do
   end
 
   context 'when ha_proxy.resolvers are provided' do
+    let(:properties) do
+      default_properties.deep_merge({ 'resolvers' => [{ 'public' => '1.1.1.1' }] })
+    end
+
+    it 'sets the resolver on the server configuration' do
+      expect(backend_images).to include('server node0 10.0.0.2:443 resolvers default check inter 1000')
+      expect(backend_images).to include('server node1 10.0.0.3:443 resolvers default check inter 1000')
+      expect(backend_auth).to include('server node0 10.0.0.8:8080 resolvers default check inter 1000')
+      expect(backend_auth).to include('server node1 10.0.0.9:8080 resolvers default check inter 1000')
+    end
+  end
+
+  context 'when backend_use_http_health is true' do
+    let(:properties) do
+      default_properties.deep_merge({
+        'routed_backend_servers' => {
+          '/images' => {
+            'backend_use_http_health' => true
+          }
+        }
+      })
+    end
+
+    it 'configures the healthcheck' do
+      expect(backend_images).to include('option httpchk GET /health')
+    end
+
+    it 'uses the backend port for the healthcheck' do
+      expect(backend_images).to include('server node0 10.0.0.2:443 check inter 1000 port 443')
+      expect(backend_images).to include('server node1 10.0.0.3:443 check inter 1000 port 443')
+    end
+
+    context 'when backend_http_health_port is provided' do
+      let(:properties) do
+        default_properties.deep_merge({
+          'routed_backend_servers' => {
+            '/images' => {
+              'backend_use_http_health' => true,
+              'backend_http_health_port' => 9999
+            }
+          }
+        })
+      end
+
+      it 'configures the correct check port on the servers' do
+        expect(backend_images).to include('server node0 10.0.0.2:443 check inter 1000 port 9999')
+        expect(backend_images).to include('server node1 10.0.0.3:443 check inter 1000 port 9999')
+      end
+    end
+
+    context 'when backend_health_fall is provided' do
+      let(:properties) do
+        default_properties.deep_merge({
+          'routed_backend_servers' => {
+            '/images' => {
+              'backend_use_http_health' => true,
+              'backend_health_fall' => 3
+            }
+          }
+        })
+      end
+
+      it 'configures the correct check rise and fall on the servers' do
+        expect(backend_images).to include('server node0 10.0.0.2:443 check inter 1000 port 443 fall 3')
+        expect(backend_images).to include('server node1 10.0.0.3:443 check inter 1000 port 443 fall 3')
+      end
+    end
+
+    context 'when backend_health_rise is provided' do
+      let(:properties) do
+        default_properties.deep_merge({
+          'routed_backend_servers' => {
+            '/images' => {
+              'backend_use_http_health' => true,
+              'backend_health_rise' => 2
+            }
+          }
+        })
+      end
+
+      it 'configures the correct check rise and fall on the servers' do
+        expect(backend_images).to include('server node0 10.0.0.2:443 check inter 1000 port 443 rise 2')
+        expect(backend_images).to include('server node1 10.0.0.3:443 check inter 1000 port 443 rise 2')
+      end
+    end
+
+    context 'when backend_health_fall and backend_rise is provided' do
+      let(:properties) do
+        default_properties.deep_merge({
+          'routed_backend_servers' => {
+            '/images' => {
+              'backend_use_http_health' => true,
+              'backend_health_fall' => 3,
+              'backend_health_rise' => 2
+            }
+          }
+        })
+      end
+
+      it 'configures the correct check rise and fall on the servers' do
+        expect(backend_images).to include('server node0 10.0.0.2:443 check inter 1000 port 443 fall 3 rise 2')
+        expect(backend_images).to include('server node1 10.0.0.3:443 check inter 1000 port 443 fall 3 rise 2')
+      end
+    end
+
+    context 'when backend_http_health_uri is provided' do
+      let(:properties) do
+        default_properties.deep_merge({
+          'routed_backend_servers' => {
+            '/images' => {
+              'backend_use_http_health' => true,
+              'backend_http_health_uri' => '/alive'
+            }
+          }
+        })
+      end
+
+      it 'overrides the default health check uri' do
+        expect(backend_images).to include('option httpchk GET /alive')
+      end
+    end
+  end
+
+  context 'when backend_ssl is verify' do
+    let(:properties) do
+      default_properties.deep_merge({
+        'routed_backend_servers' => {
+          '/images' => {
+            'backend_ssl' => 'verify'
+          }
+        }
+      })
+    end
+
+    it 'configures the server to use ssl: verify' do
+      expect(backend_images).to include('server node0 10.0.0.2:443 check inter 1000 ssl verify required ca-file /var/vcap/jobs/haproxy/config/backend-ca-certs.pem')
+      expect(backend_images).to include('server node1 10.0.0.3:443 check inter 1000 ssl verify required ca-file /var/vcap/jobs/haproxy/config/backend-ca-certs.pem')
+    end
+
+    context 'when ha_proxy.enable_http2 is true' do
+      let(:properties) do
+        default_properties.deep_merge({
+          'routed_backend_servers' => {
+            '/images' => {
+              'backend_ssl' => 'verify'
+            }
+          },
+          'enable_http2' => true
+        })
+      end
+
+      it 'enables h2 ALPN negotiation with routed backends' do
+        expect(backend_images).to include('server node0 10.0.0.2:443 check inter 1000 ssl verify required ca-file /var/vcap/jobs/haproxy/config/backend-ca-certs.pem alpn h2,http/1.1')
+        expect(backend_images).to include('server node1 10.0.0.3:443 check inter 1000 ssl verify required ca-file /var/vcap/jobs/haproxy/config/backend-ca-certs.pem alpn h2,http/1.1')
+      end
+    end
+
+    context 'when ha_proxy.backend_verifyhost is provided' do
+      let(:properties) do
+        default_properties.deep_merge({
+          'routed_backend_servers' => {
+            '/images' => {
+              'backend_ssl' => 'verify',
+              'backend_verifyhost' => 'backend.com'
+            }
+          }
+        })
+      end
+
+      it 'configures the server to use ssl: verify with verifyhost for the provided host name' do
+        expect(backend_images).to include('server node0 10.0.0.2:443 check inter 1000 ssl verify required ca-file /var/vcap/jobs/haproxy/config/backend-ca-certs.pem verifyhost backend.com')
+        expect(backend_images).to include('server node1 10.0.0.3:443 check inter 1000 ssl verify required ca-file /var/vcap/jobs/haproxy/config/backend-ca-certs.pem verifyhost backend.com')
+      end
+
+      context 'when backend_ssl is not verify' do
+        let(:properties) do
+          default_properties.deep_merge({
+            'routed_backend_servers' => {
+              '/images' => {
+                'backend_ssl' => 'noverify',
+                'backend_verifyhost' => 'backend.com'
+              }
+            }
+          })
+        end
+
+        it 'aborts with a meaningful error message' do
+          expect do
+            backend_images
+          end.to raise_error(/Conflicting configuration: backend_ssl must be 'verify' to use backend_verifyhost in routed_backend_servers/)
+        end
+      end
+    end
+  end
+
+  context 'when ha_proxy.backend_ssl is noverify' do
+    let(:properties) do
+      default_properties.deep_merge({
+        'routed_backend_servers' => {
+          '/images' => {
+            'backend_ssl' => 'noverify'
+          }
+        }
+      })
+    end
+
+    it 'configures the server to use ssl: verify none' do
+      expect(backend_images).to include('server node0 10.0.0.2:443 check inter 1000 ssl verify none')
+      expect(backend_images).to include('server node1 10.0.0.3:443 check inter 1000 ssl verify none')
+    end
+
+    context 'when ha_proxy.enable_http2 is true' do
+      let(:properties) do
+        default_properties.deep_merge({
+          'routed_backend_servers' => {
+            '/images' => {
+              'backend_ssl' => 'noverify'
+            }
+          },
+          'enable_http2' => true
+        })
+      end
+
+      it 'enables h2 ALPN negotiation with routed backends' do
+        expect(backend_images).to include('server node0 10.0.0.2:443 check inter 1000 ssl verify none alpn h2,http/1.1')
+        expect(backend_images).to include('server node1 10.0.0.3:443 check inter 1000 ssl verify none alpn h2,http/1.1')
+      end
+    end
+  end
+
+  context 'when ha_proxy.backend_ssl is off' do
+    let(:properties) do
+      default_properties.deep_merge({
+        'routed_backend_servers' => {
+          '/images' => {
+            'backend_ssl' => 'off'
+          }
+        }
+      })
+    end
+
+    it 'configures the server to not use ssl' do
+      expect(backend_images).to include('server node0 10.0.0.2:443 check inter 1000')
+      expect(backend_images).to include('server node1 10.0.0.3:443 check inter 1000')
+    end
+
+    context 'when ha_proxy.enable_http2 is true' do
+      let(:properties) do
+        default_properties.deep_merge({
+          'routed_backend_servers' => {
+            '/images' => {
+              'backend_ssl' => 'off'
+            }
+          },
+          'enable_http2' => true
+        })
+      end
+
+      it 'does not include ALPN configuration' do
+        expect(backend_images).to include('server node0 10.0.0.2:443 check inter 1000')
+        expect(backend_images).to include('server node1 10.0.0.3:443 check inter 1000')
+      end
+    end
+  end
+
+  context 'when ha_proxy.routed_backend_servers is not provided' do
+    let(:haproxy_conf) do
+      parse_haproxy_config(template.render({}))
+    end
+
+    it 'is not included' do
+      expect(haproxy_conf).not_to have_key(/backend http-routed-backend/)
+    end
+  end
+end

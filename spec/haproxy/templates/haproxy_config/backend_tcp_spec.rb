@@ -4,4 +4,17 @@ require 'rspec'
 
 describe 'config/haproxy.config custom TCP backends' do
   let(:haproxy_conf) do
-    parse_haproxy_config(template.render({ 'ha_proxy' => properties }, consumes: [backen
+    parse_haproxy_config(template.render({ 'ha_proxy' => properties }, consumes: [backend_tcp_link]))
+  end
+
+  let(:backend_tcp_link) do
+    Bosh::Template::Test::Link.new(
+      name: 'tcp_backend',
+      instances: [
+        # will appear in same AZ
+        Bosh::Template::Test::LinkInstance.new(address: 'postgres.az1.com', name: 'postgres', az: 'az1'),
+
+        # will appear in another AZ
+        Bosh::Template::Test::LinkInstance.new(address: 'postgres.az2.com', name: 'postgres', az: 'az2')
+      ]
+ 

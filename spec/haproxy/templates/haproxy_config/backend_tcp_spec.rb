@@ -32,4 +32,20 @@ describe 'config/haproxy.config custom TCP backends' do
         'port' => 6379,
         'backend_servers' => ['10.0.0.1', '10.0.0.2']
       }, {
-        'name' =>
+        'name' => 'mysql',
+        'port' => 3306,
+        'backend_servers' => ['11.0.0.1', '11.0.0.2']
+      }]
+    }
+  end
+
+  let(:properties) { default_properties }
+
+  it 'has the correct mode' do
+    expect(backend_tcp_redis).to include('mode tcp')
+    expect(backend_tcp_mysql).to include('mode tcp')
+    expect(backend_tcp_postgres_via_link).to include('mode tcp')
+  end
+
+  context 'when backend_port is provided' do
+    let(:proper

@@ -48,4 +48,19 @@ describe 'config/haproxy.config custom TCP backends' do
   end
 
   context 'when backend_port is provided' do
-    let(:proper
+    let(:properties) do
+      {
+        'tcp_link_port' => 5432,
+        'tcp' => [{
+          'name' => 'redis',
+          'port' => 6379,
+          'backend_port' => 6380,
+          'backend_servers' => ['10.0.0.1', '10.0.0.2'],
+          'balance' => 'leastconn'
+        }, {
+          'name' => 'mysql',
+          'port' => 3306,
+          'backend_port' => 3307,
+          'backend_servers' => ['11.0.0.1', '11.0.0.2'],
+          'balance' => 'leastconn'
+      

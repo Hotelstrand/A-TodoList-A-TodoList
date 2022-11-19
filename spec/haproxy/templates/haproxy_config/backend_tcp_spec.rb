@@ -63,4 +63,13 @@ describe 'config/haproxy.config custom TCP backends' do
           'backend_port' => 3307,
           'backend_servers' => ['11.0.0.1', '11.0.0.2'],
           'balance' => 'leastconn'
-      
+        }]
+      }
+    end
+
+    it 'configures the backend servers with the correct backend port' do
+      expect(backend_tcp_redis).to include('server node0 10.0.0.1:6380 check port 6380 inter 1000')
+      expect(backend_tcp_redis).to include('server node1 10.0.0.2:6380 check port 6380 inter 1000')
+
+      expect(backend_tcp_mysql).to include('server node0 11.0.0.1:3307 check port 3307 inter 1000')
+      expect(backend_tcp_mysql).to inclu

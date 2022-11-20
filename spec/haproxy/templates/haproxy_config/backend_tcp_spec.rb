@@ -72,4 +72,20 @@ describe 'config/haproxy.config custom TCP backends' do
       expect(backend_tcp_redis).to include('server node1 10.0.0.2:6380 check port 6380 inter 1000')
 
       expect(backend_tcp_mysql).to include('server node0 11.0.0.1:3307 check port 3307 inter 1000')
-      expect(backend_tcp_mysql).to inclu
+      expect(backend_tcp_mysql).to include('server node1 11.0.0.2:3307 check port 3307 inter 1000')
+    end
+  end
+
+  context 'when balance is provided (not available via link)' do
+    let(:properties) do
+      {
+        'tcp_link_port' => 5432,
+        'tcp' => [{
+          'name' => 'redis',
+          'port' => 6379,
+          'backend_servers' => ['10.0.0.1', '10.0.0.2'],
+          'balance' => 'leastconn'
+        }, {
+          'name' => 'mysql',
+          'port' => 3306,
+          'backend

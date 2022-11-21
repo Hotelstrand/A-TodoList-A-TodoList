@@ -88,4 +88,18 @@ describe 'config/haproxy.config custom TCP backends' do
         }, {
           'name' => 'mysql',
           'port' => 3306,
-          'backend
+          'backend_servers' => ['11.0.0.1', '11.0.0.2'],
+          'balance' => 'leastconn'
+        }]
+      }
+    end
+
+    it 'uses the specified balancing algorithm' do
+      expect(backend_tcp_redis).to include('balance leastconn')
+      expect(backend_tcp_mysql).to include('balance leastconn')
+    end
+  end
+
+  it 'configures the backend servers' do
+    expect(backend_tcp_redis).to include('server node0 10.0.0.1:6379 check port 6379 inter 1000')
+    expect(backend_tcp_r

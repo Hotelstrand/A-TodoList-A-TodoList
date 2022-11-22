@@ -134,4 +134,10 @@ describe 'config/haproxy.config custom TCP backends' do
     let(:properties) { default_properties.merge({ 'tcp_link_check_port' => 9000 }) }
 
     it 'overrides the health check port' do
-      expect
+      expect(backend_tcp_redis).to include('server node0 10.0.0.1:6379 check port 9000 inter 1000')
+      expect(backend_tcp_redis).to include('server node1 10.0.0.2:6379 check port 9000 inter 1000')
+
+      expect(backend_tcp_mysql).to include('server node0 11.0.0.1:3306 check port 9000 inter 1000')
+      expect(backend_tcp_mysql).to include('server node1 11.0.0.2:3306 check port 9000 inter 1000')
+
+      expect(backend_tcp_postgres_via_lin

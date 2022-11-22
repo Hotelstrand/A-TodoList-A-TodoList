@@ -108,4 +108,20 @@ describe 'config/haproxy.config custom TCP backends' do
     expect(backend_tcp_mysql).to include('server node1 11.0.0.2:3306 check port 3306 inter 1000')
 
     expect(backend_tcp_postgres_via_link).to include('server node0 postgres.az1.com:5432 check port 5432 inter 1000')
-    expect(backend_tcp_postgres_via_link).to in
+    expect(backend_tcp_postgres_via_link).to include('server node1 postgres.az2.com:5432 check port 5432 inter 1000  backup')
+  end
+
+  context 'when a server is included in backend_servers_local' do
+    let(:properties) do
+      {
+        'tcp_link_port' => 5432,
+        'tcp' => [{
+          'name' => 'redis',
+          'port' => 6379,
+          'backend_servers' => ['10.0.0.1', '10.0.0.2'],
+          'backend_servers_local' => ['10.0.0.1']
+        }]
+      }
+    end
+
+    it 'configures non-loca

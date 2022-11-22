@@ -124,4 +124,14 @@ describe 'config/haproxy.config custom TCP backends' do
       }
     end
 
-    it 'configures non-loca
+    it 'configures non-local servers as "backups"' do
+      expect(backend_tcp_redis).to include('server node0 10.0.0.1:6379 check port 6379 inter 1000')
+      expect(backend_tcp_redis).to include('server node1 10.0.0.2:6379 check port 6379 inter 1000  backup')
+    end
+  end
+
+  context 'when ha_proxy.tcp_link_check_port is provided' do
+    let(:properties) { default_properties.merge({ 'tcp_link_check_port' => 9000 }) }
+
+    it 'overrides the health check port' do
+      expect

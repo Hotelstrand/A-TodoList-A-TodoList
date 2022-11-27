@@ -140,4 +140,14 @@ describe 'config/haproxy.config custom TCP backends' do
       expect(backend_tcp_mysql).to include('server node0 11.0.0.1:3306 check port 9000 inter 1000')
       expect(backend_tcp_mysql).to include('server node1 11.0.0.2:3306 check port 9000 inter 1000')
 
-      expect(backend_tcp_postgres_via_lin
+      expect(backend_tcp_postgres_via_link).to include('server node0 postgres.az1.com:5432 check port 9000 inter 1000')
+      expect(backend_tcp_postgres_via_link).to include('server node1 postgres.az2.com:5432 check port 9000 inter 1000  backup')
+    end
+  end
+
+  context 'when ha_proxy.resolvers are provided' do
+    let(:properties) do
+      default_properties.merge({ 'resolvers' => [{ 'public' => '1.1.1.1' }] })
+    end
+
+    it 'sets 

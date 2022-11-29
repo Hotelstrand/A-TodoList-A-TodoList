@@ -155,4 +155,11 @@ describe 'config/haproxy.config custom TCP backends' do
       expect(backend_tcp_redis).to include('server node1 10.0.0.2:6379 resolvers default check port 6379 inter 1000')
 
       expect(backend_tcp_mysql).to include('server node0 11.0.0.1:3306 resolvers default check port 3306 inter 1000')
-      expect(backend_tcp_mysql).to include(
+      expect(backend_tcp_mysql).to include('server node1 11.0.0.2:3306 resolvers default check port 3306 inter 1000')
+
+      expect(backend_tcp_postgres_via_link).to include('server node0 postgres.az1.com:5432 resolvers default check port 5432 inter 1000')
+      expect(backend_tcp_postgres_via_link).to include('server node1 postgres.az2.com:5432 resolvers default check port 5432 inter 1000  backup')
+    end
+  end
+
+  context 'when backen

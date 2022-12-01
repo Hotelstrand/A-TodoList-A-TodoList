@@ -176,4 +176,11 @@ describe 'config/haproxy.config custom TCP backends' do
     end
 
     it 'configures the server to use ssl: verify' do
-      expect(backend_tcp_redis).to include('server node0 10.0.0.1:6379 check port 6379
+      expect(backend_tcp_redis).to include('server node0 10.0.0.1:6379 check port 6379 inter 1000 ssl verify required ca-file /var/vcap/jobs/haproxy/config/backend-ca-certs.pem')
+      expect(backend_tcp_redis).to include('server node1 10.0.0.2:6379 check port 6379 inter 1000 ssl verify required ca-file /var/vcap/jobs/haproxy/config/backend-ca-certs.pem')
+    end
+
+    context 'when ha_proxy.backend_ssl_verifyhost is provided' do
+      let(:properties) do
+        {
+          'tcp

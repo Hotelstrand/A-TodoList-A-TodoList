@@ -199,4 +199,18 @@ describe 'config/haproxy.config custom TCP backends' do
         expect(backend_tcp_redis).to include('server node1 10.0.0.2:6379 check port 6379 inter 1000 ssl verify required ca-file /var/vcap/jobs/haproxy/config/backend-ca-certs.pem verifyhost backend.com')
       end
 
-      context 'when ha_proxy.backend_ssl is not 
+      context 'when ha_proxy.backend_ssl is not verify' do
+        let(:properties) do
+          {
+            'tcp_link_port' => 5432,
+            'tcp' => [{
+              'name' => 'redis',
+              'port' => 6379,
+              'backend_servers' => ['10.0.0.1', '10.0.0.2'],
+              'backend_ssl' => 'noverify',
+              'backend_verifyhost' => 'backend.com'
+            }]
+          }
+        end
+
+        it 'aborts with a meaningful error mes

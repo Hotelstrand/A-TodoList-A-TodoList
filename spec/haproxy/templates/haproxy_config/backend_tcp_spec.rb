@@ -213,4 +213,19 @@ describe 'config/haproxy.config custom TCP backends' do
           }
         end
 
-        it 'aborts with a meaningful error mes
+        it 'aborts with a meaningful error message' do
+          expect do
+            backend_tcp_redis
+          end.to raise_error(/Conflicting configuration: backend_ssl must be 'verify' to use backend_verifyhost in tcp backend configuration/)
+        end
+      end
+    end
+  end
+
+  context 'when ha_proxy.backend_ssl is noverify' do
+    let(:properties) do
+      {
+        'tcp_link_port' => 5432,
+        'tcp' => [{
+          'name' => 'redis',
+          'port' => 6379,

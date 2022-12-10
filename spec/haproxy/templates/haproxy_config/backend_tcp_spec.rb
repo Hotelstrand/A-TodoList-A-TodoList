@@ -229,3 +229,16 @@ describe 'config/haproxy.config custom TCP backends' do
         'tcp' => [{
           'name' => 'redis',
           'port' => 6379,
+          'backend_servers' => ['10.0.0.1', '10.0.0.2'],
+          'backend_ssl' => 'noverify'
+        }]
+      }
+    end
+
+    it 'configures the server to use ssl: verify none' do
+      expect(backend_tcp_redis).to include('server node0 10.0.0.1:6379 check port 6379 inter 1000 ssl verify none')
+      expect(backend_tcp_redis).to include('server node1 10.0.0.2:6379 check port 6379 inter 1000 ssl verify none')
+    end
+  end
+
+  co

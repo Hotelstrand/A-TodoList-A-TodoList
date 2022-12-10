@@ -241,4 +241,13 @@ describe 'config/haproxy.config custom TCP backends' do
     end
   end
 
-  co
+  context 'when ha_proxy.tcp is not provided' do
+    let(:haproxy_conf) do
+      parse_haproxy_config(template.render({}))
+    end
+
+    it 'is not included' do
+      expect(haproxy_conf).not_to have_key(/backend tcp/)
+    end
+  end
+end

@@ -54,4 +54,16 @@ describe 'config/haproxy.config frontend cf_tcp_routing' do
   end
 
   it 'has the correct backend' do
-    expect(frontend_cf_tcp_routing).to include('default_backend cf_tcp_routers'
+    expect(frontend_cf_tcp_routing).to include('default_backend cf_tcp_routers')
+  end
+
+  context 'when no tcp_router link is provided' do
+    let(:haproxy_conf) do
+      parse_haproxy_config(template.render(properties))
+    end
+
+    it 'is not included' do
+      expect(haproxy_conf).not_to have_key('frontend cf_tcp_routing')
+    end
+  end
+end

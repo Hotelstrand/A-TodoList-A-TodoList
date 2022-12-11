@@ -37,3 +37,21 @@ describe 'config/haproxy.config frontend cf_tcp_routing' do
     it 'overrides the binding ip' do
       expect(frontend_cf_tcp_routing).to include('bind 1.2.3.4:1024-1123')
     end
+  end
+
+  context 'when ha_proxy.tcp_routing.port_range is provided' do
+    let(:properties) do
+      {
+        'tcp_routing' => {
+          'port_range' => '100-200'
+        }
+      }
+    end
+
+    it 'overrides the port range' do
+      expect(frontend_cf_tcp_routing).to include('bind :100-200')
+    end
+  end
+
+  it 'has the correct backend' do
+    expect(frontend_cf_tcp_routing).to include('default_backend cf_tcp_routers'

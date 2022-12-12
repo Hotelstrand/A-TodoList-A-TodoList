@@ -23,4 +23,20 @@ describe 'config/haproxy.config HTTP frontend' do
       expect(frontend_http).to include('bind 1.2.3.4:80')
     end
 
-    co
+    context 'when ha_proxy.v4v6 is true and binding_ip is ::' do
+      let(:properties) do
+        { 'v4v6' => true, 'binding_ip' => '::' }
+      end
+
+      it 'enables ipv6' do
+        expect(frontend_http).to include('bind :::80  v4v6')
+      end
+    end
+
+    context 'when ha_proxy.accept_proxy is true' do
+      let(:properties) do
+        { 'accept_proxy' => true }
+      end
+
+      it 'sets accept-proxy' do
+        expec

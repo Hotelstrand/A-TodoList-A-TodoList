@@ -39,4 +39,20 @@ describe 'config/haproxy.config HTTP frontend' do
       end
 
       it 'sets accept-proxy' do
-        expec
+        expect(frontend_http).to include('bind :80 accept-proxy')
+      end
+    end
+  end
+
+  context 'when a custom ha_proxy.frontend_config is provided' do
+    let(:properties) do
+      { 'frontend_config' => 'custom config content' }
+    end
+
+    it 'includes the custom config' do
+      expect(frontend_http).to include('custom config content')
+    end
+  end
+
+  context 'when a ha_proxy.cidr_whitelist is provided' do
+    let(:proper

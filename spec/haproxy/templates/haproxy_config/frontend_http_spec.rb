@@ -67,4 +67,18 @@ describe 'config/haproxy.config HTTP frontend' do
 
   context 'when a ha_proxy.cidr_blacklist is provided' do
     let(:properties) do
-      { 'cid
+      { 'cidr_blacklist' => ['172.168.4.1/32', '10.2.0.0/16'] }
+    end
+
+    it 'sets the correct acl and content reject rules' do
+      expect(frontend_http).to include('acl blacklist src -f /var/vcap/jobs/haproxy/config/blacklist_cidrs.txt')
+      expect(frontend_http).to include('tcp-request content reject if blacklist')
+    end
+  end
+
+  context 'when ha_proxy.block_all is provided' do
+    let(:properties) do
+      { 'block_all' => true }
+    end
+
+  

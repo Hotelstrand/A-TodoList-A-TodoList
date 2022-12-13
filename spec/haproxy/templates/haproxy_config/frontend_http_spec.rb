@@ -55,4 +55,16 @@ describe 'config/haproxy.config HTTP frontend' do
   end
 
   context 'when a ha_proxy.cidr_whitelist is provided' do
-    let(:proper
+    let(:properties) do
+      { 'cidr_whitelist' => ['172.168.4.1/32', '10.2.0.0/16'] }
+    end
+
+    it 'sets the correct acl and content accept rules' do
+      expect(frontend_http).to include('acl whitelist src -f /var/vcap/jobs/haproxy/config/whitelist_cidrs.txt')
+      expect(frontend_http).to include('tcp-request content accept if whitelist')
+    end
+  end
+
+  context 'when a ha_proxy.cidr_blacklist is provided' do
+    let(:properties) do
+      { 'cid

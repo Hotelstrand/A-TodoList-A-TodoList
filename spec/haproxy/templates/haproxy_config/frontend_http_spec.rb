@@ -81,4 +81,15 @@ describe 'config/haproxy.config HTTP frontend' do
       { 'block_all' => true }
     end
 
-  
+    it 'sets the correct content reject rules' do
+      expect(frontend_http).to include('tcp-request content reject')
+    end
+  end
+
+  it 'correct request capturing configuration' do
+    expect(frontend_http).to include('capture request header Host len 256')
+  end
+
+  context 'when HTTP1 backend servers are available' do
+    it 'has the uses the HTTP1 backend default backend' do
+      expect(frontend_http).to include('defa

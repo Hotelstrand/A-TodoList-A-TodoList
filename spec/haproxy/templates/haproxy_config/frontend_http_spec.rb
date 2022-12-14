@@ -92,4 +92,20 @@ describe 'config/haproxy.config HTTP frontend' do
 
   context 'when HTTP1 backend servers are available' do
     it 'has the uses the HTTP1 backend default backend' do
-      expect(frontend_http).to include('defa
+      expect(frontend_http).to include('default_backend http-routers-http1')
+    end
+  end
+
+  context 'when only HTTP1 and HTTP2 backend servers are available' do
+    let(:properties) do
+      {
+        'disable_backend_http2_websockets' => true,
+        'enable_http2' => true,
+        'backend_ssl' => 'verify'
+      }
+    end
+
+    it 'uses the HTTP2 backend default backend' do
+      expect(frontend_http).to include('default_backend http-routers-http2')
+    end
+  end

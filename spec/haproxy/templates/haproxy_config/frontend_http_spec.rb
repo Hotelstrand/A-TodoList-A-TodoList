@@ -109,3 +109,20 @@ describe 'config/haproxy.config HTTP frontend' do
       expect(frontend_http).to include('default_backend http-routers-http2')
     end
   end
+
+  context 'when only HTTP2 backend servers are available' do
+    let(:properties) do
+      {
+        'disable_backend_http2_websockets' => false,
+        'enable_http2' => true,
+        'backend_match_http_protocol' => false,
+        'backend_ssl' => 'verify'
+      }
+    end
+
+    it 'uses the HTTP2 backend default backend' do
+      expect(frontend_http).to include('default_backend http-routers-http2')
+    end
+  end
+
+  context 'when ha_proxy.http_request_deny_co

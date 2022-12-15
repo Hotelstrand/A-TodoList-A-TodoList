@@ -125,4 +125,20 @@ describe 'config/haproxy.config HTTP frontend' do
     end
   end
 
-  context 'when ha_proxy.http_request_deny_co
+  context 'when ha_proxy.http_request_deny_conditions are provided' do
+    let(:properties) do
+      {
+        'http_request_deny_conditions' => [{
+          'condition' => [{
+            'acl_name' => 'block_host',
+            'acl_rule' => 'hdr_beg(host) -i login'
+          }, {
+            'acl_name' => 'whitelist_ips',
+            'acl_rule' => 'src 5.22.5.11 5.22.5.12',
+            'negate' => true
+          }]
+        }]
+      }
+    end
+
+    

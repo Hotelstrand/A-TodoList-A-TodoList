@@ -141,4 +141,14 @@ describe 'config/haproxy.config HTTP frontend' do
       }
     end
 
-    
+    it 'adds the correct acls and http-request deny rules' do
+      expect(frontend_http).to include('acl block_host hdr_beg(host) -i login')
+      expect(frontend_http).to include('acl whitelist_ips src 5.22.5.11 5.22.5.12')
+
+      expect(frontend_http).to include('http-request deny if block_host !whitelist_ips')
+    end
+  end
+
+  context 'when ha_proxy.headers are provided' do
+    let(:properties) do
+      { 'headers' => ['X-Applicat

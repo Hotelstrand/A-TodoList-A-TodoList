@@ -151,4 +151,15 @@ describe 'config/haproxy.config HTTP frontend' do
 
   context 'when ha_proxy.headers are provided' do
     let(:properties) do
-      { 'headers' => ['X-Applicat
+      { 'headers' => ['X-Application-ID: my-custom-header', 'MyCustomHeader: 3'] }
+    end
+
+    it 'adds the request headers' do
+      expect(frontend_http).to include('http-request add-header X-Application-ID:\ my-custom-header ""')
+      expect(frontend_http).to include('http-request add-header MyCustomHeader:\ 3 ""')
+    end
+  end
+
+  context 'when ha_proxy.rsp_headers are provided' do
+    let(:properties) do
+      { 'rsp_headers' => ['X-Application-ID: my-c

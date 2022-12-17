@@ -173,4 +173,14 @@ describe 'config/haproxy.config HTTP frontend' do
 
   context 'when ha_proxy.internal_only_domains are provided' do
     let(:properties) do
-      { 'intern
+      { 'internal_only_domains' => ['bosh.internal'] }
+    end
+
+    it 'adds the correct acl and http-request deny rules' do
+      expect(frontend_http).to include('acl private src -f /var/vcap/jobs/haproxy/config/trusted_domain_cidrs.txt')
+      expect(frontend_http).to include('acl internal hdr(Host) -m sub bosh.internal')
+      expect(frontend_http).to include('http-request deny if internal !private')
+    end
+  end
+
+  context 'when ha_proxy.routed_backend_servers are provid

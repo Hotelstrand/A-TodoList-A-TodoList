@@ -183,4 +183,19 @@ describe 'config/haproxy.config HTTP frontend' do
     end
   end
 
-  context 'when ha_proxy.routed_backend_servers are provid
+  context 'when ha_proxy.routed_backend_servers are provided' do
+    let(:properties) do
+      {
+        'routed_backend_servers' => {
+          '/images' => {
+            'port' => 12_000,
+            'servers' => ['10.0.0.1']
+          }
+        }
+      }
+    end
+
+    it 'grants access to the backend servers' do
+      expect(frontend_http).to include('acl routed_backend_9c1bb7_0 path_beg /images')
+      expect(frontend_http).to include('use_backend http-routed-backend-9c1bb7 if routed_backend_9c1bb7_0')
+    en

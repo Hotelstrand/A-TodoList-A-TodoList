@@ -213,4 +213,12 @@ describe 'config/haproxy.config HTTP frontend' do
 
       it 'includes additional acls' do
         expect(frontend_http).to include('acl routed_backend_9c1bb7_1 method GET')
- 
+        expect(frontend_http).to include('acl routed_backend_9c1bb7_2 path_end /foo')
+        expect(frontend_http).to include('use_backend http-routed-backend-9c1bb7 if routed_backend_9c1bb7_0 routed_backend_9c1bb7_1 routed_backend_9c1bb7_2')
+      end
+    end
+  end
+
+  it 'adds the X-Forwarded-Proto header' do
+    expect(frontend_http).to include('acl xfp_exists hdr_cnt(X-Forwarded-Proto) gt 0')
+    expect(frontend_http).

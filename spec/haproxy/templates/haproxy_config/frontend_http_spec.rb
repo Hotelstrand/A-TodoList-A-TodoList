@@ -198,4 +198,19 @@ describe 'config/haproxy.config HTTP frontend' do
     it 'grants access to the backend servers' do
       expect(frontend_http).to include('acl routed_backend_9c1bb7_0 path_beg /images')
       expect(frontend_http).to include('use_backend http-routed-backend-9c1bb7 if routed_backend_9c1bb7_0')
-    en
+    end
+
+    context 'when a routed_backend_server contains additional_acls' do
+      let(:properties) do
+        super().deep_merge({
+          'routed_backend_servers' => {
+            '/images' => {
+              'additional_acls' => ['method GET', 'path_end /foo']
+            }
+          }
+        })
+      end
+
+      it 'includes additional acls' do
+        expect(frontend_http).to include('acl routed_backend_9c1bb7_1 method GET')
+ 

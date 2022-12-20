@@ -221,4 +221,18 @@ describe 'config/haproxy.config HTTP frontend' do
 
   it 'adds the X-Forwarded-Proto header' do
     expect(frontend_http).to include('acl xfp_exists hdr_cnt(X-Forwarded-Proto) gt 0')
-    expect(frontend_http).
+    expect(frontend_http).to include('http-request add-header X-Forwarded-Proto "http" if ! xfp_exists')
+  end
+
+  context 'when ha_proxy.https_redirect_all is true' do
+    let(:properties) do
+      { 'https_redirect_all' => true }
+    end
+
+    it 'adds the redirect rule' do
+      expect(frontend_http).to include('redirect scheme https code 301 if !{ ssl_fc }')
+    end
+  end
+
+  context 'when ha_proxy.https_redirect_all is false (the default)' do
+  

@@ -235,4 +235,15 @@ describe 'config/haproxy.config HTTP frontend' do
   end
 
   context 'when ha_proxy.https_redirect_all is false (the default)' do
-  
+    let(:properties) do
+      { 'https_redirect_all' => false }
+    end
+
+    it 'only redirects domains specified in the redirect map' do
+      expect(frontend_http).to include('acl ssl_redirect hdr(host),lower,map_end(/var/vcap/jobs/haproxy/config/ssl_redirect.map,false) -m str true')
+      expect(frontend_http).to include('redirect scheme https code 301 if ssl_redirect')
+    end
+  end
+
+  context 'when ha_proxy.disable_http is true' do
+    

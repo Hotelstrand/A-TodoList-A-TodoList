@@ -246,4 +246,12 @@ describe 'config/haproxy.config HTTP frontend' do
   end
 
   context 'when ha_proxy.disable_http is true' do
-    
+    let(:properties) do
+      { 'disable_http' => true }
+    end
+
+    it 'removes the http frontend' do
+      expect(haproxy_conf).not_to have_key('frontend http-in')
+    end
+  end
+end

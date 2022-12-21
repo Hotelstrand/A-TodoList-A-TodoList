@@ -388,3 +388,265 @@ describe 'config/haproxy.config HTTPS Websockets frontend' do
         end
 
         it 'aborts with a meaningful error message' do
+          expect do
+            frontend_wss
+          end.to raise_error(/Conflicting configuration: hsts_enable must be true to use hsts_include_subdomains/)
+        end
+      end
+
+      it 'sets the includeSubDomains flag' do
+        expect(frontend_wss).to include('http-response set-header Strict-Transport-Security max-age=31536000;\ includeSubDomains;')
+      end
+    end
+
+    context 'when ha_proxy.hsts_preload is true' do
+      let(:properties) do
+        default_properties.merge({ 'hsts_enable' => true, 'hsts_preload' => true })
+      end
+
+      it 'sets the preload flag' do
+        expect(frontend_wss).to include('http-response set-header Strict-Transport-Security max-age=31536000;\ preload;')
+      end
+
+      context 'when ha_proxy.hsts_enable is false' do
+        let(:properties) do
+          default_properties.merge({ 'hsts_enable' => false, 'hsts_preload' => true })
+        end
+
+        it 'aborts with a meaningful error message' do
+          expect do
+            frontend_wss
+          end.to raise_error(/Conflicting configuration: hsts_enable must be true to enable hsts_preload/)
+        end
+      end
+    end
+  end
+
+  it 'correct request capturing configuration' do
+    expect(frontend_wss).to include('capture request header Host len 256')
+  end
+
+  context 'when only HTTP1 backend servers are available' do
+    it 'has the uses the HTTP1 backend default backend' do
+      expect(frontend_wss).to include('default_backend http-routers-http1')
+    end
+  end
+
+  context 'when HTTP1 and HTTP2 backend servers are available' do
+    let(:properties) do
+      default_properties.merge({
+        'disable_backend_http2_websockets' => true,
+        'enable_http2' => true,
+        'backend_ssl' => 'verify'
+      })
+    end
+
+    it 'uses the HTTP2 backend default backend' do
+      expect(frontend_wss).to include('default_backend http-routers-http2')
+    end
+  end
+
+  context 'when only HTTP2 backend servers are available' do
+    let(:properties) do
+      default_properties.merge({
+        'disable_backend_http2_websockets' => false,
+        'enable_http2' => true,
+        'backend_match_http_protocol' => false,
+        'backend_ssl' => 'verify'
+      })
+    end
+
+    it 'uses the HTTP2 backend default backend' do
+      expect(frontend_wss).to include('default_backend http-routers-http2')
+    end
+  end
+
+  context 'when backend_match_http_protocol is true' do
+    let(:properties) do
+      default_properties.merge({
+        'backend_match_http_protocol' => true,
+        'backend_ssl' => 'verify'
+      })
+    end
+
+    it 'enables config to match the protocol' do
+      expect(frontend_wss).to include('acl is_http2 ssl_fc_alpn,lower,strcmp(proc.h2_alpn_tag) eq 0')
+      expect(frontend_wss).to include('use_backend http-routers-http1 if ! is_http2')
+      expect(frontend_wss).to include('use_backend http-routers-http2 if is_http2')
+    end
+
+    context('when backend_ssl is off') do
+      let(:properties) do
+        default_properties.merge({
+          'backend_match_http_protocol' => true,
+          'backend_ssl' => 'off'
+        })
+      end
+
+      it 'does not override the default backend' do
+        expect(frontend_wss).not_to include(/use_backend/)
+      end
+    end
+  end
+
+  context 'when ha_proxy.http_request_deny_conditions are provided' do
+    let(:properties) do
+      default_properties.merge({
+        'http_request_deny_conditions' => [{
+          'condition' => [{
+            'acl_name' => 'block_host',
+            'acl_rule' => 'hdr_beg(host) -i login'
+          }, {
+            'acl_name' => 'whitelist_ips',
+            'acl_rule' => 'src 5.22.5.11 5.22.5.12',
+            'negate' => true
+          }]
+        }]
+      })
+    end
+
+    it 'adds the correct acls and http-request deny rules' do
+      expect(frontend_wss).to include('acl block_host hdr_beg(host) -i login')
+      expect(frontend_wss).to include('acl whitelist_ips src 5.22.5.11 5.22.5.12')
+
+      expect(frontend_wss).to include('http-request deny if block_host !whitelist_ips')
+    end
+  end
+
+  context 'when a custom ha_proxy.frontend_config is provided' do
+    let(:properties) do
+      default_properties.merge({ 'frontend_config' => 'custom config content' })
+    end
+
+    it 'includes the custom config' do
+      expect(frontend_wss).to include('custom config content')
+    end
+  end
+
+  context 'when a ha_proxy.cidr_whitelist is provided' do
+    let(:properties) do
+      default_properties.merge({ 'cidr_whitelist' => ['172.168.4.1/32', '10.2.0.0/16'] })
+    end
+
+    it 'sets the correct acl and content accept rules' do
+      expect(frontend_wss).to include('acl whitelist src -f /var/vcap/jobs/haproxy/config/whitelist_cidrs.txt')
+      expect(frontend_wss).to include('tcp-request content accept if whitelist')
+    end
+  end
+
+  context 'when a ha_proxy.cidr_blacklist is provided' do
+    let(:properties) do
+      default_properties.merge({ 'cidr_blacklist' => ['172.168.4.1/32', '10.2.0.0/16'] })
+    end
+
+    it 'sets the correct acl and content reject rules' do
+      expect(frontend_wss).to include('acl blacklist src -f /var/vcap/jobs/haproxy/config/blacklist_cidrs.txt')
+      expect(frontend_wss).to include('tcp-request content reject if blacklist')
+    end
+  end
+
+  context 'when ha_proxy.block_all is provided' do
+    let(:properties) do
+      default_properties.merge({ 'block_all' => true })
+    end
+
+    it 'sets the correct content reject rules' do
+      expect(frontend_wss).to include('tcp-request content reject')
+    end
+  end
+
+  context 'when ha_proxy.headers are provided' do
+    let(:properties) do
+      default_properties.merge({ 'headers' => ['X-Application-ID: my-custom-header', 'MyCustomHeader: 3'] })
+    end
+
+    it 'adds the request headers' do
+      expect(frontend_wss).to include('http-request add-header X-Application-ID:\ my-custom-header ""')
+      expect(frontend_wss).to include('http-request add-header MyCustomHeader:\ 3 ""')
+    end
+  end
+
+  context 'when ha_proxy.rsp_headers are provided' do
+    let(:properties) do
+      default_properties.merge({ 'rsp_headers' => ['X-Application-ID: my-custom-header', 'MyCustomHeader: 3'] })
+    end
+
+    it 'adds the response headers' do
+      expect(frontend_wss).to include('http-response add-header X-Application-ID:\ my-custom-header ""')
+      expect(frontend_wss).to include('http-response add-header MyCustomHeader:\ 3 ""')
+    end
+  end
+
+  context 'when ha_proxy.internal_only_domains are provided' do
+    let(:properties) do
+      default_properties.merge({ 'internal_only_domains' => ['bosh.internal'] })
+    end
+
+    it 'adds the correct acl and http-request deny rules' do
+      expect(frontend_wss).to include('acl private src -f /var/vcap/jobs/haproxy/config/trusted_domain_cidrs.txt')
+      expect(frontend_wss).to include('acl internal hdr(Host) -m sub bosh.internal')
+      expect(frontend_wss).to include('http-request deny if internal !private')
+    end
+  end
+
+  context 'when ha_proxy.routed_backend_servers are provided' do
+    let(:properties) do
+      default_properties.merge({
+        'routed_backend_servers' => {
+          '/images' => {
+            'port' => 12_000,
+            'servers' => ['10.0.0.1']
+          }
+        }
+      })
+    end
+
+    it 'grants access to the backend servers' do
+      expect(frontend_wss).to include('acl routed_backend_9c1bb7_0 path_beg /images')
+      expect(frontend_wss).to include('use_backend http-routed-backend-9c1bb7 if routed_backend_9c1bb7_0')
+    end
+
+    context 'when a routed_backend_server contains additional_acls' do
+      let(:properties) do
+        super().deep_merge({
+          'routed_backend_servers' => {
+            '/images' => {
+              'additional_acls' => ['method GET', 'path_end /foo']
+            }
+          }
+        })
+      end
+
+      it 'includes additional acls' do
+        expect(frontend_wss).to include('acl routed_backend_9c1bb7_1 method GET')
+        expect(frontend_wss).to include('acl routed_backend_9c1bb7_2 path_end /foo')
+        expect(frontend_wss).to include('use_backend http-routed-backend-9c1bb7 if routed_backend_9c1bb7_0 routed_backend_9c1bb7_1 routed_backend_9c1bb7_2')
+      end
+    end
+  end
+
+  it 'adds the X-Forwarded-Proto header' do
+    expect(frontend_wss).to include('acl xfp_exists hdr_cnt(X-Forwarded-Proto) gt 0')
+    expect(frontend_wss).to include('http-request add-header X-Forwarded-Proto "https" if ! xfp_exists')
+  end
+
+  context 'when websockets are not enabled (default)' do
+    let(:properties) { {} }
+
+    it 'removes the wss frontend' do
+      expect(haproxy_conf).not_to have_key('frontend wss-in')
+    end
+  end
+
+  context('when no valid SSL config is provided') do
+    let(:properties) do
+      { 'enable_4443' => true }
+    end
+
+    it 'aborts with a meaningful error message' do
+      expect do
+        frontend_wss
+      end.to raise_error(/Conflicting configuration: if enable_4443 is true, you must provide a valid SSL config via ssl_pem or crt_list/)
+    end
+  end
+end

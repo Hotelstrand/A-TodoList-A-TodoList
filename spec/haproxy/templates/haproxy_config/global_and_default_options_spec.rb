@@ -21,4 +21,13 @@ describe 'config/haproxy.config global and default options' do
 
   it 'has expected defaults' do
     expect(defaults).to include('log global')
-    exp
+    expect(defaults).to include('option log-health-checks')
+    expect(defaults).to include('option log-separate-errors')
+    expect(defaults).to include('option http-server-close')
+    expect(defaults).to include('option idle-close-on-response')
+    expect(defaults).to include('option httplog')
+    expect(defaults).to include('option forwardfor')
+    expect(defaults).to include('option contstats')
+  end
+
+  it 'has expected global opti

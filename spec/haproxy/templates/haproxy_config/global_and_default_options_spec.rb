@@ -85,4 +85,25 @@ describe 'config/haproxy.config global and default options' do
   end
 
   context 'when ha_proxy.log_level is provided' do
-    let(:
+    let(:properties) do
+      {
+        'log_level' => 'trace'
+      }
+    end
+
+    it 'configures logging correctly' do
+      expect(global).to include('log stdout len 1024 format raw syslog trace')
+    end
+  end
+
+  context 'when ha_proxy.global_config is provided' do
+    let(:properties) do
+      {
+        'global_config' => 'custom-global-config'
+      }
+    end
+
+    it 'adds custom global config' do
+      expect(global).to include('custom-global-config')
+    end
+  

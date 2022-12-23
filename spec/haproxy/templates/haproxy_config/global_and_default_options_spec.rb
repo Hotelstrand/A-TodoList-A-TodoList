@@ -30,4 +30,18 @@ describe 'config/haproxy.config global and default options' do
     expect(defaults).to include('option contstats')
   end
 
-  it 'has expected global opti
+  it 'has expected global options' do
+    expect(global).to include('daemon')
+    expect(global).to include('user vcap')
+    expect(global).to include('group vcap')
+    expect(global).to include('spread-checks 4')
+    expect(global).to include('stats timeout 2m')
+  end
+
+  context 'when ha_proxy.raw_config is provided' do
+    it 'replaces the entire haproxy config contents' do
+      expect(template.render({
+        'ha_proxy' => {
+          'raw_config' => 'custom_config'
+        }
+      })).to

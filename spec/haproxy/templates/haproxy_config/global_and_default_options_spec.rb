@@ -63,4 +63,26 @@ describe 'config/haproxy.config global and default options' do
   context 'when ha_proxy.log_max_length is provided' do
     let(:properties) do
       {
-        'log_max_length' 
+        'log_max_length' => 9999
+      }
+    end
+
+    it 'configures logging correctly' do
+      expect(global).to include('log stdout len 9999 format raw syslog info')
+    end
+  end
+
+  context 'when ha_proxy.log_format is provided' do
+    let(:properties) do
+      {
+        'log_format' => 'custom-format'
+      }
+    end
+
+    it 'configures logging correctly' do
+      expect(global).to include('log stdout len 1024 format custom-format syslog info')
+    end
+  end
+
+  context 'when ha_proxy.log_level is provided' do
+    let(:

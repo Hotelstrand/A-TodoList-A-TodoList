@@ -44,4 +44,23 @@ describe 'config/haproxy.config global and default options' do
         'ha_proxy' => {
           'raw_config' => 'custom_config'
         }
-      })).to
+      })).to eq("custom_config\n")
+    end
+  end
+
+  context 'when ha_proxy.syslog_server is provided' do
+    let(:properties) do
+      {
+        'syslog_server' => '/my/server'
+      }
+    end
+
+    it 'configures logging correctly' do
+      expect(global).to include('log /my/server len 1024 format raw syslog info')
+    end
+  end
+
+  context 'when ha_proxy.log_max_length is provided' do
+    let(:properties) do
+      {
+        'log_max_length' 

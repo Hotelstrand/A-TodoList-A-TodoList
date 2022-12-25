@@ -106,4 +106,26 @@ describe 'config/haproxy.config global and default options' do
     it 'adds custom global config' do
       expect(global).to include('custom-global-config')
     end
-  
+  end
+
+  context 'when ha_proxy.nbthread is provided' do
+    let(:properties) do
+      {
+        'nbthread' => 7
+      }
+    end
+
+    it 'sets nbthread' do
+      expect(global).to include('nbthread 7')
+    end
+  end
+
+  context 'when ha_proxy.disable_tls_10 is provided' do
+    let(:properties) do
+      {
+        'disable_tls_10' => true
+      }
+    end
+
+    it 'disables TLS 1.0' do
+      expect(global).to include('ssl-default-server-options no-

@@ -155,4 +155,21 @@ describe 'config/haproxy.config global and default options' do
 
     it 'disables TLS 1.2' do
       expect(global).to include('ssl-default-server-options no-sslv3 no-tlsv12 no-tls-tickets')
-      expect(global).to include('ssl-default-bind-options no-sslv3 no-tlsv12 no-tls-tick
+      expect(global).to include('ssl-default-bind-options no-sslv3 no-tlsv12 no-tls-tickets')
+    end
+  end
+
+  context 'when ha_proxy.disable_tls_13 is provided' do
+    let(:properties) do
+      {
+        'disable_tls_13' => true
+      }
+    end
+
+    it 'disables TLS 1.3' do
+      expect(global).to include('ssl-default-server-options no-sslv3 no-tlsv13 no-tls-tickets')
+      expect(global).to include('ssl-default-bind-options no-sslv3 no-tlsv13 no-tls-tickets')
+    end
+  end
+
+  context 'when ha_proxy.disable_

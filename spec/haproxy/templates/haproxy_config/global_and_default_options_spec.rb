@@ -200,4 +200,22 @@ describe 'config/haproxy.config global and default options' do
 
   context 'when ha_proxy.ssl_ciphersuites is provided' do
     let(:properties) do
-      
+      {
+        'ssl_ciphersuites' => 'TLS_AES_128_GCM_SHA256'
+      }
+    end
+
+    it 'overrides the allowed ciphers' do
+      expect(global).to include('ssl-default-server-ciphersuites TLS_AES_128_GCM_SHA256')
+      expect(global).to include('ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256')
+    end
+  end
+
+  context 'when ha_proxy.max_connections is provided' do
+    let(:properties) do
+      {
+        'max_connections' => 9999
+      }
+    end
+
+    it 'sets the number of

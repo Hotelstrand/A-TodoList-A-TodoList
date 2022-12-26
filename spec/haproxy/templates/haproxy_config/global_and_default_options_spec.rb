@@ -186,4 +186,18 @@ describe 'config/haproxy.config global and default options' do
   end
 
   context 'when ha_proxy.ssl_ciphers is provided' do
-    let(:proper
+    let(:properties) do
+      {
+        'ssl_ciphers' => 'ECDHE-ECDSA-CHACHA20-POLY1305'
+      }
+    end
+
+    it 'overrides the allowed ciphers' do
+      expect(global).to include('ssl-default-server-ciphers ECDHE-ECDSA-CHACHA20-POLY1305')
+      expect(global).to include('ssl-default-bind-ciphers ECDHE-ECDSA-CHACHA20-POLY1305')
+    end
+  end
+
+  context 'when ha_proxy.ssl_ciphersuites is provided' do
+    let(:properties) do
+      

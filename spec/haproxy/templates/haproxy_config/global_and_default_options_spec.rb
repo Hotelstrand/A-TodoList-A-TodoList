@@ -218,4 +218,23 @@ describe 'config/haproxy.config global and default options' do
       }
     end
 
-    it 'sets the number of
+    it 'sets the number of max connections' do
+      expect(global).to include('maxconn 9999')
+      expect(defaults).to include('maxconn 9999')
+    end
+  end
+
+  context 'when ha_proxy.reload_hard_stop_after is provided' do
+    let(:properties) do
+      {
+        'reload_hard_stop_after' => '30m'
+      }
+    end
+
+    it 'sets hard-stop-after' do
+      expect(global).to include('hard-stop-after 30m')
+    end
+  end
+
+  context 'when ha_proxy.lua_scripts is provided' do
+    let(:properties) d

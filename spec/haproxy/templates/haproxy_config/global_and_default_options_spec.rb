@@ -253,4 +253,22 @@ describe 'config/haproxy.config global and default options' do
   context 'when ha_proxy.lua_scripts_per_thread is provided' do
     let(:properties) do
       {
-        'lua_scripts
+        'lua_scripts_per_thread' => [
+          '/var/vcap/packages/something/something/darkside.lua'
+        ]
+      }
+    end
+
+    it 'includes the external lua script' do
+      expect(global).to include('lua-load-per-thread /var/vcap/packages/something/something/darkside.lua')
+    end
+  end
+
+  context 'when ha_proxy.default_dh_param is provided' do
+    let(:properties) do
+      {
+        'default_dh_param' => 8888
+      }
+    end
+
+    it 'sets tu

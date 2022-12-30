@@ -271,4 +271,24 @@ describe 'config/haproxy.config global and default options' do
       }
     end
 
-    it 'sets tu
+    it 'sets tune.ssl.default-dh-param' do
+      expect(global).to include('tune.ssl.default-dh-param 8888')
+    end
+  end
+
+  context 'when ha_proxy.buffer_size_bytes is provided' do
+    let(:properties) do
+      {
+        'buffer_size_bytes' => 7777
+      }
+    end
+
+    it 'sets tune.bufsize' do
+      expect(global).to include('tune.bufsize 7777')
+    end
+  end
+
+  context 'when ha_proxy.max_rewrite is provided' do
+    let(:properties) do
+      {
+  

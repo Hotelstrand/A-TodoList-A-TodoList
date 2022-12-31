@@ -291,4 +291,22 @@ describe 'config/haproxy.config global and default options' do
   context 'when ha_proxy.max_rewrite is provided' do
     let(:properties) do
       {
-  
+        'max_rewrite' => 6666
+      }
+    end
+
+    it 'sets tune.maxrewrite' do
+      expect(global).to include('tune.maxrewrite 6666')
+    end
+  end
+
+  context 'when ha_proxy.drain_enable is false' do
+    let(:properties) do
+      {
+        'drain_enable' => false,
+        'drain_frontend_grace_time' => 12
+      }
+    end
+
+    it 'aborts with a meaningful error message' do
+      expect { global }.to raise_error(/Conflicting configuration: drai

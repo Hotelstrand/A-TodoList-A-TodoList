@@ -309,4 +309,23 @@ describe 'config/haproxy.config global and default options' do
     end
 
     it 'aborts with a meaningful error message' do
-      expect { global }.to raise_error(/Conflicting configuration: drai
+      expect { global }.to raise_error(/Conflicting configuration: drain_enable must be true to use drain_frontend_grace_time/)
+    end
+  end
+
+  context 'when ha_proxy.connect_timeout is provided' do
+    let(:properties) do
+      {
+        'connect_timeout' => 4
+      }
+    end
+
+    it 'sets timeout connect in milliseconds' do
+      expect(defaults).to include(/timeout connect\s+4000ms/)
+    end
+  end
+
+  context 'when ha_proxy.client_timeout is provided' do
+    let(:properties) do
+      {
+        'client_timeout' => 5

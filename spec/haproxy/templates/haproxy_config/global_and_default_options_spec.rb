@@ -349,4 +349,23 @@ describe 'config/haproxy.config global and default options' do
     end
   end
 
-  context 'when
+  context 'when ha_proxy.websocket_timeout is provided' do
+    let(:properties) do
+      {
+        'websocket_timeout' => 7
+      }
+    end
+
+    it 'sets the timeout tunnel in milliseconds' do
+      expect(defaults).to include(/timeout tunnel\s+7000ms/)
+    end
+  end
+
+  context 'when ha_proxy.keepalive_timeout is provided' do
+    let(:properties) do
+      {
+        'keepalive_timeout' => 8
+      }
+    end
+
+    it 'sets timeout http-keep-alive in milliseconds' 

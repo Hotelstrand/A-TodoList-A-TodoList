@@ -329,3 +329,24 @@ describe 'config/haproxy.config global and default options' do
     let(:properties) do
       {
         'client_timeout' => 5
+      }
+    end
+
+    it 'sets timeout client in milliseconds' do
+      expect(defaults).to include(/timeout client\s+5000ms/)
+    end
+  end
+
+  context 'when ha_proxy.server_timeout is provided' do
+    let(:properties) do
+      {
+        'server_timeout' => 6
+      }
+    end
+
+    it 'sets the timeout server in milliseconds' do
+      expect(defaults).to include(/timeout server\s+6000ms/)
+    end
+  end
+
+  context 'when

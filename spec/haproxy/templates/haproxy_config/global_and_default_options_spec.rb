@@ -368,4 +368,21 @@ describe 'config/haproxy.config global and default options' do
       }
     end
 
-    it 'sets timeout http-keep-alive in milliseconds' 
+    it 'sets timeout http-keep-alive in milliseconds' do
+      expect(defaults).to include(/timeout http-keep-alive\s+8000ms/)
+    end
+  end
+
+  context 'when ha_proxy.request_timeout is provided' do
+    let(:properties) do
+      {
+        'request_timeout' => 9
+      }
+    end
+
+    it 'sets timeout http-request in milliseconds' do
+      expect(defaults).to include(/timeout http-request\s+9000ms/)
+    end
+  end
+
+  context 'when ha_proxy.queue_timeout is provided' d

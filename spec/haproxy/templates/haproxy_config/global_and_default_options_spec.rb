@@ -385,4 +385,24 @@ describe 'config/haproxy.config global and default options' do
     end
   end
 
-  context 'when ha_proxy.queue_timeout is provided' d
+  context 'when ha_proxy.queue_timeout is provided' do
+    let(:properties) do
+      {
+        'queue_timeout' => 10
+      }
+    end
+
+    it 'sets the timeout queue in milliseconds' do
+      expect(defaults).to include(/timeout queue\s+10000ms/)
+    end
+  end
+
+  context 'when ha_proxy.default_config is provided' do
+    let(:properties) do
+      {
+        'default_config' => 'my default config'
+      }
+    end
+
+    it 'appends the custom default config' do
+      expect(defaults).to

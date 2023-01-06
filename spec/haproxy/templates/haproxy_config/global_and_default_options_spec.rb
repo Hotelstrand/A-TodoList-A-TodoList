@@ -405,4 +405,22 @@ describe 'config/haproxy.config global and default options' do
     end
 
     it 'appends the custom default config' do
-      expect(defaults).to
+      expect(defaults).to include('my default config')
+    end
+  end
+
+  context 'when ha_proxy.backend_prefer_local_az is provided' do
+    let(:properties) do
+      {
+        'backend_prefer_local_az' => true
+      }
+    end
+
+    it 'enables the allbackups options' do
+      expect(defaults).to include('option allbackups')
+    end
+  end
+
+  context 'when ha_proxy.always_allow_body_http10 is true' do
+    let(:properties) do
+ 

@@ -20,4 +20,14 @@ describe 'config/haproxy.config healthcheck listeners' do
       expect(healthcheck_listener).to include('bind :8080')
       expect(healthcheck_listener).to include('mode http')
       expect(healthcheck_listener).to include('option httpclose')
-      expect
+      expect(healthcheck_listener).to include('monitor-uri /health')
+      expect(healthcheck_listener).to include('acl http-routers_down nbsrv(http-routers-http1) eq 0')
+      expect(healthcheck_listener).to include('monitor fail if http-routers_down')
+    end
+
+    context 'when only http2 backend servers are available' do
+      let(:properties) do
+        {
+          'enable_health_check_http' => true,
+          'disable_backend_http2_websockets' => false,
+        

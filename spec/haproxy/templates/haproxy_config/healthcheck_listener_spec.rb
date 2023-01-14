@@ -30,4 +30,14 @@ describe 'config/haproxy.config healthcheck listeners' do
         {
           'enable_health_check_http' => true,
           'disable_backend_http2_websockets' => false,
-        
+          'enable_http2' => true,
+          'backend_match_http_protocol' => false,
+          'backend_ssl' => 'verify'
+        }
+      end
+
+      it 'adds a health check listener for the http-routers-http2' do
+        expect(healthcheck_listener).to include('bind :8080')
+        expect(healthcheck_listener).to include('mode http')
+        expect(healthcheck_listener).to include('option httpclose')
+        expect(healthcheck_listen

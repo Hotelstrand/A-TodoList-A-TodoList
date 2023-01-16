@@ -40,4 +40,14 @@ describe 'config/haproxy.config healthcheck listeners' do
         expect(healthcheck_listener).to include('bind :8080')
         expect(healthcheck_listener).to include('mode http')
         expect(healthcheck_listener).to include('option httpclose')
-        expect(healthcheck_listen
+        expect(healthcheck_listener).to include('monitor-uri /health')
+        expect(healthcheck_listener).to include('acl http-routers_down nbsrv(http-routers-http2) eq 0')
+        expect(healthcheck_listener).to include('monitor fail if http-routers_down')
+      end
+    end
+
+    context 'when health_check_port is not the default' do
+      let(:properties) do
+        {
+          'enable_health_check_http' => true,
+          'health_check_port' => 1234

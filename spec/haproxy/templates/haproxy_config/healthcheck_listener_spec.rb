@@ -51,3 +51,12 @@ describe 'config/haproxy.config healthcheck listeners' do
         {
           'enable_health_check_http' => true,
           'health_check_port' => 1234
+        }
+      end
+
+      it 'sets the correct port' do
+        expect(healthcheck_listener).to include('bind :1234')
+      end
+    end
+  end
+end

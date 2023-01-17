@@ -23,4 +23,18 @@ describe 'config/haproxy.config rate limiting' do
 
     let(:request_limit_base_properties) do
       {
-        'requests_
+        'requests_rate_limit' => {
+          'window_size' => '10s',
+          'table_size' => '10m'
+        }
+      }
+    end
+
+    let(:temp_properties) do # temp_properties is required since we cannot deep_merge :properties in its own let/assignment block
+      default_properties.deep_merge(request_limit_base_properties)
+    end
+
+    let(:properties) { temp_properties }
+
+    it 'sets up stick-tables' do
+      expect(backend_req_rate).to incl

@@ -37,4 +37,14 @@ describe 'config/haproxy.config rate limiting' do
     let(:properties) { temp_properties }
 
     it 'sets up stick-tables' do
-      expect(backend_req_rate).to incl
+      expect(backend_req_rate).to include('stick-table type ip size 10m expire 10s store http_req_rate(10s)')
+    end
+
+    it 'tracks requests in stick tables' do
+      expect(frontend_http).to include('http-request track-sc1 src table st_http_req_rate')
+      expect(frontend_https).to include('http-request track-sc1 src table st_http_req_rate')
+    end
+
+    context 'when "requests" and "block" are also provided' do
+      let(:properties) do
+        temp_properties.deep_merge({ 'requests_rate_limit'

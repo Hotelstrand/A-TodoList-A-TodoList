@@ -53,4 +53,15 @@ describe 'config/haproxy.config rate limiting' do
       it 'adds http-request deny condition to http-in and https-in frontends' do
         expect(frontend_http).to include('http-request deny status 429 if { sc_http_req_rate(1) gt 5 }')
         expect(frontend_http).to include('http-request track-sc1 src table st_http_req_rate')
-        expect(frontend_https).to include('http-request deny status 429 if
+        expect(frontend_https).to include('http-request deny status 429 if { sc_http_req_rate(1) gt 5 }')
+        expect(frontend_https).to include('http-request track-sc1 src table st_http_req_rate')
+      end
+    end
+  end
+
+  context 'when ha_proxy.connections_rate_limit properties "window_size", "table_size" are provided' do
+    let(:backend_conn_rate) { haproxy_conf['backend st_tcp_conn_rate'] }
+
+    let(:connection_limit_base_properties) do
+      {
+        

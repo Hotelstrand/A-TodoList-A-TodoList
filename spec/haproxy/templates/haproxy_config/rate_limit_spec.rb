@@ -47,4 +47,10 @@ describe 'config/haproxy.config rate limiting' do
 
     context 'when "requests" and "block" are also provided' do
       let(:properties) do
-        temp_properties.deep_merge({ 'requests_rate_limit'
+        temp_properties.deep_merge({ 'requests_rate_limit' => { 'requests' => '5', 'block' => 'true' } })
+      end
+
+      it 'adds http-request deny condition to http-in and https-in frontends' do
+        expect(frontend_http).to include('http-request deny status 429 if { sc_http_req_rate(1) gt 5 }')
+        expect(frontend_http).to include('http-request track-sc1 src table st_http_req_rate')
+        expect(frontend_https).to include('http-request deny status 429 if

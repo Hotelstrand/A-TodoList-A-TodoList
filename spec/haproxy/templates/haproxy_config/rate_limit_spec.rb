@@ -64,4 +64,18 @@ describe 'config/haproxy.config rate limiting' do
 
     let(:connection_limit_base_properties) do
       {
-        
+        'connections_rate_limit' => {
+          'window_size' => '10s',
+          'table_size' => '10m'
+        }
+      }
+    end
+
+    let(:temp_properties) do # temp_properties is required since we cannot deep_merge :properties in its own let/assignment block
+      default_properties.deep_merge(connection_limit_base_properties)
+    end
+
+    let(:properties) { temp_properties }
+
+    it 'sets up stick-tables' do
+      expect(backend_conn_rate).to include('stick-table type ip size 10m ex

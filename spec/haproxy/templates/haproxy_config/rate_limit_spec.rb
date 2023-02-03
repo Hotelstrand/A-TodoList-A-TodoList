@@ -94,4 +94,9 @@ describe 'config/haproxy.config rate limiting' do
       it 'adds http-request deny condition to http-in and https-in frontends' do
         expect(frontend_http).to include('tcp-request connection reject if { sc_conn_rate(0) gt 5 }')
         expect(frontend_http).to include('tcp-request connection track-sc0 src table st_tcp_conn_rate')
-        expect(frontend_https).to include('tcp-request connection r
+        expect(frontend_https).to include('tcp-request connection reject if { sc_conn_rate(0) gt 5 }')
+        expect(frontend_https).to include('tcp-request connection track-sc0 src table st_tcp_conn_rate')
+      end
+    end
+  end
+end

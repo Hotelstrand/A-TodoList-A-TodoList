@@ -24,4 +24,15 @@ describe 'config/haproxy.config resolvers' do
     it 'configures a resolver' do
       expect(resolvers_default).to include('hold valid 10s')
       expect(resolvers_default).to include('timeout retry 1s')
-      expect(resolvers_default).
+      expect(resolvers_default).to include('resolve_retries 3')
+      expect(resolvers_default).to include('nameserver public 1.1.1.1:53')
+      expect(resolvers_default).to include('nameserver private 10.1.1.1:53')
+    end
+
+    context 'when ha_proxy.dns_hold is provided' do
+      let(:properties) { default_properties.merge({ 'dns_hold' => '30s' }) }
+
+      it 'overrides the dns hold for the resolver' do
+        expect(resolvers_default).to include('hold valid 30s')
+      end
+    

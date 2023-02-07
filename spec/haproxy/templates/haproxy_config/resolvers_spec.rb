@@ -35,4 +35,15 @@ describe 'config/haproxy.config resolvers' do
       it 'overrides the dns hold for the resolver' do
         expect(resolvers_default).to include('hold valid 30s')
       end
-    
+    end
+
+    context 'when ha_proxy.resolve_retry_timeout is provided' do
+      let(:properties) { default_properties.merge({ 'resolve_retry_timeout' => '5s' }) }
+
+      it 'overrides the resolve_retry_timeout for the resolver' do
+        expect(resolvers_default).to include('timeout retry 5s')
+      end
+    end
+
+    context 'when ha_proxy.resolve_retries is provided' do
+      let(:properties) { default_properties.

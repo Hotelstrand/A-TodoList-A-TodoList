@@ -23,4 +23,11 @@ describe 'config/haproxy.config stats listener' do
     let(:stats_listener) { haproxy_conf['listen stats'] }
 
     it 'sets up a stats listener for each process' do
-      expect(stats_listener).to inclu
+      expect(stats_listener).to include('bind *:9000')
+      expect(stats_listener).to include('acl private src 0.0.0.0/32')
+      expect(stats_listener).to include('http-request deny unless private')
+      expect(stats_listener).to include('mode http')
+      expect(stats_listener).to include('stats enable')
+      expect(stats_listener).to include('stats hide-version')
+      expect(stats_listener).to include('stats realm "Haproxy Statistics"')
+      expect(stats_listener).to

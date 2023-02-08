@@ -46,4 +46,11 @@ describe 'config/haproxy.config resolvers' do
     end
 
     context 'when ha_proxy.resolve_retries is provided' do
-      let(:properties) { default_properties.
+      let(:properties) { default_properties.merge({ 'resolve_retries' => 10 }) }
+
+      it 'overrides the resolve_retries for the resolver' do
+        expect(resolvers_default).to include('resolve_retries 10')
+      end
+    end
+  end
+end

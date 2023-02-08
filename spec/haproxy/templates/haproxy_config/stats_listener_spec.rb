@@ -30,4 +30,18 @@ describe 'config/haproxy.config stats listener' do
       expect(stats_listener).to include('stats enable')
       expect(stats_listener).to include('stats hide-version')
       expect(stats_listener).to include('stats realm "Haproxy Statistics"')
-      expect(stats_listener).to
+      expect(stats_listener).to include('stats uri /foo')
+      expect(stats_listener).to include('stats auth admin:secret')
+    end
+
+    context 'when ha_proxy.trusted_stats_cidrs is set' do
+      let(:properties) do
+        default_properties.merge({ 'trusted_stats_cidrs' => '1.2.3.4/32' })
+      end
+
+      it 'has the correct acl' do
+        expect(stats_listener).to include('acl private src 1.2.3.4/32')
+      end
+    end
+
+    context 'whe

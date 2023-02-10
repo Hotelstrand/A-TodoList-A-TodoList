@@ -44,4 +44,14 @@ describe 'config/haproxy.config stats listener' do
       end
     end
 
-    context 'whe
+    context 'when ha_proxy.stats_bind is set' do
+      let(:properties) do
+        default_properties.merge({ 'stats_bind' => '1.2.3.4:5000' })
+      end
+
+      it 'overrides the default bind address' do
+        expect(stats_listener).to include('bind 1.2.3.4:5000')
+      end
+    end
+  end
+end

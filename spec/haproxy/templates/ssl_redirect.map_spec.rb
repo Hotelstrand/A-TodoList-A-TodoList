@@ -25,4 +25,8 @@ describe 'config/ssl_redirect.map' do
   end
 
   context 'when ha_proxy.https_redirect_domains is not provided' do
-  
+    it 'is empty' do
+      expect(template.render({})).to be_a_blank_string
+    end
+  end
+end

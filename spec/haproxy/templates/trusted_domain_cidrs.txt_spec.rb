@@ -25,4 +25,19 @@ describe 'config/trusted_domain_cidrs.txt' do
       end
     end
 
-    context 'when a newline-separated, gzipped, base64-encoded li
+    context 'when a newline-separated, gzipped, base64-encoded list of cidrs is provided' do
+      it 'has the correct contents' do
+        expect(template.render({
+          'ha_proxy' => {
+            'trusted_domain_cidrs' => gzip_and_b64_encode("10.0.0.0/8\n192.168.2.0/24")
+          }
+        })).to eq(<<~EXPECTED)
+          # generated from trusted_domain_cidrs.txt.erb
+
+          # BEGIN trusted_domain cidrs
+          10.0.0.0/8
+          192.168.2.0/24
+          # END trusted_domain cidrs
+
+        EXPECTED
+ 

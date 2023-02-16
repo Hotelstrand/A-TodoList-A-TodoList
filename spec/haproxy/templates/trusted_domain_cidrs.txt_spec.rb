@@ -40,4 +40,13 @@ describe 'config/trusted_domain_cidrs.txt' do
           # END trusted_domain cidrs
 
         EXPECTED
- 
+      end
+    end
+
+    context 'when ha_proxy.trusted_domain_cidrs is not provided' do
+      it 'is empty' do
+        expect(template.render({})).to be_a_blank_string
+      end
+    end
+  end
+end

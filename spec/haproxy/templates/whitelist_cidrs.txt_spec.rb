@@ -39,4 +39,22 @@ describe 'config/whitelist_cidrs.txt' do
             INPUT
           }
         })).to eq(<<~EXPECTED)
-          #
+          # generated from whitelist_cidrs.txt.erb
+
+          # BEGIN whitelist cidrs
+          10.0.0.0/8
+          192.168.2.0/24
+
+          # END whitelist cidrs
+
+        EXPECTED
+      end
+    end
+  end
+
+  context 'when ha_proxy.cidr_whitelist is not provided' do
+    it 'is empty' do
+      expect(template.render({})).to be_a_blank_string
+    end
+  end
+end

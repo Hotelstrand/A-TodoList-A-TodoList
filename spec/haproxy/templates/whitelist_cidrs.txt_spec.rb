@@ -20,3 +20,23 @@ describe 'config/whitelist_cidrs.txt' do
 
           # BEGIN whitelist cidrs
           # detected cidrs provided as array in cleartext format
+          10.0.0.0/8
+          192.168.2.0/24
+
+          # END whitelist cidrs
+
+        EXPECTED
+      end
+    end
+
+    context 'when a base64-encoded, gzipped config is provided' do
+      it 'has the correct contents' do
+        expect(template.render({
+          'ha_proxy' => {
+            'cidr_whitelist' => gzip_and_b64_encode(<<~INPUT)
+              10.0.0.0/8
+              192.168.2.0/24
+            INPUT
+          }
+        })).to eq(<<~EXPECTED)
+          #

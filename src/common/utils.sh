@@ -15,4 +15,29 @@ function pid_is_running() {
 # remove the stale :pidfile: if it exists.
 #
 function pid_guard() {
-  declare pidfile="$1"
+  declare pidfile="$1" name="$2"
+
+  echo "------------ STARTING $(basename "$0") at $(date) --------------" | tee /dev/stderr
+
+  if [ ! -f "${pidfile}" ]; then
+    return 0
+  fi
+
+  local pid
+  pid=$(head -1 "${pidfile}")
+
+  if pid_is_running "${pid}"; then
+    echo "${name} is already running, please stop it first"
+    exit 1
+  fi
+
+  echo "Removing stale pidfile"
+  rm "${pidfile}"
+}
+
+# wait_pid_death
+#
+# @param pid
+# @param timeout
+#
+# Watch a :pid: for :timeout: seconds, 

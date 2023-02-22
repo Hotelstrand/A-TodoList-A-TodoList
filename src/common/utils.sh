@@ -40,4 +40,25 @@ function pid_guard() {
 # @param pid
 # @param timeout
 #
-# Watch a :pid: for :timeout: seconds, 
+# Watch a :pid: for :timeout: seconds, waiting for it to die.
+# If it dies before :timeout:, exit 0. If not, exit 1.
+#
+# Note that this should be run in a subshell, so that the current
+# shell does not exit.
+#
+function wait_pid_death() {
+  declare pid="$1" timeout="$2"
+
+  local countdown
+  countdown=$(( timeout * 10 ))
+
+  while true; do
+    if ! pid_is_running "${pid}"; then
+      return 0
+    fi
+
+    if [ ${countdown} -le 0 ]; then
+      return 1
+    fi
+
+    countdown=$(( countdown - 1 

@@ -61,4 +61,20 @@ function wait_pid_death() {
       return 1
     fi
 
-    countdown=$(( countdown - 1 
+    countdown=$(( countdown - 1 ))
+    sleep 0.1
+  done
+}
+
+# kill_and_wait
+#
+# @param pidfile
+# @param timeout [default 25s]
+#
+# For a pid found in :pidfile:, send a `kill -15` TERM, then wait for :timeout: seconds to
+# see if it dies on its own. If not, send it a `kill -9`. If the process does die,
+# exit 0 and remove the :pidfile:. If after all of this, the process does not actually
+# die, exit 1.
+#
+# Note:
+# Monit default timeout for start/stop is 30s

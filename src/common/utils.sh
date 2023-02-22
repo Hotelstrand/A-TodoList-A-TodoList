@@ -78,3 +78,22 @@ function wait_pid_death() {
 #
 # Note:
 # Monit default timeout for start/stop is 30s
+# Append 'with timeout {n} seconds' to monit start/stop program configs
+#
+function kill_and_wait() {
+  declare pidfile="$1" timeout="${2:-25}" sigkill_on_timeout="${3:-1}"
+
+  if [ ! -f "${pidfile}" ]; then
+    echo "Pidfile ${pidfile} doesn't exist"
+    exit 0
+  fi
+
+  local pid
+  pid=$(head -1 "${pidfile}")
+
+  if [ -z "${pid}" ]; then
+    echo "Unable to get pid from ${pidfile}"
+    exit 1
+  fi
+
+  if ! pid_is_running 

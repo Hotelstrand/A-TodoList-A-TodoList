@@ -117,4 +117,12 @@ function kill_and_wait() {
     echo "Timed Out"
     exit 1
   else
-    echo
+    echo "Stopped"
+    rm -f "${pidfile}"
+  fi
+}
+
+running_in_container() {
+  # look for a non-root cgroup
+  grep --quiet --invert-match ':/$' /proc/self/cgroup
+}

@@ -28,4 +28,16 @@ version_checker() {
 	done
 
 
-	
+	if [[ ${actual_numeric} -lt ${expected_numeric} ]]; then
+		return 1
+	fi
+	return 0
+}
+
+required_version="1.8.9"
+dev_version=$(spruce -v 2>&1 | perl -pe 's/.*development.*/DEV/')
+if [[ ${dev_version} == "DEV" ]]; then
+	echo "Treating 'development' version as up-to-date with spruce v${required_version}"
+else
+	spruce_version=$(spruce -v 2>&1 | perl -pe 's|.*?(\d+\.\d+(\.\d+)*).*|$1|')
+	if [[ -z ${spruce_version} || $(echo 

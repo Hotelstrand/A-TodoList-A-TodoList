@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+version_checker() {
+	if [[ $1 == $2 ]]
+	then
+		return 0
+	fi
+	local IFS=.
+	local i actual=($1) expected=($2)
+	# fill empty fi

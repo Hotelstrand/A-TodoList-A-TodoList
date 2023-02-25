@@ -9,4 +9,23 @@ version_checker() {
 	fi
 	local IFS=.
 	local i actual=($1) expected=($2)
-	# fill empty fi
+	# fill empty fields in actual with zeros
+	for ((i=${#actual[@]}; i<${#expected[@]}; i++))
+	do
+		actual[i]=0
+	done
+	actual_numeric=0
+	expected_numeric=0
+	for ((i=0; i<${#actual[@]}; i++))
+	do
+		if [[ -z ${expected[i]} ]]
+		then
+			# fill empty fields in expected with zeros
+			expected[i]=0
+		fi
+		actual_numeric=$((actual_numeric+${actual[i]}*1000**(${#actual[@]}-i)))
+		expected_numeric=$((expected_numeric+${expected[i]}*1000**(${#expected[@]}-i)))
+	done
+
+
+	

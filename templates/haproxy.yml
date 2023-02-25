@@ -1,0 +1,15 @@
+instance_groups:
+  - name: haproxy
+    instances: 1
+    vm_type: haproxy
+    stemcell: ubuntu
+    jobs:
+      - name: haproxy
+        release: haproxy
+    networks:
+    - name: haproxy
+      static_ips: (( static_ips(0, 1, 2, 3, 4) ))
+
+releases:
+  - name: haproxy
+   

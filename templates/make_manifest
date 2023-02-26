@@ -40,4 +40,14 @@ if [[ ${dev_version} == "DEV" ]]; then
 	echo "Treating 'development' version as up-to-date with spruce v${required_version}"
 else
 	spruce_version=$(spruce -v 2>&1 | perl -pe 's|.*?(\d+\.\d+(\.\d+)*).*|$1|')
-	if [[ -z ${spruce_version} || $(echo 
+	if [[ -z ${spruce_version} || $(echo ${current_version} | egrep '[^0-9\.]') ]]; then
+		echo "make_manifest requires spruce version ${required_version} or newer, but the current version could not be parsed: ${spruce_version}"
+		exit 1
+	fi
+	if ! version_checker ${spruce_version} ${required_version}; then
+		echo "make_manifest requires spruce version ${required_version} or newer, but found version ${spruce_version}"
+		exit
+	fi
+fi
+
+template_prefix

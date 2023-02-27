@@ -50,4 +50,21 @@ else
 	fi
 fi
 
-template_prefix
+template_prefix="haproxy"
+STEMCELL_OS=${STEMCELL_OS:-ubuntu}
+
+infrastructure=$1
+servers=$2
+
+if [[ "$infrastructure" != "aws-ec2" ]] && \
+    [[ "$infrastructure" != "openstack" ]] && \
+    [[ "$infrastructure" != "warden" ]] || \
+    [[ -z "$servers" ]]; then
+  echo >&2 "usage: ./make_manifest <aws-ec2|warden|openstack> <backend_server1>,[<backend_server2>,...,<backend_serverN>]"
+  exit 1
+fi
+
+shift
+shift
+
+BOSH_STATUS=

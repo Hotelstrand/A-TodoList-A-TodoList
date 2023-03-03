@@ -75,4 +75,18 @@ NAME=$template_prefix-$infrastructure
 
 if [[ $DIRECTOR_NAME = "warden" ]]; then
   if [[ $infrastructure != "warden" ]]; then
-    echo "Not targeting bosh-lite with warden CPI. Pl
+    echo "Not targeting bosh-lite with warden CPI. Please use 'bosh target' before running this script."
+    exit 1
+  fi
+fi
+
+if [[ $infrastructure = "aws-ec2" ]]; then
+  if [[ $DIRECTOR_CPI != "aws" ]]; then
+    echo "Not targeting an AWS BOSH. Please use 'bosh target' before running this script."
+    exit 1
+  fi
+fi
+
+if [[ $infrastructure = "openstack" ]]; then
+  if [[ $DIRECTOR_CPI != "openstack" ]]; then
+    echo "Not targeting an OpenStack BOSH. Please use 'bosh target' before runn

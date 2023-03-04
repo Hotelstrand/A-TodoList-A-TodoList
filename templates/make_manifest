@@ -129,4 +129,22 @@ if [[ $(bosh cloud-config | spruce json | jq -r '.networks[] | select(.name == "
 	exit 1
 fi
 if [[ $(bosh cloud-config | spruce json | jq -r '.vm_types[] | select(.name == "haproxy") | .name') != "haproxy" ]]; then
-	echo >&2 "Your cloud-config does not have the 'haproxy' v
+	echo >&2 "Your cloud-config does not have the 'haproxy' vm_type in it. See templates/cloud-config-warden.yml for an example."
+	exit 1
+fi
+
+bosh cloud-config | spruce merge --cherry-pick networks > $tmpdir/cc-networks.yml
+
+if [[ -n "${KEEPALIVED_VIP}" ]]; then
+	keepalived=$templates/keepalived.yml
+fi
+
+spruce merge --prune networks \
+  $templates/haproxy.yml \
+  $keepalived \
+  $tmpdir/cc-networks.yml \
+  $tmpdir/stub-with-uuid.yml \
+  $* > $tmpdir/$NAME-manifest.yml
+
+bosh deployment $tmpdir/$NAME-manifest.yml
+bosh status

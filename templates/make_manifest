@@ -124,4 +124,9 @@ director_uuid: ${DIRECTOR_UUID}
 EOF
 
 
-if [[ $(bosh cloud-con
+if [[ $(bosh cloud-config | spruce json | jq -r '.networks[] | select(.name == "haproxy") | .name') != "haproxy" ]]; then
+	echo >&2 "Your cloud-config does not have the 'haproxy' network in it. See templates/cloud-config-warden.yml for an example."
+	exit 1
+fi
+if [[ $(bosh cloud-config | spruce json | jq -r '.vm_types[] | select(.name == "haproxy") | .name') != "haproxy" ]]; then
+	echo >&2 "Your cloud-config does not have the 'haproxy' v
